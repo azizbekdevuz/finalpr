@@ -1,44 +1,48 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from __future__ import annotations
+
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask_babel import gettext as _
+
 import models.user as UserModel
+from routes import establish_session, logout_session
+from services.redirect_safety import safe_redirect_target
 
 auth_bp = Blueprint('auth', __name__)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    """회원가입 뷰."""
+    """User registration view (legacy credential account)."""
     if 'user_id' in session:
         return redirect(url_for('main.index'))
 
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
-        email    = request.form.get('email', '').strip()
+        email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
-        confirm  = request.form.get('confirm_password', '')
+        confirm = request.form.get('confirm_password', '')
 
-        # 유효성 검사
         errors = []
         if not username or len(username) < 3:
-            errors.append('사용자명은 3자 이상이어야 합니다.')
+            errors.append(_('Username must be at least 3 characters.'))
         if not email or '@' not in email:
-            errors.append('올바른 이메일을 입력해주세요.')
+            errors.append(_('Please enter a valid email address.'))
         if len(password) < 6:
-            errors.append('비밀번호는 6자 이상이어야 합니다.')
+            errors.append(_('Password must be at least 6 characters.'))
         if password != confirm:
-            errors.append('비밀번호가 일치하지 않습니다.')
+            errors.append(_('Passwords do not match.'))
         if UserModel.username_exists(username):
-            errors.append('이미 사용 중인 사용자명입니다.')
+            errors.append(_('That username is already taken.'))
         if UserModel.email_exists(email):
-            errors.append('이미 사용 중인 이메일입니다.')
+            errors.append(_('That email is already in use.'))
 
         if errors:
             for e in errors:
                 flash(e, 'danger')
-            return render_template('auth/register.html',
-                                   username=username, email=email)
+            return render_template('auth/register.html', username=username, email=email)
 
         UserModel.create_user(username, email, password)
-        flash('회원가입이 완료되었습니다! 로그인해주세요.', 'success')
+        flash(_('Registration complete! Please sign in.'), 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html')
@@ -46,7 +50,7 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    """로그인 뷰."""
+    """Credential login view."""
     if 'user_id' in session:
         return redirect(url_for('main.index'))
 
@@ -56,22 +60,17 @@ def login():
 
         user = UserModel.find_by_username(username)
         if user and UserModel.verify_password(user, password):
-            session.permanent = True
-            session['user_id']  = str(user['_id'])
-            session['username'] = user['username']
-            session['role']     = user.get('role', 'user')
-            flash(f'환영합니다, {user["username"]}님!', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('main.index'))
-        else:
-            flash('사용자명 또는 비밀번호가 올바르지 않습니다.', 'danger')
+            establish_session(user, provider='local')
+            flash(_('Welcome back, %(username)s!', username=user['username']), 'success')
+            return redirect(safe_redirect_target(request.args.get('next')))
+        flash(_('Incorrect username or password.'), 'danger')
 
     return render_template('auth/login.html')
 
 
 @auth_bp.route('/logout')
 def logout():
-    """로그아웃 뷰."""
-    session.clear()
-    flash('로그아웃되었습니다.', 'info')
+    """Log out of all authentication methods (keeps selected language)."""
+    logout_session()
+    flash(_('You have been signed out.'), 'info')
     return redirect(url_for('main.index'))

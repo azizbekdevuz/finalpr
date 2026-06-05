@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}관광지 등록 — 가보자고{% endblock %}
+{% from 'macros/ui.html' import page_title %}
+{% block title %}{{ _('Add Spot') }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
 <div class="page-header-simple">
   <div class="container">
-    <h1 class="page-title">📍 관광지 등록</h1>
-    <p class="page-subtitle text-muted">새로운 관광지 정보를 등록하세요</p>
+    {{ page_title('fa-solid fa-location-dot', _('Add Spot')) }}
+    <p class="page-subtitle text-muted">{{ _('Register a new spot') }}</p>
   </div>
 </div>
+
+{% set cat_labels = {'자연': _('Nature'), '문화/역사': _('Culture/History'), '음식/맛집': _('Food'), '액티비티': _('Activities'), '쇼핑': _('Shopping')} %}
 
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -17,19 +20,19 @@
 
           <div class="row g-3 mb-3">
             <div class="col-md-8">
-              <label class="form-label fw-bold" for="name">관광지 이름 *</label>
+              <label class="form-label fw-bold" for="name">{{ _('Spot name') }} *</label>
               <input type="text" class="form-control" id="name" name="name"
                      value="{{ form.get('name', '') if form else '' }}"
-                     placeholder="관광지 이름을 입력하세요" required />
+                     placeholder="{{ _('Enter the spot name') }}" required />
             </div>
             <div class="col-md-4">
-              <label class="form-label fw-bold" for="category">카테고리 *</label>
+              <label class="form-label fw-bold" for="category">{{ _('Category') }} *</label>
               <select class="form-select" id="category" name="category" required>
-                <option value="">선택하세요</option>
+                <option value="">{{ _('Please choose') }}</option>
                 {% for cat in categories %}
                 <option value="{{ cat }}"
                   {% if form and form.get('category') == cat %}selected{% endif %}>
-                  {{ cat }}
+                  {{ cat_labels.get(cat, cat) }}
                 </option>
                 {% endfor %}
               </select>
@@ -37,9 +40,9 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold" for="region">지역 *</label>
+            <label class="form-label fw-bold" for="region">{{ _('Region') }} *</label>
             <select class="form-select" id="region" name="region" required>
-              <option value="">지역을 선택하세요</option>
+              <option value="">{{ _('Please choose a region') }}</option>
               {% for r in regions %}
               <option value="{{ r }}"
                 {% if form and form.get('region') == r %}selected{% endif %}>
@@ -50,39 +53,38 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold" for="description">설명 *</label>
+            <label class="form-label fw-bold" for="description">{{ _('Description') }} *</label>
             <textarea class="form-control" id="description" name="description"
-                      rows="5" placeholder="관광지에 대한 자세한 설명을 입력하세요"
+                      rows="5" placeholder="{{ _('Enter a detailed description of the spot') }}"
                       required>{{ form.get('description', '') if form else '' }}</textarea>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold" for="address">주소</label>
+            <label class="form-label fw-bold" for="address">{{ _('Address') }}</label>
             <input type="text" class="form-control" id="address" name="address"
                    value="{{ form.get('address', '') if form else '' }}"
-                   placeholder="예: 서울특별시 종로구 사직로 161" />
+                   placeholder="{{ _('e.g. 161 Sajik-ro, Jongno-gu, Seoul') }}" />
           </div>
 
           <div class="mb-4">
-            <label class="form-label fw-bold" for="image_url">이미지 URL</label>
+            <label class="form-label fw-bold" for="image_url">{{ _('Image URL') }}</label>
             <input type="url" class="form-control" id="image_url" name="image_url"
                    value="{{ form.get('image_url', '') if form else '' }}"
                    placeholder="https://..." />
-            <div class="form-text">공공 API 또는 외부 이미지 URL을 입력하세요.</div>
+            <div class="form-text">{{ _('Enter a public API or external image URL.') }}</div>
 
-            <!-- Image Preview -->
             <div id="imgPreviewWrap" class="mt-3" style="display:none;">
-              <img id="imgPreview" src="" alt="미리보기"
+              <img id="imgPreview" src="" alt="{{ _('Preview') }}"
                    class="img-fluid rounded" style="max-height: 200px;" />
             </div>
           </div>
 
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary px-5">
-              <i class="fas fa-plus me-1"></i>등록하기
+              <i class="fas fa-plus me-1" aria-hidden="true"></i>{{ _('Register') }}
             </button>
             <a href="{{ url_for('spots.list_spots') }}" class="btn btn-outline-secondary">
-              취소
+              {{ _('Cancel') }}
             </a>
           </div>
         </form>
@@ -94,7 +96,6 @@
 
 {% block scripts %}
 <script>
-  // 이미지 URL 미리보기
   const urlInput = document.getElementById('image_url');
   const preview  = document.getElementById('imgPreview');
   const previewWrap = document.getElementById('imgPreviewWrap');

@@ -11,16 +11,18 @@ Endpoints:
   POST /courses/delete/<id>   — 저장 코스 삭제 (본인만)
 """
 
-from flask import Blueprint, render_template, request, jsonify, session
-from services.tour_api import (
-    fetch_first_spot_by_keyword,
-    fetch_nearby,
-    fetch_detail_common,
-)
-from services.llm_service import extract_place, generate_course_description, check_ollama_status
-import models.spot as SpotModel
+from flask import Blueprint, jsonify, render_template, request, session
+from flask_babel import get_locale
+from flask_babel import gettext as _
+
 import models.saved_course as SavedCourseModel
 from routes import login_required
+from services.llm_service import check_ollama_status, extract_place, generate_course_description
+from services.tour_api import (
+    fetch_detail_common,
+    fetch_first_spot_by_keyword,
+    fetch_nearby,
+)
 
 courses_bp = Blueprint('courses', __name__)
 
@@ -38,28 +40,12 @@ def courses():
 
 @courses_bp.route('/ai-recommend', methods=['POST'])
 def ai_recommend():
-    """
-    AI 코스 추천 AJAX API
+    """AI course recommendation AJAX API.
 
-    Request JSON:
-        {"message": "경복궁 가고 싶어요"}
-
-    Response JSON (성공):
-        {
-            "ok": true,
-            "keyword": "경복궁",
-            "spots": [
-                {"contentid": "...", "title": "...", "addr1": "...",
-                 "firstimage": "...", "overview": "..."},
-                ...
-            ],
-            "summary": "코스 요약 1~2문장",
-            "description": "대화형 상세 설명",
-            "model": "gemma4:26b"
-        }
-
-    Response JSON (오류):
-        {"ok": false, "error": "오류 메시지"}
+    Request JSON: {"message": "..."}
+    Response JSON: {"ok", "keyword", "spots", "summary", "description", "model"}
+    or {"ok": false, "error": "..."} on failure. Response language follows the
+    active locale.
     """
     from flask import current_app
 
@@ -67,21 +53,23 @@ def ai_recommend():
     message = data.get('message', '').strip()
 
     if not message:
-        return jsonify({'ok': False, 'error': '메시지를 입력해주세요.'}), 400
+        return jsonify({'ok': False, 'error': _('Please enter a message.')}), 400
 
-    # ── Step 1: LLM → 장소 키워드 추출 ──────────────────────────────────────
+    locale = str(get_locale() or 'ko')
+
+    # ── Step 1: LLM → place keyword extraction ──────────────────────────────
     keyword = extract_place(message)
 
     if keyword == '__OLLAMA_OFFLINE__':
         return jsonify({
             'ok': False,
-            'error': 'Ollama 서버에 연결할 수 없습니다. `ollama serve` 명령으로 서버를 먼저 시작해주세요.',
+            'error': _('Cannot reach the Ollama server. Start it with `ollama serve` first.'),
         }), 503
 
     if not keyword:
         return jsonify({
             'ok': False,
-            'error': '가고 싶은 장소를 찾을 수 없었어요. 예) "경복궁 가고 싶어", "부산 여행하고 싶어"',
+            'error': _('We could not find a place to visit. Try e.g. "I want to visit Gyeongbokgung".'),
         }), 400
 
     # ── Step 2: searchKeyword2 → contentid 최솟값 관광지 선택 ────────────────
@@ -90,7 +78,7 @@ def ai_recommend():
     if not first_spot:
         return jsonify({
             'ok': False,
-            'error': f'"{keyword}"에 해당하는 관광지를 찾을 수 없습니다. 다른 장소로 시도해보세요.',
+            'error': _('No spot found for "%(keyword)s". Try another place.', keyword=keyword),
         }), 404
 
     # ── Step 3: locationBasedList2 → 주변 관광지 2개 선택 ────────────────────
@@ -143,8 +131,8 @@ def ai_recommend():
             'overview':   overview[:300] + '…' if len(overview) > 300 else overview,
         })
 
-    # ── Step 5: LLM → 코스 요약 + 대화형 설명 생성 ────────────────────────────
-    llm_result = generate_course_description(enriched_spots, overviews)
+    # ── Step 5: LLM → course summary + conversational description ───────────
+    llm_result = generate_course_description(enriched_spots, overviews, locale=locale)
 
     model = current_app.config.get('LLM_MODEL', 'gemma4:26b')
 
@@ -172,20 +160,10 @@ def llm_status():
 @courses_bp.route('/save', methods=['POST'])
 @login_required
 def save_course():
-    """
-    AI 추천 코스를 회원의 저장 코스에 추가합니다.
+    """Save an AI-recommended course to the member's saved courses.
 
-    Request JSON:
-        {
-            "keyword": "경복궁",
-            "spots": [...],
-            "summary": "...",
-            "description": "...",
-            "model": "gemma4:26b"
-        }
-
-    Response JSON:
-        {"ok": true, "course_id": "..."}
+    Request JSON: {"keyword", "spots", "summary", "description", "model"}
+    Response JSON: {"ok": true, "course_id": "..."}
     """
     data = request.get_json(silent=True) or {}
 
@@ -196,7 +174,7 @@ def save_course():
     model       = data.get('model', '')
 
     if not keyword or not spots:
-        return jsonify({'ok': False, 'error': '저장할 코스 데이터가 없습니다.'}), 400
+        return jsonify({'ok': False, 'error': _('There is no course data to save.')}), 400
 
     user_id = session['user_id']
 
@@ -242,8 +220,8 @@ def delete_course(course_id):
 
     from flask import flash, redirect, url_for
     if deleted:
-        flash('코스가 삭제되었습니다.', 'success')
+        flash(_('The course has been deleted.'), 'success')
     else:
-        flash('삭제할 수 없는 코스입니다.', 'danger')
+        flash(_('This course could not be deleted.'), 'danger')
     return redirect(url_for('courses.my_courses'))
 

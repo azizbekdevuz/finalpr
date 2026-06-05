@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="{{ current_locale }}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="대한민국 대표 관광지 정보를 한눈에 — 지역별·카테고리별 검색과 리뷰까지" />
-  <title>{% block title %}가보자고{% endblock %}</title>
+  <meta name="description" content="{{ _('Discover Korea\'s top destinations at a glance — search by region and category, with reviews.') }}" />
+  <title>{% block title %}{{ _('Gabojago') }}{% endblock %}</title>
 
-  <!-- MDB 5 CSS -->
+  <!-- MDB UI Kit CSS -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" />
   <!-- Google Fonts -->
@@ -24,54 +24,65 @@
 </head>
 <body>
 
+<div class="liquid-bg" id="liquidBg" aria-hidden="true">
+  <canvas class="liquid-bg__canvas"></canvas>
+</div>
+
+{% from 'macros/language.html' import language_switcher %}
+
 <!-- ═══════════════════ NAVBAR ═══════════════════ -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
   <div class="container">
-    <!-- Brand -->
     <a class="navbar-brand" href="{{ url_for('main.index') }}">
-      <i class="fa-solid fa-map-location-dot me-2 brand-icon"></i><span class="brand-logo">가보자고</span>
+      <i class="fa-solid fa-map-location-dot me-2 brand-icon" aria-hidden="true"></i><span class="brand-logo">{{ _('Gabojago') }}</span>
     </a>
 
     <button class="navbar-toggler" type="button"
             data-mdb-collapse-init
             data-mdb-target="#navMenu"
-            aria-controls="navMenu" aria-expanded="false">
-      <i class="fas fa-bars"></i>
+            aria-controls="navMenu" aria-expanded="false"
+            aria-label="{{ _('Toggle navigation') }}">
+      <i class="fas fa-bars" aria-hidden="true"></i>
     </button>
 
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}"
-             href="{{ url_for('main.index') }}">홈</a>
+             {% if request.endpoint == 'main.index' %}aria-current="page"{% endif %}
+             href="{{ url_for('main.index') }}">{{ _('Home') }}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if request.blueprint == 'spots' %}active{% endif %}"
-             href="{{ url_for('spots.list_spots') }}">관광지</a>
+             {% if request.blueprint == 'spots' %}aria-current="page"{% endif %}
+             href="{{ url_for('spots.list_spots') }}">{{ _('Spots') }}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'courses.courses' %}active{% endif %}"
-             href="{{ url_for('courses.courses') }}">코스</a>
+             {% if request.endpoint == 'courses.courses' %}aria-current="page"{% endif %}
+             href="{{ url_for('courses.courses') }}">{{ _('Courses') }}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'main.regions' %}active{% endif %}"
-             href="{{ url_for('main.regions') }}">지역</a>
+             {% if request.endpoint == 'main.regions' %}aria-current="page"{% endif %}
+             href="{{ url_for('main.regions') }}">{{ _('Regions') }}</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if request.blueprint == 'reviews' %}active{% endif %}"
-             href="{{ url_for('reviews.index') }}">리뷰</a>
+             {% if request.blueprint == 'reviews' %}aria-current="page"{% endif %}
+             href="{{ url_for('reviews.index') }}">{{ _('Reviews') }}</a>
         </li>
       </ul>
 
-
-
-      <!-- Auth Links -->
-      <ul class="navbar-nav">
+      <ul class="navbar-nav align-items-lg-center">
+        <li class="nav-item me-lg-2 my-2 my-lg-0">
+          {{ language_switcher(current_locale, supported_languages) }}
+        </li>
         {% if session.get('user_id') %}
           {% if session.get('role') == 'admin' %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('spots.create') }}">
-              <i class="fas fa-plus-circle me-1"></i>관광지 등록
+              <i class="fas fa-plus-circle me-1" aria-hidden="true"></i>{{ _('Add Spot') }}
             </a>
           </li>
           {% endif %}
@@ -79,18 +90,18 @@
             <a class="nav-link nav-member-btn dropdown-toggle" href="#"
                id="userDropdown" role="button"
                data-mdb-dropdown-init aria-expanded="false">
-              <i class="fas fa-user-circle me-1"></i>{{ session.get('username') }}
+              <i class="fas fa-user-circle me-1" aria-hidden="true"></i>{{ session.get('username') }}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>
                 <a class="dropdown-item" href="{{ url_for('main.dashboard') }}">
-                  <i class="fas fa-tachometer-alt me-2"></i>마이페이지
+                  <i class="fas fa-tachometer-alt me-2" aria-hidden="true"></i>{{ _('My Page') }}
                 </a>
               </li>
               <li><hr class="dropdown-divider" /></li>
               <li>
                 <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
-                  <i class="fas fa-sign-out-alt me-2"></i>로그아웃
+                  <i class="fas fa-sign-out-alt me-2" aria-hidden="true"></i>{{ _('Sign out') }}
                 </a>
               </li>
             </ul>
@@ -98,7 +109,7 @@
         {% else %}
           <li class="nav-item">
             <a class="nav-link nav-member-btn" href="{{ url_for('auth.login') }}">
-              <i class="fas fa-user-circle me-1"></i>회원
+              <i class="fas fa-user-circle me-1" aria-hidden="true"></i>{{ _('Sign in') }}
             </a>
           </li>
         {% endif %}
@@ -110,15 +121,16 @@
 <!-- ═══════════════════ FLASH MESSAGES ═══════════════════ -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-  <div class="flash-container">
+  <div class="flash-container" aria-live="polite">
     {% for category, message in messages %}
     <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
-      {% if category == 'success' %}<i class="fas fa-check-circle me-2"></i>
-      {% elif category == 'danger' %}<i class="fas fa-exclamation-circle me-2"></i>
-      {% elif category == 'warning' %}<i class="fas fa-exclamation-triangle me-2"></i>
-      {% else %}<i class="fas fa-info-circle me-2"></i>{% endif %}
+      {% if category == 'success' %}<i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+      {% elif category == 'danger' %}<i class="fas fa-exclamation-circle me-2" aria-hidden="true"></i>
+      {% elif category == 'warning' %}<i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i>
+      {% else %}<i class="fas fa-info-circle me-2" aria-hidden="true"></i>{% endif %}
       {{ message }}
-      <button type="button" class="btn-close" data-mdb-dismiss="alert"></button>
+      <button type="button" class="btn-close" data-mdb-dismiss="alert"
+              aria-label="{{ _('Close') }}"></button>
     </div>
     {% endfor %}
   </div>
@@ -136,48 +148,56 @@
     <div class="row g-4">
       <div class="col-md-4">
         <h5 class="fw-bold mb-3">
-          <i class="fa-solid fa-map-location-dot me-2"></i>가보자고
+          <i class="fa-solid fa-map-location-dot me-2" aria-hidden="true"></i>{{ _('Gabojago') }}
         </h5>
         <p class="text-muted small">
-          대한민국의 아름다운 관광지 정보를 한눈에.<br />
-          지역별·카테고리별 검색과 생생한 리뷰를 만나보세요.
+          {{ _('Korea\'s beautiful destinations at a glance.') }}<br />
+          {{ _('Search by region and category, and read vivid reviews.') }}
         </p>
       </div>
       <div class="col-md-4">
-        <h6 class="fw-bold mb-3">바로가기</h6>
+        <h6 class="fw-bold mb-3">{{ _('Quick links') }}</h6>
         <ul class="list-unstyled small">
-          <li><a href="{{ url_for('main.index') }}" class="footer-link">홈</a></li>
-          <li><a href="{{ url_for('spots.list_spots') }}" class="footer-link">관광지</a></li>
-          <li><a href="{{ url_for('courses.courses') }}" class="footer-link">코스</a></li>
-          <li><a href="{{ url_for('main.regions') }}" class="footer-link">지역</a></li>
-          <li><a href="{{ url_for('reviews.index') }}" class="footer-link">리뷰</a></li>
+          <li><a href="{{ url_for('main.index') }}" class="footer-link">{{ _('Home') }}</a></li>
+          <li><a href="{{ url_for('spots.list_spots') }}" class="footer-link">{{ _('Spots') }}</a></li>
+          <li><a href="{{ url_for('courses.courses') }}" class="footer-link">{{ _('Courses') }}</a></li>
+          <li><a href="{{ url_for('main.regions') }}" class="footer-link">{{ _('Regions') }}</a></li>
+          <li><a href="{{ url_for('reviews.index') }}" class="footer-link">{{ _('Reviews') }}</a></li>
           {% if not session.get('user_id') %}
-          <li><a href="{{ url_for('auth.login') }}" class="footer-link">로그인</a></li>
-          <li><a href="{{ url_for('auth.register') }}" class="footer-link">회원가입</a></li>
+          <li><a href="{{ url_for('auth.login') }}" class="footer-link">{{ _('Sign in') }}</a></li>
+          <li><a href="{{ url_for('auth.register') }}" class="footer-link">{{ _('Sign up') }}</a></li>
           {% endif %}
         </ul>
       </div>
       <div class="col-md-4">
-        <h6 class="fw-bold mb-3">카테고리</h6>
+        <h6 class="fw-bold mb-3">{{ _('Categories') }}</h6>
         <div class="d-flex flex-wrap gap-2">
-          {% set cats = ['자연', '문화/역사', '음식/맛집', '액티비티', '쇼핑'] %}
-          {% for cat in cats %}
-          <a href="{{ url_for('spots.list_spots', category=cat) }}"
-             class="badge footer-badge">{{ cat }}</a>
+          {% set cats = [('자연', _('Nature')), ('문화/역사', _('Culture/History')), ('음식/맛집', _('Food')), ('액티비티', _('Activities')), ('쇼핑', _('Shopping'))] %}
+          {% for value, label in cats %}
+          <a href="{{ url_for('spots.list_spots', category=value) }}"
+             class="badge footer-badge">{{ label }}</a>
           {% endfor %}
         </div>
       </div>
     </div>
     <hr class="my-4 border-secondary" />
     <p class="text-center text-muted small mb-0">
-      © 2025 가보자고. 웹 프로그래밍 프로젝트.
+      {{ _('© 2025 Gabojago. Web programming project.') }}
     </p>
   </div>
 </footer>
 
-<!-- MDB 5 JS -->
+<!-- MDB UI Kit JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script>
+<script>
+  window.APP_I18N = Object.assign(window.APP_I18N || {}, {{ {
+    'genericError': _('An unknown error occurred.'),
+    'networkError': _('A communication error occurred. Please try again shortly.'),
+    'noImage': _('No image'),
+  } | tojson }});
+</script>
 <!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/liquid-bg.js') }}" defer></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% block scripts %}{% endblock %}
 </body>

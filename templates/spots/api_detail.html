@@ -1,32 +1,33 @@
 {% extends 'base.html' %}
-{% block title %}{{ common.title }} — 가보자고{% endblock %}
+{% block title %}{{ common.title }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
 
 <!-- ── Hero ───────────────────────────────────────────────── -->
 <div class="api-detail-hero"
-     style="background-image: url('{{ common.firstimage or 'https://via.placeholder.com/1400x500?text=No+Image' }}')">
+     style="background-image: url('{{ common.firstimage or 'https://via.placeholder.com/1400x500?text=No+Image' }}')"
+     role="img" aria-label="{{ common.title }}">
   <div class="api-detail-hero-overlay"></div>
   <div class="container api-detail-hero-content">
     <div class="d-flex gap-2 mb-3 flex-wrap align-items-center">
       <span class="badge api-type-hero-badge">{{ type_label }}</span>
       {% if common.addr1 %}
       <span class="badge api-addr-hero-badge">
-        <i class="fas fa-map-marker-alt me-1"></i>{{ common.addr1.split(' ')[0] }}
+        <i class="fas fa-map-marker-alt me-1" aria-hidden="true"></i>{{ common.addr1.split(' ')[0] }}
       </span>
       {% endif %}
       {% if popular_info %}
-      <span class="badge api-popular-rank-badge">
+      <span class="badge api-popular-rank-badge d-inline-flex align-items-center gap-1">
         {% set r = popular_info.rank %}
-        {% if r == 1 %}🥇{% elif r == 2 %}🥈{% elif r == 3 %}🥉{% else %}🔥{% endif %}
-        인기순위 {{ r }}위
+        <span class="rank-badge rank-badge--{% if r <= 3 %}{{ r }}{% else %}n{% endif %}">#{{ r }}</span>
+        {{ _('Popular rank %(r)s', r=r) }}
       </span>
       {% endif %}
     </div>
     <h1 class="api-detail-hero-title">{{ common.title }}</h1>
     {% if common.tel %}
     <p class="api-detail-hero-sub">
-      <i class="fas fa-phone me-2"></i>{{ common.tel }}
+      <i class="fas fa-phone me-2" aria-hidden="true"></i>{{ common.tel }}
     </p>
     {% endif %}
   </div>
@@ -36,161 +37,156 @@
 <div class="container py-5">
   <div class="row g-5">
 
-    <!-- Left: 주요 정보 -->
     <div class="col-lg-8">
 
-      <!-- 뒤로가기 -->
       <a href="{{ url_for('spots.list_spots') }}" class="btn btn-outline-secondary btn-sm mb-4">
-        <i class="fas fa-arrow-left me-1"></i>목록으로
+        <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>{{ _('Back to list') }}
       </a>
 
-      <!-- 개요(overview) -->
       {% if common.overview %}
       <div class="info-card mb-4">
-        <h4 class="fw-bold mb-3">
-          <i class="fas fa-align-left text-primary me-2"></i>소개
-        </h4>
+        <h2 class="h4 fw-bold mb-3">
+          <i class="fas fa-align-left text-primary me-2" aria-hidden="true"></i>{{ _('Introduction') }}
+        </h2>
         <p class="text-muted lh-lg" style="white-space: pre-line;">{{ common.overview }}</p>
       </div>
       {% endif %}
 
-      <!-- 소개 정보(intro) — contentTypeId 별 필드 분기 -->
       {% set has_intro = intro and intro | length > 2 %}
       {% if has_intro %}
       <div class="info-card mb-4">
-        <h4 class="fw-bold mb-3">
-          <i class="fas fa-clipboard-list text-success me-2"></i>상세 안내
-        </h4>
+        <h2 class="h4 fw-bold mb-3">
+          <i class="fas fa-clipboard-list text-success me-2" aria-hidden="true"></i>{{ _('Details') }}
+        </h2>
         <ul class="list-unstyled api-info-list">
 
           {% macro info_row(icon, label, val) %}
             {% if val and val != '0' %}
             <li class="api-info-row">
-              <span class="api-info-icon"><i class="{{ icon }}"></i></span>
+              <span class="api-info-icon"><i class="{{ icon }}" aria-hidden="true"></i></span>
               <span class="api-info-label">{{ label }}</span>
               <span class="api-info-val" style="white-space: pre-line;">{{ val }}</span>
             </li>
             {% endif %}
           {% endmacro %}
 
-          {# ── 관광지 (12) ── #}
-          {{ info_row('fas fa-phone', '문의처', intro.get('infocenter')) }}
-          {{ info_row('fas fa-clock', '이용 시간', intro.get('usetime')) }}
-          {{ info_row('fas fa-calendar-times', '쉬는 날', intro.get('restdate')) }}
-          {{ info_row('fas fa-car', '주차', intro.get('parking')) }}
-          {{ info_row('fas fa-users', '수용 인원', intro.get('accomcount')) }}
-          {{ info_row('fas fa-baby', '유모차 대여', intro.get('chkbabycarriage')) }}
-          {{ info_row('fas fa-paw', '반려동물 동반', intro.get('chkpet')) }}
-          {{ info_row('fas fa-credit-card', '신용카드', intro.get('chkcreditcard')) }}
-          {{ info_row('fas fa-calendar-check', '개장일', intro.get('opendate')) }}
-          {{ info_row('fas fa-sun', '이용 계절', intro.get('useseason')) }}
-          {{ info_row('fas fa-star', '체험 안내', intro.get('expguide')) }}
+          {# ── Attraction (12) ── #}
+          {{ info_row('fas fa-phone', _('Contact'), intro.get('infocenter')) }}
+          {{ info_row('fas fa-clock', _('Hours'), intro.get('usetime')) }}
+          {{ info_row('fas fa-calendar-times', _('Closed days'), intro.get('restdate')) }}
+          {{ info_row('fas fa-car', _('Parking'), intro.get('parking')) }}
+          {{ info_row('fas fa-users', _('Capacity'), intro.get('accomcount')) }}
+          {{ info_row('fas fa-baby', _('Stroller rental'), intro.get('chkbabycarriage')) }}
+          {{ info_row('fas fa-paw', _('Pets allowed'), intro.get('chkpet')) }}
+          {{ info_row('fas fa-credit-card', _('Credit cards'), intro.get('chkcreditcard')) }}
+          {{ info_row('fas fa-calendar-check', _('Opening date'), intro.get('opendate')) }}
+          {{ info_row('fas fa-sun', _('Season'), intro.get('useseason')) }}
+          {{ info_row('fas fa-star', _('Experience info'), intro.get('expguide')) }}
 
-          {# ── 문화시설 (14) ── #}
-          {{ info_row('fas fa-phone', '문의처', intro.get('infocenterculture')) }}
-          {{ info_row('fas fa-clock', '이용 시간', intro.get('usetimeculture')) }}
-          {{ info_row('fas fa-calendar-times', '쉬는 날', intro.get('restdateculture')) }}
-          {{ info_row('fas fa-car', '주차', intro.get('parkingculture')) }}
-          {{ info_row('fas fa-won-sign', '이용 요금', intro.get('usefee')) }}
-          {{ info_row('fas fa-baby', '유모차 대여', intro.get('chkbabycarriageculture')) }}
-          {{ info_row('fas fa-paw', '반려동물 동반', intro.get('chkpetculture')) }}
-          {{ info_row('fas fa-credit-card', '신용카드', intro.get('chkcreditcardculture')) }}
-          {{ info_row('fas fa-calendar-check', '개장일', intro.get('opendateculture')) }}
-          {{ info_row('fas fa-users', '수용 인원', intro.get('accomcountculture')) }}
-          {{ info_row('fas fa-age', '이용 연령', intro.get('scale')) }}
-          {{ info_row('fas fa-info-circle', '할인 정보', intro.get('discountinfo')) }}
-          {{ info_row('fas fa-list', '관람 소요 시간', intro.get('spendtime')) }}
+          {# ── Cultural facility (14) ── #}
+          {{ info_row('fas fa-phone', _('Contact'), intro.get('infocenterculture')) }}
+          {{ info_row('fas fa-clock', _('Hours'), intro.get('usetimeculture')) }}
+          {{ info_row('fas fa-calendar-times', _('Closed days'), intro.get('restdateculture')) }}
+          {{ info_row('fas fa-car', _('Parking'), intro.get('parkingculture')) }}
+          {{ info_row('fas fa-won-sign', _('Fee'), intro.get('usefee')) }}
+          {{ info_row('fas fa-baby', _('Stroller rental'), intro.get('chkbabycarriageculture')) }}
+          {{ info_row('fas fa-paw', _('Pets allowed'), intro.get('chkpetculture')) }}
+          {{ info_row('fas fa-credit-card', _('Credit cards'), intro.get('chkcreditcardculture')) }}
+          {{ info_row('fas fa-calendar-check', _('Opening date'), intro.get('opendateculture')) }}
+          {{ info_row('fas fa-users', _('Capacity'), intro.get('accomcountculture')) }}
+          {{ info_row('fas fa-child', _('Age/Scale'), intro.get('scale')) }}
+          {{ info_row('fas fa-info-circle', _('Discount info'), intro.get('discountinfo')) }}
+          {{ info_row('fas fa-list', _('Visit duration'), intro.get('spendtime')) }}
 
-          {# ── 축제/공연 (15) ── #}
-          {{ info_row('fas fa-calendar-alt', '행사 시작일', intro.get('eventstartdate')) }}
-          {{ info_row('fas fa-calendar-check', '행사 종료일', intro.get('eventenddate')) }}
-          {{ info_row('fas fa-map-marker-alt', '행사 장소', intro.get('eventplace')) }}
-          {{ info_row('fas fa-clock', '공연 시간', intro.get('playtime')) }}
-          {{ info_row('fas fa-clock', '이용 시간', intro.get('usetimefestival')) }}
-          {{ info_row('fas fa-won-sign', '이용 요금', intro.get('usetimefee')) }}
-          {{ info_row('fas fa-won-sign', '입장 요금', intro.get('discountinfofestival')) }}
-          {{ info_row('fas fa-building', '주최자', intro.get('sponsor1')) }}
-          {{ info_row('fas fa-phone', '주최 연락처', intro.get('sponsor1tel')) }}
-          {{ info_row('fas fa-building', '주관사', intro.get('sponsor2')) }}
-          {{ info_row('fas fa-phone', '주관 연락처', intro.get('sponsor2tel')) }}
-          {{ info_row('fas fa-car', '주차', intro.get('parkingfestival')) }}
-          {{ info_row('fas fa-baby', '유모차 대여', intro.get('chkbabycarriagefestival')) }}
-          {{ info_row('fas fa-paw', '반려동물 동반', intro.get('chkpetfestival')) }}
+          {# ── Festival/Performance (15) ── #}
+          {{ info_row('fas fa-calendar-alt', _('Event start date'), intro.get('eventstartdate')) }}
+          {{ info_row('fas fa-calendar-check', _('Event end date'), intro.get('eventenddate')) }}
+          {{ info_row('fas fa-map-marker-alt', _('Event venue'), intro.get('eventplace')) }}
+          {{ info_row('fas fa-clock', _('Show time'), intro.get('playtime')) }}
+          {{ info_row('fas fa-clock', _('Hours'), intro.get('usetimefestival')) }}
+          {{ info_row('fas fa-won-sign', _('Fee'), intro.get('usetimefee')) }}
+          {{ info_row('fas fa-won-sign', _('Admission fee'), intro.get('discountinfofestival')) }}
+          {{ info_row('fas fa-building', _('Host'), intro.get('sponsor1')) }}
+          {{ info_row('fas fa-phone', _('Host contact'), intro.get('sponsor1tel')) }}
+          {{ info_row('fas fa-building', _('Organizer'), intro.get('sponsor2')) }}
+          {{ info_row('fas fa-phone', _('Organizer contact'), intro.get('sponsor2tel')) }}
+          {{ info_row('fas fa-car', _('Parking'), intro.get('parkingfestival')) }}
+          {{ info_row('fas fa-baby', _('Stroller rental'), intro.get('chkbabycarriagefestival')) }}
+          {{ info_row('fas fa-paw', _('Pets allowed'), intro.get('chkpetfestival')) }}
 
-          {# ── 레포츠 (28) ── #}
-          {{ info_row('fas fa-phone', '문의처', intro.get('infocenterleports')) }}
-          {{ info_row('fas fa-clock', '이용 시간', intro.get('usetimeleports')) }}
-          {{ info_row('fas fa-calendar-times', '쉬는 날', intro.get('restdateleports')) }}
-          {{ info_row('fas fa-car', '주차', intro.get('parkingleports')) }}
-          {{ info_row('fas fa-won-sign', '입장 요금', intro.get('usefeeleports')) }}
-          {{ info_row('fas fa-users', '수용 인원', intro.get('accomcountleports')) }}
-          {{ info_row('fas fa-baby', '유모차 대여', intro.get('chkbabycarriageleports')) }}
-          {{ info_row('fas fa-paw', '반려동물 동반', intro.get('chkpetleports')) }}
-          {{ info_row('fas fa-credit-card', '신용카드', intro.get('chkcreditcardleports')) }}
-          {{ info_row('fas fa-calendar-check', '개장일', intro.get('opendateleports')) }}
+          {# ── Leisure sports (28) ── #}
+          {{ info_row('fas fa-phone', _('Contact'), intro.get('infocenterleports')) }}
+          {{ info_row('fas fa-clock', _('Hours'), intro.get('usetimeleports')) }}
+          {{ info_row('fas fa-calendar-times', _('Closed days'), intro.get('restdateleports')) }}
+          {{ info_row('fas fa-car', _('Parking'), intro.get('parkingleports')) }}
+          {{ info_row('fas fa-won-sign', _('Admission fee'), intro.get('usefeeleports')) }}
+          {{ info_row('fas fa-users', _('Capacity'), intro.get('accomcountleports')) }}
+          {{ info_row('fas fa-baby', _('Stroller rental'), intro.get('chkbabycarriageleports')) }}
+          {{ info_row('fas fa-paw', _('Pets allowed'), intro.get('chkpetleports')) }}
+          {{ info_row('fas fa-credit-card', _('Credit cards'), intro.get('chkcreditcardleports')) }}
+          {{ info_row('fas fa-calendar-check', _('Opening date'), intro.get('opendateleports')) }}
 
-          {# ── 숙박 (32) ── #}
-          {{ info_row('fas fa-phone', '문의처', intro.get('infocenterlodging')) }}
-          {{ info_row('fas fa-sign-in-alt', '체크인', intro.get('checkintime')) }}
-          {{ info_row('fas fa-sign-out-alt', '체크아웃', intro.get('checkouttime')) }}
-          {{ info_row('fas fa-bed', '객실 유형', intro.get('roomtype')) }}
-          {{ info_row('fas fa-door-open', '객실 수', intro.get('roomcount')) }}
-          {{ info_row('fas fa-users', '수용 인원', intro.get('accomcountlodging')) }}
-          {{ info_row('fas fa-car', '주차', intro.get('parkinglodging')) }}
-          {{ info_row('fas fa-utensils', '취사 가능', intro.get('chkcooking')) }}
-          {{ info_row('fas fa-swimming-pool', '부대 시설', intro.get('subfacility')) }}
-          {{ info_row('fas fa-concierge-bell', '세미나실', intro.get('seminar')) }}
-          {{ info_row('fas fa-hot-tub', '사우나', intro.get('sauna')) }}
-          {{ info_row('fas fa-bicycle', '자전거 대여', intro.get('bicycle')) }}
-          {{ info_row('fas fa-dumbbell', '피트니스', intro.get('fitness')) }}
-          {{ info_row('fas fa-drumstick-bite', '바베큐', intro.get('barbecue')) }}
-          {{ info_row('fas fa-glass-cheers', '음료(주류)', intro.get('beverage')) }}
-          {{ info_row('fas fa-laptop', '공용 PC', intro.get('publicpc')) }}
-          {{ info_row('fas fa-bath', '공용 욕실', intro.get('publicbath')) }}
-          {{ info_row('fas fa-microphone-alt', '노래방', intro.get('karaoke')) }}
-          {{ info_row('fas fa-campground', '캠프파이어', intro.get('campfire')) }}
+          {# ── Lodging (32) ── #}
+          {{ info_row('fas fa-phone', _('Contact'), intro.get('infocenterlodging')) }}
+          {{ info_row('fas fa-sign-in-alt', _('Check-in'), intro.get('checkintime')) }}
+          {{ info_row('fas fa-sign-out-alt', _('Check-out'), intro.get('checkouttime')) }}
+          {{ info_row('fas fa-bed', _('Room type'), intro.get('roomtype')) }}
+          {{ info_row('fas fa-door-open', _('Room count'), intro.get('roomcount')) }}
+          {{ info_row('fas fa-users', _('Capacity'), intro.get('accomcountlodging')) }}
+          {{ info_row('fas fa-car', _('Parking'), intro.get('parkinglodging')) }}
+          {{ info_row('fas fa-utensils', _('Cooking allowed'), intro.get('chkcooking')) }}
+          {{ info_row('fas fa-swimming-pool', _('Facilities'), intro.get('subfacility')) }}
+          {{ info_row('fas fa-concierge-bell', _('Seminar room'), intro.get('seminar')) }}
+          {{ info_row('fas fa-hot-tub', _('Sauna'), intro.get('sauna')) }}
+          {{ info_row('fas fa-bicycle', _('Bicycle rental'), intro.get('bicycle')) }}
+          {{ info_row('fas fa-dumbbell', _('Fitness'), intro.get('fitness')) }}
+          {{ info_row('fas fa-drumstick-bite', _('Barbecue'), intro.get('barbecue')) }}
+          {{ info_row('fas fa-glass-cheers', _('Beverages'), intro.get('beverage')) }}
+          {{ info_row('fas fa-laptop', _('Public PC'), intro.get('publicpc')) }}
+          {{ info_row('fas fa-bath', _('Public bath'), intro.get('publicbath')) }}
+          {{ info_row('fas fa-microphone-alt', _('Karaoke'), intro.get('karaoke')) }}
+          {{ info_row('fas fa-campground', _('Campfire'), intro.get('campfire')) }}
 
-          {# ── 쇼핑 (38) ── #}
-          {{ info_row('fas fa-phone', '문의처', intro.get('infocentershopping')) }}
-          {{ info_row('fas fa-clock', '영업 시간', intro.get('opentime')) }}
-          {{ info_row('fas fa-calendar-check', '개장일', intro.get('opendateshopping')) }}
-          {{ info_row('fas fa-calendar-times', '쉬는 날', intro.get('restdateshopping')) }}
-          {{ info_row('fas fa-tag', '판매 품목', intro.get('saleitem')) }}
-          {{ info_row('fas fa-info-circle', '쇼핑 안내', intro.get('shopguide')) }}
-          {{ info_row('fas fa-car', '주차', intro.get('parkingshopping')) }}
-          {{ info_row('fas fa-baby', '유모차 대여', intro.get('chkbabycarriageshopping')) }}
-          {{ info_row('fas fa-credit-card', '신용카드', intro.get('chkcreditcardshopping')) }}
-          {{ info_row('fas fa-restroom', '화장실', intro.get('restroom')) }}
+          {# ── Shopping (38) ── #}
+          {{ info_row('fas fa-phone', _('Contact'), intro.get('infocentershopping')) }}
+          {{ info_row('fas fa-clock', _('Business hours'), intro.get('opentime')) }}
+          {{ info_row('fas fa-calendar-check', _('Opening date'), intro.get('opendateshopping')) }}
+          {{ info_row('fas fa-calendar-times', _('Closed days'), intro.get('restdateshopping')) }}
+          {{ info_row('fas fa-tag', _('Items for sale'), intro.get('saleitem')) }}
+          {{ info_row('fas fa-info-circle', _('Shopping info'), intro.get('shopguide')) }}
+          {{ info_row('fas fa-car', _('Parking'), intro.get('parkingshopping')) }}
+          {{ info_row('fas fa-baby', _('Stroller rental'), intro.get('chkbabycarriageshopping')) }}
+          {{ info_row('fas fa-credit-card', _('Credit cards'), intro.get('chkcreditcardshopping')) }}
+          {{ info_row('fas fa-restroom', _('Restroom'), intro.get('restroom')) }}
 
-          {# ── 음식점 (39) ── #}
-          {{ info_row('fas fa-phone', '문의처', intro.get('infocenterfood')) }}
-          {{ info_row('fas fa-clock', '영업 시간', intro.get('opentimefood')) }}
-          {{ info_row('fas fa-calendar-times', '쉬는 날', intro.get('restdatefood')) }}
-          {{ info_row('fas fa-utensils', '대표 메뉴', intro.get('firstmenu')) }}
-          {{ info_row('fas fa-list', '취급 메뉴', intro.get('treatmenu')) }}
-          {{ info_row('fas fa-car', '주차', intro.get('parkingfood')) }}
-          {{ info_row('fas fa-box', '포장 가능', intro.get('packing')) }}
-          {{ info_row('fas fa-baby', '어린이 시설', intro.get('kidsfacility')) }}
+          {# ── Restaurant (39) ── #}
+          {{ info_row('fas fa-phone', _('Contact'), intro.get('infocenterfood')) }}
+          {{ info_row('fas fa-clock', _('Business hours'), intro.get('opentimefood')) }}
+          {{ info_row('fas fa-calendar-times', _('Closed days'), intro.get('restdatefood')) }}
+          {{ info_row('fas fa-utensils', _('Signature menu'), intro.get('firstmenu')) }}
+          {{ info_row('fas fa-list', _('Menu'), intro.get('treatmenu')) }}
+          {{ info_row('fas fa-car', _('Parking'), intro.get('parkingfood')) }}
+          {{ info_row('fas fa-box', _('Takeout available'), intro.get('packing')) }}
+          {{ info_row('fas fa-baby', _('Kids facility'), intro.get('kidsfacility')) }}
 
         </ul>
       </div>
       {% endif %}
 
-      <!-- 이미지 갤러리 -->
       {% if images %}
       <div class="info-card mb-4">
-        <h4 class="fw-bold mb-3">
-          <i class="fas fa-images text-warning me-2"></i>사진 갤러리
-        </h4>
+        <h2 class="h4 fw-bold mb-3">
+          <i class="fas fa-images text-warning me-2" aria-hidden="true"></i>{{ _('Photo gallery') }}
+        </h2>
         <div class="api-gallery-grid">
           {% for img in images %}
-          <a href="{{ img.originimgurl }}" target="_blank" class="api-gallery-item">
+          <a href="{{ img.originimgurl }}" target="_blank" rel="noopener" class="api-gallery-item">
             <img src="{{ img.originimgurl }}"
                  alt="{{ img.imgname or common.title }}"
                  loading="lazy"
                  onerror="this.parentElement.style.display='none'" />
             <div class="api-gallery-overlay">
-              <i class="fas fa-search-plus"></i>
+              <i class="fas fa-search-plus" aria-hidden="true"></i>
             </div>
           </a>
           {% endfor %}
@@ -200,59 +196,56 @@
 
     </div>
 
-    <!-- Right: 사이드바 -->
     <div class="col-lg-4">
       <div class="detail-sidebar sticky-top" style="top: 80px;">
 
-        <!-- 위치 정보 -->
         <div class="sidebar-section mb-4">
-          <h6 class="sidebar-section-title">
-            <i class="fas fa-map-pin text-danger me-2"></i>위치 정보
-          </h6>
+          <h2 class="sidebar-section-title h6">
+            <i class="fas fa-map-pin text-danger me-2" aria-hidden="true"></i>{{ _('Location info') }}
+          </h2>
           {% if common.addr1 %}
           <p class="text-muted small mb-1">
-            <i class="fas fa-location-dot me-1"></i>{{ common.addr1 }}
+            <i class="fas fa-location-dot me-1" aria-hidden="true"></i>{{ common.addr1 }}
             {% if common.addr2 %} {{ common.addr2 }}{% endif %}
           </p>
           {% endif %}
           {% if common.zipcode %}
           <p class="text-muted small mb-2">
-            <i class="fas fa-envelope me-1"></i>우편번호: {{ common.zipcode }}
+            <i class="fas fa-envelope me-1" aria-hidden="true"></i>{{ _('Postal code:') }} {{ common.zipcode }}
           </p>
           {% endif %}
           {% if common.mapx and common.mapy %}
           <a href="https://map.kakao.com/?q={{ common.title | urlencode }}"
-             target="_blank" class="btn btn-outline-danger btn-sm w-100 mt-1">
-            <i class="fas fa-map me-1"></i>지도에서 보기
+             target="_blank" rel="noopener" class="btn btn-outline-danger btn-sm w-100 mt-1">
+            <i class="fas fa-map me-1" aria-hidden="true"></i>{{ _('View on map') }}
           </a>
           {% endif %}
         </div>
 
         <hr />
 
-        <!-- 연락처 & 홈페이지 -->
         <div class="sidebar-section mb-4">
-          <h6 class="sidebar-section-title">
-            <i class="fas fa-address-card text-primary me-2"></i>연락처
-          </h6>
+          <h2 class="sidebar-section-title h6">
+            <i class="fas fa-address-card text-primary me-2" aria-hidden="true"></i>{{ _('Contact') }}
+          </h2>
           <ul class="list-unstyled sidebar-meta small">
             {% if common.tel %}
             <li class="mb-2">
-              <i class="fas fa-phone text-primary me-2"></i>
+              <i class="fas fa-phone text-primary me-2" aria-hidden="true"></i>
               <a href="tel:{{ common.tel }}" class="text-muted">{{ common.tel }}</a>
             </li>
             {% endif %}
             {% if common.telname %}
             <li class="mb-2">
-              <i class="fas fa-building text-secondary me-2"></i>{{ common.telname }}
+              <i class="fas fa-building text-secondary me-2" aria-hidden="true"></i>{{ common.telname }}
             </li>
             {% endif %}
             {% if common.homepage %}
             <li class="mb-2">
-              <i class="fas fa-globe text-success me-2"></i>
-              <a href="{{ common.homepage }}" target="_blank"
+              <i class="fas fa-globe text-success me-2" aria-hidden="true"></i>
+              <a href="{{ common.homepage }}" target="_blank" rel="noopener"
                  class="text-primary small"
-                 style="word-break: break-all;">홈페이지 바로가기</a>
+                 style="word-break: break-all;">{{ _('Visit homepage') }}</a>
             </li>
             {% endif %}
           </ul>
@@ -260,29 +253,28 @@
 
         <hr />
 
-        <!-- 기본 정보 -->
         <div class="sidebar-section">
-          <h6 class="sidebar-section-title">
-            <i class="fas fa-info text-secondary me-2"></i>기본 정보
-          </h6>
+          <h2 class="sidebar-section-title h6">
+            <i class="fas fa-info text-secondary me-2" aria-hidden="true"></i>{{ _('Basic info') }}
+          </h2>
           <ul class="list-unstyled sidebar-meta small">
             <li class="mb-2">
-              <i class="fas fa-tag text-primary me-2"></i>
-              <strong>유형</strong>
+              <i class="fas fa-tag text-primary me-2" aria-hidden="true"></i>
+              <strong>{{ _('Type') }}</strong>
               <span class="float-end">{{ type_label }}</span>
             </li>
             {% if common.createdtime %}
             <li class="mb-2">
-              <i class="fas fa-calendar-plus text-secondary me-2"></i>
-              <strong>등록일</strong>
+              <i class="fas fa-calendar-plus text-secondary me-2" aria-hidden="true"></i>
+              <strong>{{ _('Created') }}</strong>
               {% set ct = common.createdtime %}
               <span class="float-end">{{ ct[:4] }}.{{ ct[4:6] }}.{{ ct[6:8] }}</span>
             </li>
             {% endif %}
             {% if common.modifiedtime %}
             <li class="mb-2">
-              <i class="fas fa-calendar-check text-secondary me-2"></i>
-              <strong>수정일</strong>
+              <i class="fas fa-calendar-check text-secondary me-2" aria-hidden="true"></i>
+              <strong>{{ _('Modified') }}</strong>
               {% set mt = common.modifiedtime %}
               <span class="float-end">{{ mt[:4] }}.{{ mt[4:6] }}.{{ mt[6:8] }}</span>
             </li>
@@ -296,22 +288,21 @@
   </div>
 </div>
 
-<!-- ── 근처 관광지 & 음식점 ────────────────────────────────────── -->
+<!-- ── Nearby attractions & restaurants ────────────────────────── -->
 {% if nearby_spots or nearby_restaurants %}
 <div class="nearby-section py-5">
   <div class="container">
-    <h3 class="nearby-section-title mb-4">
-      <i class="fas fa-map-marked-alt me-2"></i>이 근처에는…
-    </h3>
+    <h2 class="nearby-section-title mb-4">
+      <i class="fas fa-map-marked-alt me-2" aria-hidden="true"></i>{{ _('Nearby…') }}
+    </h2>
     <div class="row g-4">
 
-      <!-- 왼쪽: 근처 관광지 -->
       <div class="col-lg-6">
         <div class="nearby-block">
-          <h5 class="nearby-block-title">
-            <span class="nearby-icon nearby-icon-spot"><i class="fas fa-mountain"></i></span>
-            근처 관광지
-          </h5>
+          <h3 class="nearby-block-title h5">
+            <span class="nearby-icon nearby-icon-spot"><i class="fas fa-mountain" aria-hidden="true"></i></span>
+            {{ _('Nearby attractions') }}
+          </h3>
           {% if nearby_spots %}
           <div class="nearby-cards">
             {% for sp in nearby_spots %}
@@ -323,7 +314,7 @@
                      onerror="this.src='https://via.placeholder.com/120x90?text=No+Image'" />
                 {% else %}
                 <div class="nearby-card-no-img">
-                  <i class="fas fa-image"></i>
+                  <i class="fas fa-image" aria-hidden="true"></i>
                 </div>
                 {% endif %}
               </div>
@@ -331,12 +322,12 @@
                 <p class="nearby-card-title">{{ sp.title }}</p>
                 {% if sp.addr1 %}
                 <p class="nearby-card-addr">
-                  <i class="fas fa-map-marker-alt me-1"></i>{{ sp.addr1 | truncate(30, True, '…') }}
+                  <i class="fas fa-map-marker-alt me-1" aria-hidden="true"></i>{{ sp.addr1 | truncate(30, True, '…') }}
                 </p>
                 {% endif %}
                 {% if sp.dist %}
                 <span class="nearby-card-dist">
-                  <i class="fas fa-route me-1"></i>{{ "%.0f"|format(sp.dist|float) }}m
+                  <i class="fas fa-route me-1" aria-hidden="true"></i>{{ "%.0f"|format(sp.dist|float) }}m
                 </span>
                 {% endif %}
               </div>
@@ -344,18 +335,17 @@
             {% endfor %}
           </div>
           {% else %}
-          <p class="text-muted small ps-1">주변 5km 내 관광지 정보가 없습니다.</p>
+          <p class="text-muted small ps-1">{{ _('No attractions found within 5km.') }}</p>
           {% endif %}
         </div>
       </div>
 
-      <!-- 오른쪽: 근처 음식점 -->
       <div class="col-lg-6">
         <div class="nearby-block">
-          <h5 class="nearby-block-title">
-            <span class="nearby-icon nearby-icon-food"><i class="fas fa-utensils"></i></span>
-            근처 음식점
-          </h5>
+          <h3 class="nearby-block-title h5">
+            <span class="nearby-icon nearby-icon-food"><i class="fas fa-utensils" aria-hidden="true"></i></span>
+            {{ _('Nearby restaurants') }}
+          </h3>
           {% if nearby_restaurants %}
           <div class="nearby-cards">
             {% for rs in nearby_restaurants %}
@@ -367,7 +357,7 @@
                      onerror="this.src='https://via.placeholder.com/120x90?text=No+Image'" />
                 {% else %}
                 <div class="nearby-card-no-img">
-                  <i class="fas fa-utensils"></i>
+                  <i class="fas fa-utensils" aria-hidden="true"></i>
                 </div>
                 {% endif %}
               </div>
@@ -375,12 +365,12 @@
                 <p class="nearby-card-title">{{ rs.title }}</p>
                 {% if rs.addr1 %}
                 <p class="nearby-card-addr">
-                  <i class="fas fa-map-marker-alt me-1"></i>{{ rs.addr1 | truncate(30, True, '…') }}
+                  <i class="fas fa-map-marker-alt me-1" aria-hidden="true"></i>{{ rs.addr1 | truncate(30, True, '…') }}
                 </p>
                 {% endif %}
                 {% if rs.dist %}
                 <span class="nearby-card-dist">
-                  <i class="fas fa-route me-1"></i>{{ "%.0f"|format(rs.dist|float) }}m
+                  <i class="fas fa-route me-1" aria-hidden="true"></i>{{ "%.0f"|format(rs.dist|float) }}m
                 </span>
                 {% endif %}
               </div>
@@ -388,7 +378,7 @@
             {% endfor %}
           </div>
           {% else %}
-          <p class="text-muted small ps-1">주변 5km 내 음식점 정보가 없습니다.</p>
+          <p class="text-muted small ps-1">{{ _('No restaurants found within 5km.') }}</p>
           {% endif %}
         </div>
       </div>

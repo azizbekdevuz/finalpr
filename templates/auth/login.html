@@ -1,40 +1,46 @@
 {% extends 'base.html' %}
-{% block title %}로그인 — 가보자고{% endblock %}
+{% from 'macros/auth.html' import oauth_buttons %}
+{% block title %}{{ _('Sign in') }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
 <div class="auth-page">
   <div class="auth-card">
     <div class="auth-header text-center mb-4">
-      <a href="{{ url_for('main.index') }}" class="text-decoration-none">
-        <i class="fa-solid fa-earth-asia fa-2x text-primary mb-3 d-block"></i>
+      <a href="{{ url_for('main.index') }}" class="text-decoration-none"
+         aria-label="{{ _('Gabojago') }}">
+        <i class="fa-solid fa-earth-asia fa-2x text-primary mb-3 d-block" aria-hidden="true"></i>
       </a>
-      <h2 class="fw-bold mb-1">로그인</h2>
-      <p class="text-muted small">계정에 로그인하세요</p>
+      <h1 class="auth-title h3 fw-bold mb-1">{{ _('Sign in') }}</h1>
+      <p class="text-muted small">{{ _('Sign in to your account') }}</p>
     </div>
 
-    <form method="POST" action="{{ url_for('auth.login') }}" novalidate>
+    <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}" novalidate>
       <div class="form-floating mb-3">
         <input type="text" class="form-control" id="username"
-               name="username" placeholder="사용자명"
-               value="{{ request.form.get('username', '') }}" required />
-        <label for="username"><i class="fas fa-user me-2"></i>사용자명</label>
+               name="username" placeholder="{{ _('Username') }}"
+               value="{{ request.form.get('username', '') }}"
+               autocomplete="username" required />
+        <label for="username"><i class="fas fa-user me-2" aria-hidden="true"></i>{{ _('Username') }}</label>
       </div>
 
       <div class="form-floating mb-4">
         <input type="password" class="form-control" id="password"
-               name="password" placeholder="비밀번호" required />
-        <label for="password"><i class="fas fa-lock me-2"></i>비밀번호</label>
+               name="password" placeholder="{{ _('Password') }}"
+               autocomplete="current-password" required />
+        <label for="password"><i class="fas fa-lock me-2" aria-hidden="true"></i>{{ _('Password') }}</label>
       </div>
 
       <button type="submit" class="btn btn-primary w-100 btn-lg fw-bold mb-3">
-        <i class="fas fa-sign-in-alt me-2"></i>로그인
+        <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>{{ _('Sign in') }}
       </button>
     </form>
 
-    <p class="text-center text-muted small">
-      계정이 없으신가요?
+    {{ oauth_buttons(oauth_enabled, request.args.get('next', '')) }}
+
+    <p class="text-center text-muted small mt-4 mb-0">
+      {{ _('Don\'t have an account?') }}
       <a href="{{ url_for('auth.register') }}" class="fw-bold text-primary text-decoration-none">
-        회원가입
+        {{ _('Sign up') }}
       </a>
     </p>
   </div>

@@ -1,0 +1,1651 @@
+# Korean translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-15 09:05+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: routes/__init__.py:21 routes/__init__.py:32
+msgid "Please sign in to use this service."
+msgstr "이 서비스를 이용하려면 로그인하세요."
+
+#: routes/__init__.py:35
+msgid "Administrators only."
+msgstr "관리자만 이용할 수 있습니다."
+
+#: routes/admin.py:49
+#, python-format
+msgid "Data was deleted from the %(collection)s collection."
+msgstr "%(collection)s 컬렉션에서 데이터가 삭제되었습니다."
+
+#: routes/admin.py:52
+msgid "Could not find the document to delete."
+msgstr "삭제할 문서를 찾을 수 없습니다."
+
+#: routes/admin.py:54
+#, python-format
+msgid "An error occurred while deleting: %(error)s"
+msgstr "삭제 중 오류가 발생했습니다: %(error)s"
+
+#: routes/admin.py:76
+msgid "The data was updated successfully."
+msgstr "데이터가 성공적으로 수정되었습니다."
+
+#: routes/admin.py:79
+#, python-format
+msgid "An error occurred while parsing or saving JSON: %(error)s"
+msgstr "JSON 파싱 또는 저장 중 오류가 발생했습니다: %(error)s"
+
+#: routes/admin.py:88
+msgid "Document not found."
+msgstr "문서를 찾을 수 없습니다."
+
+#: routes/admin.py:98
+#, python-format
+msgid "An error occurred while loading the document: %(error)s"
+msgstr "문서를 불러오는 중 오류가 발생했습니다: %(error)s"
+
+#: routes/auth.py:27
+msgid "Username must be at least 3 characters."
+msgstr "아이디는 3자 이상이어야 합니다."
+
+#: routes/auth.py:29
+msgid "Please enter a valid email address."
+msgstr "유효한 이메일 주소를 입력하세요."
+
+#: routes/auth.py:31
+msgid "Password must be at least 6 characters."
+msgstr "비밀번호는 6자 이상이어야 합니다."
+
+#: routes/auth.py:33
+msgid "Passwords do not match."
+msgstr "비밀번호가 일치하지 않습니다."
+
+#: routes/auth.py:35
+msgid "That username is already taken."
+msgstr "이미 사용 중인 아이디입니다."
+
+#: routes/auth.py:37
+msgid "That email is already in use."
+msgstr "이미 사용 중인 이메일입니다."
+
+#: routes/auth.py:45
+msgid "Registration complete! Please sign in."
+msgstr "회원가입이 완료되었습니다! 로그인해 주세요."
+
+#: routes/auth.py:64 routes/oauth.py:120
+#, python-format
+msgid "Welcome back, %(username)s!"
+msgstr "%(username)s님, 다시 오신 것을 환영합니다!"
+
+#: routes/auth.py:66
+msgid "Incorrect username or password."
+msgstr "아이디 또는 비밀번호가 올바르지 않습니다."
+
+#: routes/auth.py:75
+msgid "You have been signed out."
+msgstr "로그아웃되었습니다."
+
+#: routes/courses.py:56
+msgid "Please enter a message."
+msgstr "메시지를 입력하세요."
+
+#: routes/courses.py:66
+msgid "Cannot reach the Ollama server. Start it with `ollama serve` first."
+msgstr "Ollama 서버에 연결할 수 없습니다. 먼저 `ollama serve`로 실행하세요."
+
+#: routes/courses.py:72
+msgid ""
+"We could not find a place to visit. Try e.g. \"I want to visit "
+"Gyeongbokgung\"."
+msgstr "방문할 장소를 찾지 못했습니다. 예: \"경복궁 가고 싶어요\"처럼 입력해 보세요."
+
+#: routes/courses.py:81
+#, python-format
+msgid "No spot found for \"%(keyword)s\". Try another place."
+msgstr "\"%(keyword)s\"에 대한 관광지를 찾지 못했습니다. 다른 장소로 시도해 보세요."
+
+#: routes/courses.py:177
+msgid "There is no course data to save."
+msgstr "저장할 코스 데이터가 없습니다."
+
+#: routes/courses.py:223
+msgid "The course has been deleted."
+msgstr "코스가 삭제되었습니다."
+
+#: routes/courses.py:225
+msgid "This course could not be deleted."
+msgstr "코스를 삭제할 수 없습니다."
+
+#: routes/language.py:24
+msgid "Language updated."
+msgstr "언어가 변경되었습니다."
+
+#: routes/main.py:107 templates/index.html:286
+msgid "Korea"
+msgstr "대한민국"
+
+#: routes/main.py:114 routes/main.py:135
+msgid "Deleted spot"
+msgstr "삭제된 관광지"
+
+#: routes/main.py:116 routes/main.py:137
+msgid "Unknown spot"
+msgstr "알 수 없는 관광지"
+
+#: routes/main.py:128
+msgid "Please sign in to continue."
+msgstr "계속하려면 로그인하세요."
+
+#: routes/oauth.py:32
+msgid "That sign-in provider is not available."
+msgstr "사용할 수 없는 로그인 제공자입니다."
+
+#: routes/oauth.py:44 routes/oauth.py:70
+#, python-format
+msgid "%(provider)s sign-in is not configured on this server."
+msgstr "이 서버에는 %(provider)s 로그인이 설정되어 있지 않습니다."
+
+#: routes/oauth.py:89 routes/oauth.py:113
+msgid "Sign-in could not be completed. Please try again."
+msgstr "로그인을 완료할 수 없습니다. 다시 시도해 주세요."
+
+#: routes/oauth.py:98
+#, python-format
+msgid ""
+"We could not get a verified email from %(provider)s. Please grant email "
+"permission and try again."
+msgstr "%(provider)s에서 인증된 이메일을 가져오지 못했습니다. 이메일 제공에 동의한 뒤 다시 시도해 주세요."
+
+#: routes/oauth.py:106
+#, python-format
+msgid "Your %(provider)s email is not verified, so we cannot link the account."
+msgstr "%(provider)s 이메일이 인증되지 않아 계정을 연결할 수 없습니다."
+
+#: routes/reviews.py:125 routes/spots.py:122 routes/spots.py:169
+msgid "Please enter the spot name."
+msgstr "관광지 이름을 입력하세요."
+
+#: routes/reviews.py:127 routes/reviews.py:165
+msgid "Please choose a rating between 1 and 5 stars."
+msgstr "1~5점 사이의 별점을 선택하세요."
+
+#: routes/reviews.py:129
+msgid "Please enter at least 5 characters."
+msgstr "5자 이상 입력하세요."
+
+#: routes/reviews.py:143
+msgid "Your review has been posted! 🎉"
+msgstr "리뷰가 등록되었습니다! 🎉"
+
+#: routes/reviews.py:153 routes/spots.py:96 routes/spots.py:154
+#: routes/spots.py:194
+msgid "That spot does not exist."
+msgstr "존재하지 않는 관광지입니다."
+
+#: routes/reviews.py:157
+msgid "You have already written a review."
+msgstr "이미 리뷰를 작성하셨습니다."
+
+#: routes/reviews.py:167
+msgid "Please enter at least 5 characters for your review."
+msgstr "리뷰는 5자 이상 입력하세요."
+
+#: routes/reviews.py:182
+msgid "Your review has been posted."
+msgstr "리뷰가 등록되었습니다."
+
+#: routes/reviews.py:192
+msgid "That review does not exist."
+msgstr "존재하지 않는 리뷰입니다."
+
+#: routes/reviews.py:199
+msgid "You do not have permission to delete this."
+msgstr "삭제할 권한이 없습니다."
+
+#: routes/reviews.py:206
+msgid "The review has been deleted."
+msgstr "리뷰가 삭제되었습니다."
+
+#: routes/spots.py:21 templates/regions.html:218 templates/spots/list.html:53
+msgid "Attraction"
+msgstr "관광지"
+
+#: routes/spots.py:21 templates/spots/list.html:53
+msgid "Cultural facility"
+msgstr "문화시설"
+
+#: routes/spots.py:21 templates/spots/list.html:53
+msgid "Festival/Performance"
+msgstr "축제/공연"
+
+#: routes/spots.py:22 templates/spots/list.html:54
+msgid "Travel course"
+msgstr "여행코스"
+
+#: routes/spots.py:22 templates/spots/list.html:54
+msgid "Leisure sports"
+msgstr "레포츠"
+
+#: routes/spots.py:22 templates/spots/list.html:54
+msgid "Lodging"
+msgstr "숙박"
+
+#: routes/spots.py:23 templates/base.html:171 templates/spots/create.html:12
+#: templates/spots/detail.html:4 templates/spots/edit.html:12
+#: templates/spots/list.html:55
+msgid "Shopping"
+msgstr "쇼핑"
+
+#: routes/spots.py:23 templates/spots/list.html:55
+msgid "Restaurant"
+msgstr "음식점"
+
+#: routes/spots.py:59
+msgid "Could not load the tourism information."
+msgstr "관광 정보를 불러올 수 없습니다."
+
+#: routes/spots.py:84
+msgid "Tourism"
+msgstr "관광"
+
+#: routes/spots.py:124 routes/spots.py:171
+msgid "Please choose a category."
+msgstr "카테고리를 선택하세요."
+
+#: routes/spots.py:126
+msgid "Please choose a region."
+msgstr "지역을 선택하세요."
+
+#: routes/spots.py:128
+msgid "Please enter a description."
+msgstr "설명을 입력하세요."
+
+#: routes/spots.py:141
+#, python-format
+msgid "Spot \"%(name)s\" has been registered."
+msgstr "\"%(name)s\" 관광지가 등록되었습니다."
+
+#: routes/spots.py:181
+msgid "The spot information has been updated."
+msgstr "관광지 정보가 수정되었습니다."
+
+#: routes/spots.py:198
+#, python-format
+msgid "Spot \"%(name)s\" has been deleted."
+msgstr "\"%(name)s\" 관광지가 삭제되었습니다."
+
+#: templates/base.html:6
+msgid ""
+"Discover Korea's top destinations at a glance — search by region and "
+"category, with reviews."
+msgstr "대한민국 최고의 여행지를 한눈에 — 지역과 카테고리로 검색하고 리뷰까지 확인하세요."
+
+#: templates/auth/login.html:3 templates/auth/login.html:10
+#: templates/auth/register.html:2 templates/auth/register.html:9
+#: templates/base.html:7 templates/base.html:33 templates/base.html:147
+#: templates/courses.html:2 templates/dashboard.html:2 templates/index.html:2
+#: templates/my_courses.html:2 templates/regions.html:2
+#: templates/reviews/index.html:2 templates/reviews/write.html:2
+#: templates/spots/api_detail.html:2 templates/spots/create.html:2
+#: templates/spots/detail.html:2 templates/spots/edit.html:2
+#: templates/spots/list.html:2
+msgid "Gabojago"
+msgstr "가보자고"
+
+#: templates/base.html:40
+msgid "Toggle navigation"
+msgstr "내비게이션 토글"
+
+#: templates/base.html:49 templates/base.html:157
+msgid "Home"
+msgstr "홈"
+
+#: templates/base.html:54 templates/base.html:158 templates/spots/list.html:11
+msgid "Spots"
+msgstr "관광지"
+
+#: templates/base.html:59 templates/base.html:159
+msgid "Courses"
+msgstr "추천 코스"
+
+#: templates/base.html:64 templates/base.html:160
+msgid "Regions"
+msgstr "지역별"
+
+#: templates/base.html:69 templates/base.html:161
+#: templates/spots/detail.html:77
+msgid "Reviews"
+msgstr "여행 후기"
+
+#: templates/base.html:81 templates/dashboard.html:114
+#: templates/spots/create.html:2 templates/spots/create.html:7
+#: templates/spots/list.html:39
+msgid "Add Spot"
+msgstr "관광지 등록"
+
+#: templates/base.html:94 templates/dashboard.html:2 templates/dashboard.html:8
+msgid "My Page"
+msgstr "마이페이지"
+
+#: templates/base.html:100
+msgid "Sign out"
+msgstr "로그아웃"
+
+#: templates/auth/login.html:3 templates/auth/login.html:13
+#: templates/auth/login.html:34 templates/auth/register.html:61
+#: templates/base.html:108 templates/base.html:163
+msgid "Sign in"
+msgstr "로그인"
+
+#: templates/base.html:129
+msgid "Close"
+msgstr "닫기"
+
+#: templates/base.html:150
+msgid "Korea's beautiful destinations at a glance."
+msgstr "대한민국의 아름다운 여행지를 한눈에."
+
+#: templates/base.html:151
+msgid "Search by region and category, and read vivid reviews."
+msgstr "지역과 카테고리로 검색하고 생생한 후기를 만나보세요."
+
+#: templates/base.html:155
+msgid "Quick links"
+msgstr "바로가기"
+
+#: templates/auth/login.html:43 templates/auth/register.html:2
+#: templates/auth/register.html:12 templates/auth/register.html:54
+#: templates/base.html:164
+msgid "Sign up"
+msgstr "회원가입"
+
+#: templates/base.html:169
+msgid "Categories"
+msgstr "카테고리"
+
+#: templates/base.html:171 templates/spots/create.html:12
+#: templates/spots/detail.html:4 templates/spots/edit.html:12
+msgid "Nature"
+msgstr "자연"
+
+#: templates/base.html:171 templates/spots/create.html:12
+#: templates/spots/detail.html:4 templates/spots/edit.html:12
+msgid "Culture/History"
+msgstr "문화/역사"
+
+#: templates/base.html:171 templates/spots/create.html:12
+#: templates/spots/detail.html:4 templates/spots/edit.html:12
+msgid "Food"
+msgstr "음식/맛집"
+
+#: templates/base.html:171 templates/spots/create.html:12
+#: templates/spots/detail.html:4 templates/spots/edit.html:12
+msgid "Activities"
+msgstr "액티비티"
+
+#: templates/base.html:181
+msgid "© 2025 Gabojago. Web programming project."
+msgstr "© 2025 가보자고. 웹 프로그래밍 프로젝트."
+
+#: templates/base.html:190 templates/courses.html:370
+msgid "An unknown error occurred."
+msgstr "알 수 없는 오류가 발생했습니다."
+
+#: templates/base.html:191
+msgid "A communication error occurred. Please try again shortly."
+msgstr "통신 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+
+#: templates/base.html:192 templates/courses.html:372
+msgid "No image"
+msgstr "이미지 없음"
+
+#: templates/courses.html:2
+msgid "Recommended courses"
+msgstr "추천 코스"
+
+#: templates/courses.html:265
+msgid "Recommended travel courses"
+msgstr "추천 여행 코스"
+
+#: templates/courses.html:266
+msgid "The best regional travel routes recommended by experts"
+msgstr "전문가가 추천하는 지역별 최고의 여행 루트"
+
+#: templates/courses.html:278
+msgid "AI travel course recommendations"
+msgstr "AI 여행 코스 추천"
+
+#: templates/courses.html:279
+msgid ""
+"Tell us where you want to go and the AI will build a 3-spot course for "
+"you."
+msgstr "가고 싶은 장소를 말하면 AI가 3개 관광지 코스를 만들어 드립니다."
+
+#: templates/courses.html:284
+msgid "Loading…"
+msgstr "로딩 중…"
+
+#: templates/courses.html:289
+msgid "Describe the trip you want"
+msgstr "원하는 여행을 설명해 주세요"
+
+#: templates/courses.html:294
+msgid "e.g. I want to visit Gyeongbokgung, I want to see the sea in Busan…"
+msgstr "예) 경복궁 가고 싶어요, 부산 바다 보고 싶어요…"
+
+#: templates/courses.html:299
+msgid "Get a course"
+msgstr "코스 추천받기"
+
+#: templates/courses.html:305
+msgid "I want to visit Gyeongbokgung"
+msgstr "경복궁 가고 싶어요"
+
+#: templates/courses.html:306
+msgid "I want to see the sea in Sokcho"
+msgstr "속초 바다 보러 가고 싶어"
+
+#: templates/courses.html:307
+msgid "I want to feel nature in Jeju"
+msgstr "제주도 자연을 느끼고 싶어"
+
+#: templates/courses.html:308
+msgid "I want to explore history in Gyeongju"
+msgstr "경주 역사 탐방하고 싶어"
+
+#: templates/courses.html:309
+msgid "I want to hike Seoraksan"
+msgstr "설악산 등산하고 싶어"
+
+#: templates/courses.html:318
+msgid "Extracting places with the LLM…"
+msgstr "LLM으로 장소 추출 중…"
+
+#: templates/courses.html:319
+msgid "Searching attractions via the Tour API…"
+msgstr "관광공사 API로 관광지 검색 중…"
+
+#: templates/courses.html:320
+msgid "Exploring nearby attractions…"
+msgstr "주변 관광지 탐색 중…"
+
+#: templates/courses.html:321
+msgid "Collecting attraction details…"
+msgstr "관광지 상세 정보 수집 중…"
+
+#: templates/courses.html:322
+msgid "AI is writing the course description…"
+msgstr "AI가 코스 설명 작성 중…"
+
+#: templates/courses.html:333
+msgid "Course summary"
+msgstr "코스 요약"
+
+#: templates/courses.html:337
+msgid "Recommended attractions"
+msgstr "추천 관광지"
+
+#: templates/courses.html:341
+msgid "AI guide description"
+msgstr "AI 가이드 설명"
+
+#: templates/courses.html:347
+msgid "Model used:"
+msgstr "사용 모델:"
+
+#: templates/courses.html:350 templates/courses.html:375
+msgid "Save this course"
+msgstr "이 코스 저장하기"
+
+#: templates/courses.html:369
+msgid "Ollama offline"
+msgstr "Ollama 오프라인"
+
+#: templates/courses.html:371
+msgid ""
+"An error occurred while communicating with the server. Please try again "
+"shortly."
+msgstr "서버와 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+
+#: templates/courses.html:373
+msgid "No address information"
+msgstr "주소 정보 없음"
+
+#: templates/courses.html:374
+msgid "No course summary"
+msgstr "코스 요약 없음"
+
+#: templates/courses.html:376
+msgid "Saved"
+msgstr "저장됨"
+
+#: templates/courses.html:377
+msgid "This course is already saved."
+msgstr "이미 저장된 코스입니다."
+
+#: templates/courses.html:378
+msgid "Saving…"
+msgstr "저장 중…"
+
+#: templates/courses.html:379
+msgid "Save failed"
+msgstr "저장 실패"
+
+#: templates/courses.html:380
+msgid "An error occurred while saving."
+msgstr "저장 중 오류가 발생했습니다."
+
+#: templates/courses.html:381
+msgid "Saved! → "
+msgstr "저장되었습니다! → "
+
+#: templates/courses.html:382
+msgid "View my courses"
+msgstr "내 코스 목록 보기"
+
+#: templates/courses.html:383
+msgid ""
+"You need to sign in to save a course.\n"
+"Go to the login page?"
+msgstr ""
+"코스를 저장하려면 로그인이 필요합니다.\n"
+"로그인 페이지로 이동하시겠습니까?"
+
+#: templates/dashboard.html:11
+#, python-format
+msgid "%(username)s's activity"
+msgstr "%(username)s님의 활동"
+
+#: templates/dashboard.html:25
+msgid "Administrator"
+msgstr "관리자"
+
+#: templates/dashboard.html:25
+msgid "Member"
+msgstr "회원"
+
+#: templates/dashboard.html:30
+msgid "Reviews written"
+msgstr "작성한 리뷰"
+
+#: templates/dashboard.html:34
+msgid "Saved courses"
+msgstr "저장한 코스"
+
+#: templates/dashboard.html:40
+msgid "View my saved courses"
+msgstr "내 저장 코스 보기"
+
+#: templates/dashboard.html:49
+msgid "Reviews I wrote"
+msgstr "내가 작성한 리뷰"
+
+#: templates/dashboard.html:73
+#, python-format
+msgid "(%(n)s pts)"
+msgstr "(%(n)s점)"
+
+#: templates/dashboard.html:82 templates/dashboard.html:84
+#: templates/spots/detail.html:146 templates/spots/detail.html:148
+msgid "Delete this review?"
+msgstr "리뷰를 삭제하시겠습니까?"
+
+#: templates/dashboard.html:97
+msgid "You have not written any reviews yet."
+msgstr "아직 작성한 리뷰가 없습니다."
+
+#: templates/dashboard.html:99
+msgid "Browse spots"
+msgstr "관광지 둘러보기"
+
+#: templates/dashboard.html:110
+msgid "Administrator menu"
+msgstr "관리자 메뉴"
+
+#: templates/dashboard.html:117
+msgid "Manage spots"
+msgstr "관광지 관리"
+
+#: templates/dashboard.html:120
+msgid "Manage DB directly"
+msgstr "DB 직접 관리"
+
+#: templates/index.html:2
+msgid "Korea Tourism Information"
+msgstr "대한민국 관광 정보"
+
+#: templates/index.html:279
+msgid "Today's <em>hottest</em> destinations"
+msgstr "지금 가장 <em>뜨는</em> 여행지"
+
+#: templates/index.html:290 templates/regions.html:239
+#: templates/spots/list.html:103
+msgid "View details"
+msgstr "자세히 보기"
+
+#: templates/index.html:306
+msgid "Explore by region"
+msgstr "지역별 탐색"
+
+#: templates/index.html:307
+msgid "Where shall we go?"
+msgstr "어디로 떠나볼까요?"
+
+#: templates/index.html:308
+msgid "Pick a region to find its popular destinations"
+msgstr "지역을 선택하면 인기 여행지를 찾아드려요"
+
+#: templates/index.html:326
+msgid "Vivid reviews"
+msgstr "생생한 후기"
+
+#: templates/index.html:327
+msgid "Latest travel reviews"
+msgstr "최신 여행 후기"
+
+#: templates/index.html:328
+msgid "See honest experiences from other travelers"
+msgstr "다른 여행자들의 솔직한 경험을 만나보세요"
+
+#: templates/index.html:355
+msgid "No reviews yet."
+msgstr "아직 후기가 없습니다."
+
+#: templates/index.html:362
+msgid "See all reviews"
+msgstr "모든 후기 보기"
+
+#: templates/index.html:371
+msgid "AI course recommendations"
+msgstr "AI 코스 추천"
+
+#: templates/index.html:372
+msgid "Build your own travel course"
+msgstr "나만의 여행 코스 만들기"
+
+#: templates/index.html:373
+msgid "AI recommends the best travel course for the region you want"
+msgstr "원하는 지역의 최고의 여행 코스를 AI가 추천해 드려요"
+
+#: templates/index.html:376
+msgid "Start planning a course"
+msgstr "코스 계획 시작하기"
+
+#: templates/index.html:385
+msgid "Get started right now"
+msgstr "지금 바로 시작하세요"
+
+#: templates/index.html:386
+msgid "Sign up to write spot reviews and build your own courses"
+msgstr "회원가입하고 관광지 후기를 작성하고 나만의 코스를 만들어 보세요"
+
+#: templates/index.html:389
+msgid "Sign up for free"
+msgstr "무료로 회원가입"
+
+#: templates/my_courses.html:2 templates/my_courses.html:166
+msgid "My saved courses"
+msgstr "내 저장 코스"
+
+#: templates/my_courses.html:168
+msgid "Save AI-recommended courses and revisit them anytime."
+msgstr "AI가 추천한 코스를 저장하고 언제든지 다시 확인하세요."
+
+#: templates/my_courses.html:179
+msgid "You have no saved courses yet."
+msgstr "아직 저장한 코스가 없습니다."
+
+#: templates/my_courses.html:181
+msgid "Get AI course recommendations"
+msgstr "AI 코스 추천 받기"
+
+#: templates/my_courses.html:186
+#, python-format
+msgid "You have <strong>%(n)s</strong> saved courses."
+msgstr "총 <strong>%(n)s개</strong>의 코스가 저장되어 있습니다."
+
+#: templates/admin/db_manage.html:166 templates/my_courses.html:209
+#: templates/spots/detail.html:69
+msgid "Delete"
+msgstr "삭제"
+
+#: templates/my_courses.html:226
+#, python-format
+msgid "No. %(n)s"
+msgstr "%(n)s번째"
+
+#: templates/my_courses.html:242 templates/my_courses.html:265
+msgid "Show more"
+msgstr "더 보기"
+
+#: templates/my_courses.html:249
+#, python-format
+msgid "%(n)s attractions"
+msgstr "관광지 %(n)s개"
+
+#: templates/my_courses.html:262
+msgid "Delete this course?"
+msgstr "이 코스를 삭제하시겠습니까?"
+
+#: templates/my_courses.html:263
+msgid "Failed to delete."
+msgstr "삭제에 실패했습니다."
+
+#: templates/my_courses.html:264
+msgid "An error occurred."
+msgstr "오류가 발생했습니다."
+
+#: templates/my_courses.html:266
+msgid "Show less"
+msgstr "접기"
+
+#: templates/regions.html:2 templates/regions.html:164
+msgid "Spots by region"
+msgstr "지역별 관광지"
+
+#: templates/regions.html:165
+msgid "Discover popular destinations across 10 Korean regions at a glance"
+msgstr "전국 10개 지역의 인기 여행지를 한눈에 만나보세요"
+
+#: templates/regions.html:194
+#, python-format
+msgid "%(n)s spots total"
+msgstr "총 %(n)s개 관광지"
+
+#: templates/regions.html:226
+#, python-format
+msgid "Rank %(rank)s"
+msgstr "%(rank)s위"
+
+#: templates/regions.html:250
+msgid "There are no registered spots."
+msgstr "등록된 관광지가 없습니다."
+
+#: templates/admin/db_edit.html:2
+msgid "Edit JSON data directly"
+msgstr "JSON 데이터 직접 수정"
+
+#: templates/admin/db_edit.html:2 templates/admin/db_manage.html:2
+msgid "Admin menu"
+msgstr "관리자 메뉴"
+
+#: templates/admin/db_edit.html:78
+msgid "Edit document directly (JSON)"
+msgstr "문서 직접 수정 (JSON)"
+
+#: templates/admin/db_edit.html:86 templates/spots/create.html:86
+#: templates/spots/edit.html:83
+msgid "Cancel"
+msgstr "취소"
+
+#: templates/admin/db_edit.html:92
+msgid "Caution:"
+msgstr "주의:"
+
+#: templates/admin/db_edit.html:92
+#, python-format
+msgid ""
+"You must follow valid JSON syntax. Changing value types (number, string, "
+"boolean, etc.) can cause system errors. The %(field)s field is ignored "
+"for safety."
+msgstr ""
+"JSON 문법에 맞게 작성해야 하며, 값의 타입(숫자, 문자열, 불리언 등)을 변경하면 시스템 오류가 발생할 수 있습니다. "
+"%(field)s 필드는 안전을 위해 수정이 무시됩니다."
+
+#: templates/admin/db_edit.html:102
+msgid "Format JSON"
+msgstr "JSON 정렬하기"
+
+#: templates/admin/db_edit.html:105
+msgid "Save changes"
+msgstr "수정 내용 저장"
+
+#: templates/admin/db_edit.html:122
+msgid ""
+"The current text is not valid JSON.\n"
+"Error: "
+msgstr ""
+"현재 텍스트가 올바른 JSON 형식이 아닙니다.\n"
+"오류: "
+
+#: templates/admin/db_edit.html:123
+msgid ""
+"Save failed! This is not valid JSON.\n"
+"Please check your punctuation and quotes.\n"
+"\n"
+msgstr ""
+"저장 실패! 올바른 JSON 형식이 아닙니다.\n"
+"구두점이나 따옴표를 확인해 주세요.\n"
+"\n"
+
+#: templates/admin/db_manage.html:2 templates/admin/db_manage.html:102
+msgid "Direct DB management"
+msgstr "DB 직접 관리"
+
+#: templates/admin/db_manage.html:105
+msgid "Back to dashboard"
+msgstr "대시보드로 돌아가기"
+
+#: templates/admin/db_manage.html:114
+msgid "COLLECTIONS"
+msgstr "컬렉션"
+
+#: templates/admin/db_manage.html:129
+#, python-format
+msgid "%(col)s collection data (latest 100)"
+msgstr "%(col)s 컬렉션 데이터 (최근 100건)"
+
+#: templates/admin/db_manage.html:138
+msgid "Data Preview"
+msgstr "데이터 미리보기"
+
+#: templates/admin/db_manage.html:139
+msgid "Manage"
+msgstr "관리"
+
+#: templates/admin/db_manage.html:146
+msgid "Click to copy to clipboard (planned)"
+msgstr "클립보드에 복사하려면 클릭하세요 (예정)"
+
+#: templates/admin/db_manage.html:159 templates/spots/detail.html:64
+msgid "Edit"
+msgstr "수정"
+
+#: templates/admin/db_manage.html:164
+msgid ""
+"Warning: this cannot be undone!\n"
+"Are you sure you want to force-delete this data?"
+msgstr ""
+"경고: 복구할 수 없습니다!\n"
+"이 데이터를 정말 강제로 삭제하시겠습니까?"
+
+#: templates/admin/db_manage.html:179
+msgid "This collection is empty."
+msgstr "이 컬렉션은 비어 있습니다."
+
+#: templates/admin/db_manage.html:180
+msgid "No data exists."
+msgstr "데이터가 존재하지 않습니다."
+
+#: templates/auth/login.html:14
+msgid "Sign in to your account"
+msgstr "계정에 로그인"
+
+#: templates/auth/login.html:20 templates/auth/login.html:23
+#: templates/auth/register.html:19
+msgid "Username"
+msgstr "아이디"
+
+#: templates/auth/login.html:28 templates/auth/login.html:30
+#: templates/auth/register.html:37
+msgid "Password"
+msgstr "비밀번호"
+
+#: templates/auth/login.html:41
+msgid "Don't have an account?"
+msgstr "아직 계정이 없으신가요?"
+
+#: templates/auth/register.html:13
+msgid "Create a new account"
+msgstr "새 계정 만들기"
+
+#: templates/auth/register.html:22
+msgid "Username (3+ characters)"
+msgstr "아이디 (3자 이상)"
+
+#: templates/auth/register.html:28 templates/auth/register.html:31
+msgid "Email"
+msgstr "이메일"
+
+#: templates/auth/register.html:40
+msgid "Password (6+ characters)"
+msgstr "비밀번호 (6자 이상)"
+
+#: templates/auth/register.html:46 templates/auth/register.html:49
+msgid "Confirm password"
+msgstr "비밀번호 확인"
+
+#: templates/auth/register.html:59
+msgid "Already have an account?"
+msgstr "이미 계정이 있으신가요?"
+
+#: templates/macros/auth.html:6
+msgid "or continue with"
+msgstr "또는 다음으로 계속하기"
+
+#: templates/macros/auth.html:14 templates/macros/auth.html:32
+msgid "Connecting…"
+msgstr "연결 중…"
+
+#: templates/macros/auth.html:15 templates/macros/auth.html:17
+#: templates/macros/auth.html:24
+msgid "Continue with Google"
+msgstr "Google로 계속하기"
+
+#: templates/macros/auth.html:21 templates/macros/auth.html:22
+msgid "Google sign-in is not configured on this server."
+msgstr "이 서버에는 Google 로그인이 설정되어 있지 않습니다."
+
+#: templates/macros/auth.html:33 templates/macros/auth.html:35
+#: templates/macros/auth.html:42
+msgid "Continue with Kakao"
+msgstr "카카오로 계속하기"
+
+#: templates/macros/auth.html:39 templates/macros/auth.html:40
+msgid "Kakao sign-in is not configured on this server."
+msgstr "이 서버에는 카카오 로그인이 설정되어 있지 않습니다."
+
+#: templates/macros/language.html:5
+msgid "Select language"
+msgstr "언어 선택"
+
+#: templates/reviews/index.html:2
+msgid "Travel reviews"
+msgstr "여행 후기"
+
+#: templates/reviews/index.html:226
+msgid "Vivid stories from travelers"
+msgstr "여행자들의 생생한 이야기"
+
+#: templates/reviews/index.html:227
+msgid "All travel reviews"
+msgstr "전체 여행 후기"
+
+#: templates/reviews/index.html:229
+msgid "Honest reviews left at attractions nationwide, all in one place."
+msgstr "전국 관광지에 남겨진 솔직한 리뷰를 한눈에 모아봤어요."
+
+#: templates/reviews/index.html:235 templates/reviews/index.html:289
+#: templates/reviews/write.html:2 templates/reviews/write.html:185
+#: templates/spots/detail.html:88
+msgid "Write a review"
+msgstr "리뷰 작성하기"
+
+#: templates/reviews/index.html:241
+msgid "Sign in and leave a review"
+msgstr "로그인하고 리뷰 남기기"
+
+#: templates/reviews/index.html:252
+msgid "Total reviews"
+msgstr "총 리뷰"
+
+#: templates/reviews/index.html:261
+msgid "Average rating"
+msgstr "평균 별점"
+
+#: templates/reviews/index.html:265
+msgid "Satisfaction"
+msgstr "만족도"
+
+#: templates/reviews/index.html:295
+msgid "Rating distribution"
+msgstr "별점 분포"
+
+#: templates/reviews/index.html:312
+msgid "Filter by rating"
+msgstr "별점으로 보기"
+
+#: templates/reviews/index.html:316
+msgid "View all"
+msgstr "전체 보기"
+
+#: templates/reviews/index.html:322 templates/reviews/write.html:217
+#: templates/spots/detail.html:96 templates/spots/detail.html:97
+#, python-format
+msgid "%(n)s pts"
+msgstr "%(n)s점"
+
+#: templates/reviews/index.html:330 templates/spots/list.html:20
+msgid "Sort"
+msgstr "정렬"
+
+#: templates/reviews/index.html:334 templates/spots/list.html:24
+msgid "Latest"
+msgstr "최신순"
+
+#: templates/reviews/index.html:338
+msgid "Highest rating"
+msgstr "별점 높은 순"
+
+#: templates/reviews/index.html:353
+#, python-format
+msgid "%(n)s-star reviews"
+msgstr "%(n)s점 리뷰"
+
+#: templates/reviews/index.html:353
+msgid "All reviews"
+msgstr "전체 리뷰"
+
+#: templates/reviews/index.html:355 templates/spots/detail.html:181
+#, python-format
+msgid "%(n)s reviews"
+msgstr "리뷰 %(n)s개"
+
+#: templates/reviews/index.html:358 templates/spots/list.html:152
+#, python-format
+msgid "Page %(page)s of %(total)s"
+msgstr "%(total)s페이지 중 %(page)s페이지"
+
+#: templates/reviews/index.html:407
+msgid "View spot details"
+msgstr "관광지 상세 보기"
+
+#: templates/reviews/index.html:419
+msgid "Review pages"
+msgstr "리뷰 페이지"
+
+#: templates/reviews/index.html:447
+#, python-format
+msgid "No %(n)s-star reviews yet"
+msgstr "%(n)s점 리뷰가 없습니다"
+
+#: templates/reviews/index.html:447
+msgid "No reviews yet"
+msgstr "아직 리뷰가 없습니다"
+
+#: templates/reviews/index.html:449
+msgid "Visit a spot and leave the first review!"
+msgstr "관광지를 방문하고 첫 리뷰를 남겨보세요!"
+
+#: templates/reviews/index.html:451
+msgid "Browse attractions"
+msgstr "관광지 둘러보기"
+
+#: templates/reviews/write.html:184
+msgid "My travel story"
+msgstr "나의 여행 이야기"
+
+#: templates/reviews/write.html:186
+msgid "Leave an honest review of the spot you visited"
+msgstr "방문한 관광지에 대한 솔직한 후기를 남겨주세요"
+
+#: templates/reviews/write.html:199 templates/spots/create.html:22
+#: templates/spots/edit.html:23
+msgid "Spot name"
+msgstr "관광지명"
+
+#: templates/reviews/write.html:205
+msgid "e.g. Gyeongbokgung, Haeundae Beach, Seongsan Ilchulbong..."
+msgstr "예) 경복궁, 해운대 해수욕장, 성산일출봉..."
+
+#: templates/reviews/write.html:213 templates/spots/detail.html:92
+msgid "Rating"
+msgstr "별점"
+
+#: templates/reviews/write.html:220
+msgid "Click a star to choose a rating"
+msgstr "별을 클릭해 평점을 선택하세요"
+
+#: templates/reviews/write.html:225 templates/spots/detail.html:104
+msgid "Review"
+msgstr "후기"
+
+#: templates/reviews/write.html:230
+msgid "Feel free to share your experience at this spot. (5+ characters)"
+msgstr "이 관광지에서의 경험을 자유롭게 공유해주세요. (최소 5자)"
+
+#: templates/reviews/write.html:240
+msgid "Tip for a great review:"
+msgstr "좋은 리뷰 팁:"
+
+#: templates/reviews/write.html:240
+msgid ""
+"Describing the time of your visit, nearby sights, and how it really felt "
+"is a huge help to other travelers!"
+msgstr "방문 시기, 주변 볼거리, 실제 느낌을 구체적으로 적으면 다른 여행자에게 큰 도움이 돼요!"
+
+#: templates/reviews/write.html:244 templates/spots/detail.html:110
+msgid "Post review"
+msgstr "리뷰 등록하기"
+
+#: templates/reviews/write.html:251
+msgid "Back to review list"
+msgstr "리뷰 목록으로"
+
+#: templates/reviews/write.html:266
+msgid "😞 Not great"
+msgstr "😞 별로예요"
+
+#: templates/reviews/write.html:267
+msgid "😐 It was okay"
+msgstr "😐 그저 그래요"
+
+#: templates/reviews/write.html:268
+msgid "🙂 Pretty good"
+msgstr "🙂 괜찮아요"
+
+#: templates/reviews/write.html:269
+msgid "😊 Liked it!"
+msgstr "😊 좋아요!"
+
+#: templates/reviews/write.html:270
+msgid "🤩 Loved it!"
+msgstr "🤩 최고예요!"
+
+#: templates/spots/api_detail.html:23
+#, python-format
+msgid "Popular rank %(r)s"
+msgstr "인기순위 %(r)s위"
+
+#: templates/spots/api_detail.html:43 templates/spots/detail.html:43
+msgid "Back to list"
+msgstr "목록으로"
+
+#: templates/spots/api_detail.html:49 templates/spots/detail.html:47
+msgid "Introduction"
+msgstr "소개"
+
+#: templates/spots/api_detail.html:59
+msgid "Details"
+msgstr "상세 안내"
+
+#: templates/spots/api_detail.html:74 templates/spots/api_detail.html:87
+#: templates/spots/api_detail.html:118 templates/spots/api_detail.html:130
+#: templates/spots/api_detail.html:151 templates/spots/api_detail.html:163
+#: templates/spots/api_detail.html:229
+msgid "Contact"
+msgstr "문의처"
+
+#: templates/spots/api_detail.html:75 templates/spots/api_detail.html:88
+#: templates/spots/api_detail.html:106 templates/spots/api_detail.html:119
+msgid "Hours"
+msgstr "이용 시간"
+
+#: templates/spots/api_detail.html:76 templates/spots/api_detail.html:89
+#: templates/spots/api_detail.html:120 templates/spots/api_detail.html:154
+#: templates/spots/api_detail.html:165
+msgid "Closed days"
+msgstr "쉬는 날"
+
+#: templates/spots/api_detail.html:77 templates/spots/api_detail.html:90
+#: templates/spots/api_detail.html:113 templates/spots/api_detail.html:121
+#: templates/spots/api_detail.html:136 templates/spots/api_detail.html:157
+#: templates/spots/api_detail.html:168
+msgid "Parking"
+msgstr "주차"
+
+#: templates/spots/api_detail.html:78 templates/spots/api_detail.html:96
+#: templates/spots/api_detail.html:123 templates/spots/api_detail.html:135
+msgid "Capacity"
+msgstr "수용 인원"
+
+#: templates/spots/api_detail.html:79 templates/spots/api_detail.html:92
+#: templates/spots/api_detail.html:114 templates/spots/api_detail.html:124
+#: templates/spots/api_detail.html:158
+msgid "Stroller rental"
+msgstr "유모차 대여"
+
+#: templates/spots/api_detail.html:80 templates/spots/api_detail.html:93
+#: templates/spots/api_detail.html:115 templates/spots/api_detail.html:125
+msgid "Pets allowed"
+msgstr "반려동물 동반"
+
+#: templates/spots/api_detail.html:81 templates/spots/api_detail.html:94
+#: templates/spots/api_detail.html:126 templates/spots/api_detail.html:159
+msgid "Credit cards"
+msgstr "신용카드"
+
+#: templates/spots/api_detail.html:82 templates/spots/api_detail.html:95
+#: templates/spots/api_detail.html:127 templates/spots/api_detail.html:153
+msgid "Opening date"
+msgstr "개장일"
+
+#: templates/spots/api_detail.html:83
+msgid "Season"
+msgstr "이용 계절"
+
+#: templates/spots/api_detail.html:84
+msgid "Experience info"
+msgstr "체험 안내"
+
+#: templates/spots/api_detail.html:91 templates/spots/api_detail.html:107
+msgid "Fee"
+msgstr "이용 요금"
+
+#: templates/spots/api_detail.html:97
+msgid "Age/Scale"
+msgstr "이용 연령/규모"
+
+#: templates/spots/api_detail.html:98
+msgid "Discount info"
+msgstr "할인 정보"
+
+#: templates/spots/api_detail.html:99
+msgid "Visit duration"
+msgstr "관람 소요 시간"
+
+#: templates/spots/api_detail.html:102
+msgid "Event start date"
+msgstr "행사 시작일"
+
+#: templates/spots/api_detail.html:103
+msgid "Event end date"
+msgstr "행사 종료일"
+
+#: templates/spots/api_detail.html:104
+msgid "Event venue"
+msgstr "행사 장소"
+
+#: templates/spots/api_detail.html:105
+msgid "Show time"
+msgstr "공연 시간"
+
+#: templates/spots/api_detail.html:108 templates/spots/api_detail.html:122
+msgid "Admission fee"
+msgstr "입장 요금"
+
+#: templates/spots/api_detail.html:109
+msgid "Host"
+msgstr "주최자"
+
+#: templates/spots/api_detail.html:110
+msgid "Host contact"
+msgstr "주최 연락처"
+
+#: templates/spots/api_detail.html:111
+msgid "Organizer"
+msgstr "주관사"
+
+#: templates/spots/api_detail.html:112
+msgid "Organizer contact"
+msgstr "주관 연락처"
+
+#: templates/spots/api_detail.html:131
+msgid "Check-in"
+msgstr "체크인"
+
+#: templates/spots/api_detail.html:132
+msgid "Check-out"
+msgstr "체크아웃"
+
+#: templates/spots/api_detail.html:133
+msgid "Room type"
+msgstr "객실 유형"
+
+#: templates/spots/api_detail.html:134
+msgid "Room count"
+msgstr "객실 수"
+
+#: templates/spots/api_detail.html:137
+msgid "Cooking allowed"
+msgstr "취사 가능"
+
+#: templates/spots/api_detail.html:138
+msgid "Facilities"
+msgstr "부대 시설"
+
+#: templates/spots/api_detail.html:139
+msgid "Seminar room"
+msgstr "세미나실"
+
+#: templates/spots/api_detail.html:140
+msgid "Sauna"
+msgstr "사우나"
+
+#: templates/spots/api_detail.html:141
+msgid "Bicycle rental"
+msgstr "자전거 대여"
+
+#: templates/spots/api_detail.html:142
+msgid "Fitness"
+msgstr "피트니스"
+
+#: templates/spots/api_detail.html:143
+msgid "Barbecue"
+msgstr "바베큐"
+
+#: templates/spots/api_detail.html:144
+msgid "Beverages"
+msgstr "음료(주류)"
+
+#: templates/spots/api_detail.html:145
+msgid "Public PC"
+msgstr "공용 PC"
+
+#: templates/spots/api_detail.html:146
+msgid "Public bath"
+msgstr "공용 욕실"
+
+#: templates/spots/api_detail.html:147
+msgid "Karaoke"
+msgstr "노래방"
+
+#: templates/spots/api_detail.html:148
+msgid "Campfire"
+msgstr "캠프파이어"
+
+#: templates/spots/api_detail.html:152 templates/spots/api_detail.html:164
+msgid "Business hours"
+msgstr "영업 시간"
+
+#: templates/spots/api_detail.html:155
+msgid "Items for sale"
+msgstr "판매 품목"
+
+#: templates/spots/api_detail.html:156
+msgid "Shopping info"
+msgstr "쇼핑 안내"
+
+#: templates/spots/api_detail.html:160
+msgid "Restroom"
+msgstr "화장실"
+
+#: templates/spots/api_detail.html:166
+msgid "Signature menu"
+msgstr "대표 메뉴"
+
+#: templates/spots/api_detail.html:167
+msgid "Menu"
+msgstr "취급 메뉴"
+
+#: templates/spots/api_detail.html:169
+msgid "Takeout available"
+msgstr "포장 가능"
+
+#: templates/spots/api_detail.html:170
+msgid "Kids facility"
+msgstr "어린이 시설"
+
+#: templates/spots/api_detail.html:179
+msgid "Photo gallery"
+msgstr "사진 갤러리"
+
+#: templates/spots/api_detail.html:204
+msgid "Location info"
+msgstr "위치 정보"
+
+#: templates/spots/api_detail.html:214
+msgid "Postal code:"
+msgstr "우편번호:"
+
+#: templates/spots/api_detail.html:220 templates/spots/list.html:108
+msgid "View on map"
+msgstr "지도에서 보기"
+
+#: templates/spots/api_detail.html:248
+msgid "Visit homepage"
+msgstr "홈페이지 바로가기"
+
+#: templates/spots/api_detail.html:258
+msgid "Basic info"
+msgstr "기본 정보"
+
+#: templates/spots/api_detail.html:263
+msgid "Type"
+msgstr "유형"
+
+#: templates/spots/api_detail.html:269
+msgid "Created"
+msgstr "등록일"
+
+#: templates/spots/api_detail.html:277
+msgid "Modified"
+msgstr "수정일"
+
+#: templates/spots/api_detail.html:296
+msgid "Nearby…"
+msgstr "이 근처에는…"
+
+#: templates/spots/api_detail.html:304
+msgid "Nearby attractions"
+msgstr "근처 관광지"
+
+#: templates/spots/api_detail.html:338
+msgid "No attractions found within 5km."
+msgstr "주변 5km 내 관광지 정보가 없습니다."
+
+#: templates/spots/api_detail.html:347
+msgid "Nearby restaurants"
+msgstr "근처 음식점"
+
+#: templates/spots/api_detail.html:381
+msgid "No restaurants found within 5km."
+msgstr "주변 5km 내 음식점 정보가 없습니다."
+
+#: templates/spots/create.html:8
+msgid "Register a new spot"
+msgstr "새로운 관광지 정보를 등록하세요"
+
+#: templates/spots/create.html:25
+msgid "Enter the spot name"
+msgstr "관광지 이름을 입력하세요"
+
+#: templates/spots/create.html:28 templates/spots/detail.html:189
+#: templates/spots/edit.html:28
+msgid "Category"
+msgstr "카테고리"
+
+#: templates/spots/create.html:30
+msgid "Please choose"
+msgstr "선택하세요"
+
+#: templates/spots/create.html:42 templates/spots/detail.html:194
+#: templates/spots/edit.html:41
+msgid "Region"
+msgstr "지역"
+
+#: templates/spots/create.html:44
+msgid "Please choose a region"
+msgstr "지역을 선택하세요"
+
+#: templates/spots/create.html:55 templates/spots/edit.html:53
+msgid "Description"
+msgstr "설명"
+
+#: templates/spots/create.html:57
+msgid "Enter a detailed description of the spot"
+msgstr "관광지에 대한 자세한 설명을 입력하세요"
+
+#: templates/spots/create.html:62 templates/spots/detail.html:200
+#: templates/spots/edit.html:59
+msgid "Address"
+msgstr "주소"
+
+#: templates/spots/create.html:65
+msgid "e.g. 161 Sajik-ro, Jongno-gu, Seoul"
+msgstr "예: 서울특별시 종로구 사직로 161"
+
+#: templates/spots/create.html:69 templates/spots/edit.html:65
+msgid "Image URL"
+msgstr "이미지 URL"
+
+#: templates/spots/create.html:73
+msgid "Enter a public API or external image URL."
+msgstr "공공 API 또는 외부 이미지 URL을 입력하세요."
+
+#: templates/spots/create.html:76 templates/spots/edit.html:72
+msgid "Preview"
+msgstr "미리보기"
+
+#: templates/spots/create.html:83
+msgid "Register"
+msgstr "등록하기"
+
+#: templates/spots/detail.html:33
+#, python-format
+msgid "(%(n)s reviews)"
+msgstr "(리뷰 %(n)s개)"
+
+#: templates/spots/detail.html:53
+msgid "Location"
+msgstr "위치"
+
+#: templates/spots/detail.html:67
+msgid "Really delete this spot? All related reviews will also be deleted."
+msgstr "정말로 이 관광지를 삭제하시겠습니까? 관련 리뷰도 모두 삭제됩니다."
+
+#: templates/spots/detail.html:77
+#, python-format
+msgid "(%(n)s)"
+msgstr "(%(n)s개)"
+
+#: templates/spots/detail.html:84
+msgid "You have already written a review for this spot."
+msgstr "이미 이 관광지에 리뷰를 작성하셨습니다."
+
+#: templates/spots/detail.html:106
+msgid "Share your travel experience... (5+ characters)"
+msgstr "여행 경험을 공유해주세요... (5자 이상)"
+
+#: templates/spots/detail.html:118
+msgid "To write a review, please"
+msgstr "리뷰를 작성하려면"
+
+#: templates/spots/detail.html:119
+msgid "sign in"
+msgstr "로그인하세요"
+
+#: templates/spots/detail.html:161
+msgid "No reviews yet. Be the first to write one!"
+msgstr "아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!"
+
+#: templates/spots/edit.html:2
+#, python-format
+msgid "Edit %(name)s"
+msgstr "%(name)s 수정"
+
+#: templates/spots/edit.html:7
+msgid "Edit Spot"
+msgstr "관광지 수정"
+
+#: templates/spots/edit.html:8
+#, python-format
+msgid "Edit information for %(name)s"
+msgstr "%(name)s 정보를 수정하세요"
+
+#: templates/spots/edit.html:79
+msgid "Save"
+msgstr "저장"
+
+#: templates/spots/list.html:2 templates/spots/list.html:8
+msgid "Popular Spots TOP"
+msgstr "인기 관광지 TOP"
+
+#: templates/spots/list.html:2
+msgid "Spot list"
+msgstr "관광지 목록"
+
+#: templates/spots/list.html:9
+msgid "Popular spot ranking based on real visit data (fixed ranking)"
+msgstr "실제 방문 데이터 기반 인기 관광지 순위 (고정 순위)"
+
+#: templates/spots/list.html:12
+msgid "Nationwide spot information from Korea Tourism Organization open data"
+msgstr "한국관광공사 공공데이터 기반 전국 관광지 정보"
+
+#: templates/spots/list.html:29
+msgid "Popular"
+msgstr "인기순"
+
+#: templates/spots/list.html:35
+#, python-format
+msgid "%(n)s total"
+msgstr "총 %(n)s개"
+
+#: templates/spots/list.html:48
+#, python-format
+msgid "An error occurred while loading tourism information: %(error)s"
+msgstr "관광 정보를 불러오는 중 오류가 발생했습니다: %(error)s"
+
+#: templates/spots/list.html:76
+msgid "Other"
+msgstr "기타"
+
+#: templates/spots/list.html:121
+msgid "Pagination"
+msgstr "페이지네이션"
+
+#: templates/spots/list.html:126
+msgid "Previous"
+msgstr "이전"
+
+#: templates/spots/list.html:146
+msgid "Next"
+msgstr "다음"
+
+#: templates/spots/list.html:160
+msgid "Could not load spot information"
+msgstr "관광지 정보를 불러올 수 없습니다"
+
+#: templates/spots/list.html:161
+msgid "Please try again shortly."
+msgstr "잠시 후 다시 시도해 주세요."
+
+#: templates/spots/list.html:163
+msgid "Try again"
+msgstr "다시 시도"
+
+#~ msgid "A city of ten million where palaces, night views and food meet"
+#~ msgstr "고궁과 야경, 먹거리가 어우러진 천만의 도시"
+
+#~ msgid "An island of volcanic scenery and emerald seas"
+#~ msgstr "화산 지형과 에메랄드빛 바다의 섬"
+
+#~ msgid "A port city of sea, mountains and soulful alleys"
+#~ msgstr "바다와 산, 정겨운 골목이 있는 항구 도시"
+
+#~ msgid "A coastal city of Jeongdongjin sunrises and Gyeongpo beaches"
+#~ msgstr "정동진 일출과 경포 해변의 해안 도시"
+
+#~ msgid "A port city of islands and Chinatown"
+#~ msgstr "섬과 차이나타운의 항구 도시"
+
+#~ msgid "A historic city where a thousand years of Silla still breathe"
+#~ msgstr "천년 신라의 숨결이 살아 있는 역사 도시"
+
+#~ msgid "Busan's landmark and Korea's signature beach"
+#~ msgstr "부산의 랜드마크이자 한국 대표 해변"
+
+#~ msgid "A healing getaway near the capital: Cheongpyeong Lake and Jara Island"
+#~ msgstr "수도권 근교 힐링 명소: 청평호와 자라섬"
+
+#~ msgid "A romantic port city of night seas and turtle ships"
+#~ msgstr "밤바다와 거북선의 낭만적인 항구 도시"
+
+#~ msgid "A pristine coastal city where Seoraksan meets the East Sea"
+#~ msgstr "설악산과 동해가 만나는 청정 해안 도시"
+
+#~ msgid "A convention center leading the MICE industry"
+#~ msgstr "MICE 산업을 선도하는 컨벤션 센터"
+
+#~ msgid "A real-world Evertopia that creates happy energy"
+#~ msgstr "행복 에너지를 만드는 현실 속 에버토피아"
+
+#~ msgid "Korea's largest international exhibition and convention center"
+#~ msgstr "국내 최대 규모의 국제 전시·컨벤션 센터"
+
+#~ msgid "A park with the world's longest bridge fountain"
+#~ msgstr "세계 최장 교량 분수가 있는 공원"
+
+#~ msgid "Full of adventure and wonder!"
+#~ msgstr "모험과 경이로 가득한 곳!"
+
+#~ msgid "A moving space where past, present and future coexist"
+#~ msgstr "과거와 현재, 미래가 공존하는 감동의 공간"
+
+#~ msgid "A restful space rich with sights and things to enjoy"
+#~ msgstr "볼거리와 즐길 거리가 가득한 휴식 공간"
+
+#~ msgid "A park to enjoy in many ways all year round"
+#~ msgstr "사계절 다양하게 즐기는 공원"
+
+#~ msgid "Historic ruins preserving the beauty of Silla Buddhist culture"
+#~ msgstr "신라 불교문화의 아름다움을 간직한 유적"
+
+#~ msgid "A beach with a crescent-shaped white-sand shore"
+#~ msgstr "초승달 모양의 백사장이 있는 해변"
+

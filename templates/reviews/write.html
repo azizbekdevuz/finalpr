@@ -1,179 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}리뷰 작성 — 가보자고{% endblock %}
-
-{% block head %}
-<style>
-.write-wrap {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #eef1f8 100%);
-  padding-top: 80px;
-}
-
-/* 배너 */
-.write-banner {
-  background: linear-gradient(135deg, #302b63 0%, #24243e 60%, #0f0c29 100%);
-  padding: 56px 0 48px;
-  text-align: center;
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-}
-.write-banner::before {
-  content: '✍️';
-  position: absolute;
-  right: 6%; top: 50%;
-  transform: translateY(-50%);
-  font-size: 7rem;
-  opacity: .06;
-  pointer-events: none;
-}
-.write-banner-title {
-  font-size: 2rem;
-  font-weight: 900;
-  background: linear-gradient(90deg, #fff 0%, #c9b8ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.write-banner-sub { color: rgba(255,255,255,.5); font-size: .92rem; }
-
-/* 카드 */
-.write-card {
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 12px 48px rgba(0,0,0,.09);
-  padding: 40px 44px;
-  margin-top: -28px;
-}
-
-/* 라벨 */
-.field-label {
-  font-size: .8rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  color: #667eea;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.field-label::before {
-  content: '';
-  display: block;
-  width: 4px; height: 14px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 2px;
-}
-
-/* 인풋 */
-.rv-input {
-  width: 100%;
-  border: 2px solid #e8e8e8;
-  border-radius: 12px;
-  padding: 13px 16px;
-  font-size: .95rem;
-  transition: border-color .2s, box-shadow .2s;
-  outline: none;
-  background: #fafafa;
-  font-family: inherit;
-}
-.rv-input:focus {
-  border-color: #667eea;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(102,126,234,.1);
-}
-
-/* 별점 */
-.star-pick {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 6px;
-  justify-content: flex-start;
-}
-.star-pick input { display: none; }
-.star-pick label {
-  font-size: 2.4rem;
-  color: #ddd;
-  cursor: pointer;
-  transition: color .15s, transform .15s;
-  line-height: 1;
-}
-.star-pick label:hover,
-.star-pick label:hover ~ label,
-.star-pick input:checked ~ label { color: #ffd700; }
-.star-pick label:hover { transform: scale(1.2); }
-
-.rating-desc {
-  font-size: .85rem;
-  color: #aaa;
-  margin-top: 8px;
-  min-height: 20px;
-}
-
-/* 텍스트에어리어 */
-.rv-textarea {
-  width: 100%;
-  border: 2px solid #e8e8e8;
-  border-radius: 12px;
-  padding: 14px 16px;
-  font-size: .95rem;
-  resize: vertical;
-  min-height: 130px;
-  transition: border-color .2s, box-shadow .2s;
-  outline: none;
-  background: #fafafa;
-  font-family: inherit;
-}
-.rv-textarea:focus {
-  border-color: #667eea;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(102,126,234,.1);
-}
-.char-info { font-size: .75rem; color: #aaa; text-align: right; margin-top: 4px; }
-.char-bar  { height: 4px; border-radius: 2px; background: #eee; margin-top: 6px; overflow: hidden; }
-.char-bar-fill {
-  height: 100%; border-radius: 2px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  transition: width .2s;
-}
-
-/* 제출 버튼 */
-.submit-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  padding: 14px 40px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-  transition: transform .2s, box-shadow .2s;
-}
-.submit-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 28px rgba(102,126,234,.4);
-}
-.submit-btn:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* 팁 박스 */
-.tip-box {
-  background: #f8f9ff;
-  border-left: 4px solid #667eea;
-  border-radius: 0 10px 10px 0;
-  padding: 12px 16px;
-  font-size: .82rem;
-  color: #555;
-  line-height: 1.6;
-}
-</style>
-{% endblock %}
+{% block title %}{{ _('Write a review') }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
 <div class="write-wrap">
@@ -181,9 +7,9 @@
   <!-- 배너 -->
   <div class="write-banner">
     <div class="container">
-      <p class="write-banner-sub mb-1">✏️ 나의 여행 이야기</p>
-      <h1 class="write-banner-title">리뷰 작성</h1>
-      <p class="write-banner-sub mt-1">방문한 관광지에 대한 솔직한 후기를 남겨주세요</p>
+      <p class="write-banner-sub mb-1"><i class="fas fa-pen-fancy" aria-hidden="true"></i> {{ _('My travel story') }}</p>
+      <h1 class="write-banner-title">{{ _('Write a review') }}</h1>
+      <p class="write-banner-sub mt-1">{{ _('Leave an honest review of the spot you visited') }}</p>
     </div>
   </div>
 
@@ -196,13 +22,13 @@
 
             <!-- 관광지명 -->
             <div class="mb-4">
-              <div class="field-label">관광지명</div>
+              <div class="field-label">{{ _('Spot name') }}</div>
               <input
                 type="text"
                 name="spot_name"
                 id="spotName"
                 class="rv-input"
-                placeholder="예) 경복궁, 해운대 해수욕장, 성산일출봉..."
+                placeholder="{{ _('e.g. Gyeongbokgung, Haeundae Beach, Seongsan Ilchulbong...') }}"
                 maxlength="80"
                 autocomplete="off"
                 required />
@@ -210,24 +36,24 @@
 
             <!-- 별점 -->
             <div class="mb-4">
-              <div class="field-label">별점</div>
+              <div class="field-label">{{ _('Rating') }}</div>
               <div class="star-pick" id="starPick">
                 {% for i in [5,4,3,2,1] %}
                 <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" />
-                <label for="star{{ i }}" title="{{ i }}점"><i class="fas fa-star"></i></label>
+                <label for="star{{ i }}" title="{{ _('%(n)s pts', n=i) }}" aria-label="{{ _('%(n)s pts', n=i) }}"><i class="fas fa-star" aria-hidden="true"></i></label>
                 {% endfor %}
               </div>
-              <div class="rating-desc" id="ratingDesc">별을 클릭해 평점을 선택하세요</div>
+              <div class="rating-desc" id="ratingDesc">{{ _('Click a star to choose a rating') }}</div>
             </div>
 
             <!-- 후기 내용 -->
             <div class="mb-4">
-              <div class="field-label">후기</div>
+              <div class="field-label">{{ _('Review') }}</div>
               <textarea
                 id="rvContent"
                 name="content"
                 class="rv-textarea"
-                placeholder="이 관광지에서의 경험을 자유롭게 공유해주세요. (최소 5자)"
+                placeholder="{{ _('Feel free to share your experience at this spot. (5+ characters)') }}"
                 maxlength="500"
                 required></textarea>
               <div class="char-bar"><div class="char-bar-fill" id="charFill" style="width:0%;"></div></div>
@@ -236,19 +62,19 @@
 
             <!-- 팁 -->
             <div class="tip-box mb-5">
-              <i class="fas fa-lightbulb me-1" style="color:#667eea;"></i>
-              <strong>좋은 리뷰 팁:</strong> 방문 시기, 주변 볼거리, 실제 느낌을 구체적으로 적으면 다른 여행자에게 큰 도움이 돼요!
+              <i class="fas fa-lightbulb me-1 text-primary" aria-hidden="true"></i>
+              <strong>{{ _('Tip for a great review:') }}</strong> {{ _('Describing the time of your visit, nearby sights, and how it really felt is a huge help to other travelers!') }}
             </div>
 
             <button type="submit" class="submit-btn" id="submitBtn" disabled>
-              <i class="fas fa-paper-plane me-2"></i>리뷰 등록하기
+              <i class="fas fa-paper-plane me-2" aria-hidden="true"></i>{{ _('Post review') }}
             </button>
 
           </form>
 
           <div class="text-center mt-4">
             <a href="{{ url_for('reviews.index') }}" class="text-muted small">
-              <i class="fas fa-arrow-left me-1"></i>리뷰 목록으로
+              <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>{{ _('Back to review list') }}
             </a>
           </div>
         </div>
@@ -263,11 +89,11 @@
 {% block scripts %}
 <script>
 const RATING_LABELS = {
-  1: '😞 별로예요',
-  2: '😐 그저 그래요',
-  3: '🙂 괜찮아요',
-  4: '😊 좋아요!',
-  5: '🤩 최고예요!'
+  1: {{ _('Not great') | tojson }},
+  2: {{ _('It was okay') | tojson }},
+  3: {{ _('Pretty good') | tojson }},
+  4: {{ _('Liked it!') | tojson }},
+  5: {{ _('Loved it!') | tojson }}
 };
 
 let hasRating = false;
@@ -277,7 +103,7 @@ document.querySelectorAll('.star-pick input').forEach(input => {
   input.addEventListener('change', () => {
     hasRating = true;
     document.getElementById('ratingDesc').textContent = RATING_LABELS[input.value] || '';
-    document.getElementById('ratingDesc').style.color = '#667eea';
+    document.getElementById('ratingDesc').style.color = 'var(--primary)';
     checkSubmit();
   });
 });

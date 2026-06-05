@@ -1,0 +1,33 @@
+[project]
+name = "gabojago"
+version = "1.0.0"
+description = "Korea travel discovery platform (Flask + MongoDB)."
+requires-python = ">=3.12"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["translations", "seed.py", "tmp_mongo_check.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["extensions", "models", "routes", "services"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+warn_unused_ignores = false
+check_untyped_defs = true
+exclude = ["seed\\.py", "tmp_mongo_check\\.py", "tests/"]
+
+[[tool.mypy.overrides]]
+module = ["flask_pymongo.*", "authlib.*", "flask_babel.*", "bson.*", "pymongo.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"

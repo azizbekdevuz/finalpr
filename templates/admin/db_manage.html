@@ -1,97 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}DB 직접 관리 — 관리자 메뉴{% endblock %}
-
-{% block head %}
-<style>
-  .admin-db-wrap {
-    min-height: calc(100vh - 80px);
-    background: #f8f9fa;
-    padding-top: 80px;
-    padding-bottom: 40px;
-  }
-  
-  .col-list {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,.05);
-    overflow: hidden;
-  }
-  .col-item {
-    display: block;
-    padding: 12px 20px;
-    color: #444;
-    text-decoration: none;
-    border-bottom: 1px solid #eee;
-    transition: background .2s, color .2s;
-    font-weight: 500;
-  }
-  .col-item:last-child { border-bottom: none; }
-  .col-item:hover { background: #f0f2f5; }
-  .col-item.active {
-    background: #302b63;
-    color: #fff;
-    border-left: 4px solid #c9b8ff;
-  }
-  
-  .data-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,.05);
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-  .data-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #302b63;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .json-preview {
-    background: #272822;
-    color: #f8f8f2;
-    padding: 12px;
-    border-radius: 8px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: .85rem;
-    max-height: 200px;
-    overflow-y: auto;
-    margin: 0;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-  
-  .doc-id-badge {
-    background: #eef2f5;
-    color: #555;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-family: monospace;
-    font-size: .85rem;
-    font-weight: 600;
-  }
-  
-  .action-col {
-    width: 130px;
-    text-align: right;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #aaa;
-  }
-  
-  /* 테이블 커스텀 */
-  .table > :not(caption) > * > * {
-    padding: 16px;
-    vertical-align: middle;
-  }
-</style>
-{% endblock %}
+{% block title %}{{ _('Direct DB management') }} — {{ _('Admin menu') }}{% endblock %}
 
 {% block content %}
 <div class="admin-db-wrap">
@@ -99,24 +7,24 @@
     
     <div class="d-flex align-items-center justify-content-between mb-4">
       <h2 class="fw-bold mb-0">
-        <i class="fas fa-database text-warning me-2"></i>DB 직접 관리
+        <i class="fas fa-database text-warning me-2" aria-hidden="true"></i>{{ _('Direct DB management') }}
       </h2>
       <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary btn-sm">
-        <i class="fas fa-arrow-left me-1"></i>대시보드로 돌아가기
+        <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>{{ _('Back to dashboard') }}
       </a>
     </div>
 
     <div class="row g-4">
       <!-- 사이드바: 컬렉션 목록 -->
       <div class="col-lg-3">
-        <div class="col-list sticky-top" style="top: 100px;">
+        <div class="admin-col-list sticky-top" style="top: 100px;">
           <div class="bg-light px-3 py-2 border-bottom fw-bold text-muted small">
-            <i class="fas fa-list-ul me-1"></i>COLLECTIONS
+            <i class="fas fa-list-ul me-1" aria-hidden="true"></i>{{ _('COLLECTIONS') }}
           </div>
           {% for col in collections %}
           <a href="{{ url_for('admin.db_manage', col=col) }}" 
-             class="col-item {% if col == selected_col %}active{% endif %}">
-            <i class="fas fa-folder me-2"></i>{{ col }}
+             class="admin-col-item {% if col == selected_col %}active{% endif %}">
+            <i class="fas fa-folder me-2" aria-hidden="true"></i>{{ col }}
           </a>
           {% endfor %}
         </div>
@@ -124,26 +32,26 @@
       
       <!-- 메인: 문서 목록 -->
       <div class="col-lg-9">
-        <div class="data-card">
-          <div class="data-title">
-            <i class="fas fa-table"></i> {{ selected_col }} 컬렉션 데이터 (최근 100건)
+        <div class="admin-data-card">
+          <div class="admin-data-title">
+            <i class="fas fa-table" aria-hidden="true"></i> {{ _('%(col)s collection data (latest 100)', col=selected_col) }}
           </div>
           
           {% if documents %}
           <div class="table-responsive">
-            <table class="table table-hover align-middle border-top">
+            <table class="table table-hover align-middle border-top admin-table">
               <thead class="table-light">
                 <tr>
                   <th scope="col" style="width: 150px;">_id (ObjectId)</th>
-                  <th scope="col">Data Preview</th>
-                  <th scope="col" class="action-col">관리</th>
+                  <th scope="col">{{ _('Data Preview') }}</th>
+                  <th scope="col" class="admin-action-col">{{ _('Manage') }}</th>
                 </tr>
               </thead>
               <tbody>
                 {% for doc in documents %}
                 <tr>
                   <td>
-                    <span class="doc-id-badge" title="클립보드에 복사하려면 클릭하세요 (예정)">
+                    <span class="doc-id-badge" title="{{ _('Click to copy to clipboard (planned)') }}">
                       {{ doc._id }}
                     </span>
                   </td>
@@ -151,19 +59,19 @@
                     <!-- 보기 좋게 축약된 JSON 미리보기 -->
                     <pre class="json-preview">{{ doc.json_str[:300] }}{% if doc.json_str|length > 300 %}...{% endif %}</pre>
                   </td>
-                  <td class="action-col">
+                  <td class="admin-action-col">
                     <div class="d-flex flex-column gap-2">
                       <!-- 수정 버튼 -->
                       <a href="{{ url_for('admin.db_edit', collection=selected_col, doc_id=doc._id) }}" 
                          class="btn btn-primary btn-sm">
-                        <i class="fas fa-edit me-1"></i>수정
+                        <i class="fas fa-edit me-1" aria-hidden="true"></i>{{ _('Edit') }}
                       </a>
                       
                       <!-- 삭제 버튼 -->
                       <form method="POST" action="{{ url_for('admin.db_delete', collection=selected_col, doc_id=doc._id) }}"
-                            onsubmit="return confirm('경고: 복구할 수 없습니다!\n이 데이터를 정말 강제 삭제하시겠습니까?');">
+                            data-confirm="{{ _('Warning: this cannot be undone!\nAre you sure you want to force-delete this data?') }}">
                         <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                          <i class="fas fa-trash-alt me-1"></i>삭제
+                          <i class="fas fa-trash-alt me-1" aria-hidden="true"></i>{{ _('Delete') }}
                         </button>
                       </form>
                     </div>
@@ -174,10 +82,10 @@
             </table>
           </div>
           {% else %}
-          <div class="empty-state">
-            <i class="fas fa-folder-open fa-3x mb-3"></i>
-            <h5>이 컬렉션은 비어있습니다.</h5>
-            <p class="mb-0">데이터가 존재하지 않습니다.</p>
+          <div class="admin-empty">
+            <i class="fas fa-folder-open fa-3x mb-3" aria-hidden="true"></i>
+            <h5>{{ _('This collection is empty.') }}</h5>
+            <p class="mb-0">{{ _('No data exists.') }}</p>
           </div>
           {% endif %}
           

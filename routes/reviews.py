@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask_babel import gettext as _
+
 import models.review as ReviewModel
 import models.spot as SpotModel
 from extensions.db import mongo
@@ -77,8 +79,9 @@ def index():
         }
     ]
     stats_result = list(mongo.db.reviews.aggregate(stats_pipeline))
+    _avg = stats_result[0]['avg_rating'] if stats_result else None
     stats = {
-        'avg_rating': round(stats_result[0]['avg_rating'], 1) if stats_result else 0,
+        'avg_rating': round(_avg, 1) if _avg is not None else 0,
         'count':      stats_result[0]['count'] if stats_result else 0,
     }
 
@@ -120,11 +123,11 @@ def write_free():
 
     errors = []
     if not spot_name:
-        errors.append('관광지명을 입력해주세요.')
+        errors.append(_('Please enter the spot name.'))
     if not rating or not rating.isdigit() or not (1 <= int(rating) <= 5):
-        errors.append('1~5점 사이의 별점을 선택해주세요.')
+        errors.append(_('Please choose a rating between 1 and 5 stars.'))
     if not content or len(content) < 5:
-        errors.append('내용을 5자 이상 입력해주세요.')
+        errors.append(_('Please enter at least 5 characters.'))
 
     if errors:
         for e in errors:
@@ -138,7 +141,7 @@ def write_free():
         rating=int(rating),
         content=content,
     )
-    flash('리뷰가 등록되었습니다! 🎉', 'success')
+    flash(_('Your review has been posted!'), 'success')
     return redirect(url_for('reviews.index'))
 
 
@@ -148,21 +151,21 @@ def write(spot_id):
     """리뷰 작성 처리 (관광지 상세 페이지 폼)."""
     spot = SpotModel.get_spot_by_id(spot_id)
     if not spot:
-        flash('존재하지 않는 관광지입니다.', 'danger')
+        flash(_('That spot does not exist.'), 'danger')
         return redirect(url_for('spots.list_spots'))
 
     if ReviewModel.user_already_reviewed(spot_id, session['user_id']):
-        flash('이미 리뷰를 작성하셨습니다.', 'warning')
+        flash(_('You have already written a review.'), 'warning')
         return redirect(url_for('spots.detail', spot_id=spot_id))
 
-    rating  = request.form.get('rating')
+    rating  = request.form.get('rating', '')
     content = request.form.get('content', '').strip()
 
     errors = []
     if not rating or not rating.isdigit() or not (1 <= int(rating) <= 5):
-        errors.append('1~5 점 사이의 평점을 선택해주세요.')
+        errors.append(_('Please choose a rating between 1 and 5 stars.'))
     if not content or len(content) < 5:
-        errors.append('리뷰 내용을 5자 이상 입력해주세요.')
+        errors.append(_('Please enter at least 5 characters for your review.'))
 
     if errors:
         for e in errors:
@@ -177,7 +180,7 @@ def write(spot_id):
         content=content
     )
     SpotModel.recalculate_rating(spot_id)
-    flash('리뷰가 등록되었습니다.', 'success')
+    flash(_('Your review has been posted.'), 'success')
     return redirect(url_for('spots.detail', spot_id=spot_id))
 
 
@@ -187,21 +190,21 @@ def delete(review_id):
     """리뷰 삭제 (작성자 본인 또는 관리자만)."""
     review = ReviewModel.get_review_by_id(review_id)
     if not review:
-        flash('존재하지 않는 리뷰입니다.', 'danger')
+        flash(_('That review does not exist.'), 'danger')
         return redirect(url_for('main.index'))
 
     is_owner = str(review['user_id']) == session['user_id']
     is_admin = session.get('role') == 'admin'
 
     if not is_owner and not is_admin:
-        flash('삭제 권한이 없습니다.', 'danger')
+        flash(_('You do not have permission to delete this.'), 'danger')
         return redirect(url_for('reviews.index'))
 
     spot_id = review.get('spot_id')
     ReviewModel.delete_review(review_id)
     if spot_id:
         SpotModel.recalculate_rating(str(spot_id))
-    flash('리뷰가 삭제되었습니다.', 'success')
+    flash(_('The review has been deleted.'), 'success')
 
     referrer = request.referrer
     if referrer:
