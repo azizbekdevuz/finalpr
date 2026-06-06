@@ -1,15 +1,4 @@
-"""
-routes/courses.py
-추천 코스 페이지 + AI 코스 추천 AJAX API + 저장 기능
-
-Endpoints:
-  GET  /courses/              — 정적 코스 카드 + AI 채팅 UI 페이지
-  POST /courses/ai-recommend  — AI 코스 추천 JSON API
-  GET  /courses/llm-status    — Ollama 상태 확인
-  POST /courses/save          — AI 추천 코스 저장 (로그인 필요)
-  GET  /courses/my            — 내 저장 코스 목록 (로그인 필요)
-  POST /courses/delete/<id>   — 저장 코스 삭제 (본인만)
-"""
+"""Course pages, AI recommendation API, and saved courses."""
 
 from flask import Blueprint, jsonify, render_template, request, session
 from flask_babel import get_locale
@@ -28,15 +17,11 @@ courses_bp = Blueprint('courses', __name__)
 
 
 
-# ── GET /courses/ ─────────────────────────────────────────────────────────────
-
 @courses_bp.route('/')
 def courses():
-    """추천 코스 페이지 (AI 채팅 UI)."""
+    """Course page with optional AI chat UI."""
     return render_template('courses.html')
 
-
-# ── POST /courses/ai-recommend ───────────────────────────────────────────────
 
 @courses_bp.route('/ai-recommend', methods=['POST'])
 def ai_recommend():
@@ -57,7 +42,6 @@ def ai_recommend():
 
     locale = str(get_locale() or 'ko')
 
-    # ── Step 1: LLM → place keyword extraction ──────────────────────────────
     keyword = extract_place(message)
 
     if keyword == '__OLLAMA_OFFLINE__':
@@ -72,7 +56,6 @@ def ai_recommend():
             'error': _('We could not find a place to visit. Try e.g. "I want to visit Gyeongbokgung".'),
         }), 400
 
-    # ── Step 2: searchKeyword2 → contentid 최솟값 관광지 선택 ────────────────
     first_spot = fetch_first_spot_by_keyword(keyword)
 
     if not first_spot:
@@ -81,7 +64,6 @@ def ai_recommend():
             'error': _('No spot found for "%(keyword)s". Try another place.', keyword=keyword),
         }), 404
 
-    # ── Step 3: locationBasedList2 → 주변 관광지 2개 선택 ────────────────────
     mapx = first_spot.get('mapx', '')
     mapy = first_spot.get('mapy', '')
 
@@ -90,27 +72,24 @@ def ai_recommend():
         nearby_spots = fetch_nearby(
             mapx=mapx,
             mapy=mapy,
-            content_type_id='12',   # 관광지
-            radius=10000,           # 10km 반경
+            content_type_id='12',
+            radius=10000,
             count=2,
             exclude_content_id=str(first_spot.get('contentid', '')),
         )
 
-    # 주변 관광지가 부족하면 반경 확대 재시도
+    # Widen search radius when nearby results are sparse. / 주변 결과가 부족하면 검색 반경을 넓힙니다.
     if len(nearby_spots) < 2 and mapx and mapy:
         nearby_spots = fetch_nearby(
             mapx=mapx,
             mapy=mapy,
             content_type_id='12',
-            radius=20000,   # 20km 반경으로 확대
+            radius=20000,
             count=2,
             exclude_content_id=str(first_spot.get('contentid', '')),
         )
 
-    # 3개 관광지 목록 구성
     all_spots = [first_spot] + list(nearby_spots[:2])
-
-    # ── Step 4: detailCommon2 → 각 관광지 overview 추출 ──────────────────────
     enriched_spots = []
     overviews      = []
 
@@ -131,7 +110,6 @@ def ai_recommend():
             'overview':   overview[:300] + '…' if len(overview) > 300 else overview,
         })
 
-    # ── Step 5: LLM → course summary + conversational description ───────────
     llm_result = generate_course_description(enriched_spots, overviews, locale=locale)
 
     model = current_app.config.get('LLM_MODEL', 'gemma4:26b')
@@ -146,16 +124,12 @@ def ai_recommend():
     })
 
 
-# ── GET /courses/llm-status ───────────────────────────────────────────────────
-
 @courses_bp.route('/llm-status')
 def llm_status():
-    """Ollama 서버 상태 및 현재 모델 확인."""
+    """Return Ollama availability and configured model."""
     status = check_ollama_status()
     return jsonify(status)
 
-
-# ── POST /courses/save ────────────────────────────────────────────────────────
 
 @courses_bp.route('/save', methods=['POST'])
 @login_required
@@ -190,28 +164,23 @@ def save_course():
     return jsonify({'ok': True, 'course_id': course_id})
 
 
-# ── GET /courses/my ───────────────────────────────────────────────────────────
-
 @courses_bp.route('/my')
 @login_required
 def my_courses():
-    """내 저장 코스 목록 페이지."""
+    """Saved courses for the signed-in member."""
     user_id = session['user_id']
     courses  = SavedCourseModel.get_courses_by_user(user_id)
 
-    # ObjectId → str 변환
     for c in courses:
         c['_id'] = str(c['_id'])
 
     return render_template('my_courses.html', courses=courses)
 
 
-# ── POST /courses/delete/<course_id> ─────────────────────────────────────────
-
 @courses_bp.route('/delete/<course_id>', methods=['POST'])
 @login_required
 def delete_course(course_id):
-    """저장된 코스를 삭제합니다 (본인 소유만)."""
+    """Delete a saved course owned by the current user."""
     user_id = session['user_id']
     deleted  = SavedCourseModel.delete_course(course_id, user_id)
 

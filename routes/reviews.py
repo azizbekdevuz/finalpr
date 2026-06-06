@@ -11,14 +11,13 @@ reviews_bp = Blueprint('reviews', __name__)
 
 @reviews_bp.route('/')
 def index():
-    """전체 관광지 리뷰 피드."""
+    """Public review feed with filters and pagination."""
     page     = request.args.get('page', 1, type=int)
     per_page = 9
     skip     = (page - 1) * per_page
 
-    # 필터
-    rating_filter = request.args.get('rating', '', type=str)  # '5','4','3','2','1',''
-    sort_by       = request.args.get('sort', 'latest')         # 'latest' | 'rating'
+    rating_filter = request.args.get('rating', '', type=str)
+    sort_by       = request.args.get('sort', 'latest')
 
     match_stage = {}
     if rating_filter and rating_filter.isdigit():
@@ -29,7 +28,6 @@ def index():
     pipeline = [
         {'$match': match_stage},
         {'$sort':  sort_stage},
-        # 관광지 정보 조인
         {
             '$lookup': {
                 'from':         'tourist_spots',
@@ -46,7 +44,6 @@ def index():
                 'content':     1,
                 'created_at':  1,
                 'spot_id':     1,
-                # 직접 입력한 spot_name이 있으면 우선, 없으면 DB 조인 결과 사용
                 'spot_name':   {'$ifNull': ['$spot_name', '$spot.name']},
                 'spot_region': '$spot.region',
                 'spot_image':  '$spot.image_url',
@@ -57,7 +54,6 @@ def index():
         {'$limit': per_page},
     ]
 
-    # 전체 건수
     count_pipeline = [
         {'$match': match_stage},
         {'$count': 'total'},
@@ -68,7 +64,6 @@ def index():
 
     entries = list(mongo.db.reviews.aggregate(pipeline))
 
-    # 전체 통계
     stats_pipeline = [
         {
             '$group': {
@@ -85,7 +80,6 @@ def index():
         'count':      stats_result[0]['count'] if stats_result else 0,
     }
 
-    # 별점별 분포 (전체 기준)
     dist_pipeline = [
         {'$group': {'_id': '$rating', 'cnt': {'$sum': 1}}},
         {'$sort':  {'_id': -1}},
@@ -109,14 +103,14 @@ def index():
 @reviews_bp.route('/write', methods=['GET'])
 @login_required
 def write_page():
-    """독립 리뷰 작성 페이지 (관광지명 자유 입력)."""
+    """Standalone review form with free-text spot name."""
     return render_template('reviews/write.html')
 
 
 @reviews_bp.route('/write', methods=['POST'])
 @login_required
 def write_free():
-    """자유 입력 리뷰 저장."""
+    """Persist a free-text spot review."""
     spot_name = request.form.get('spot_name', '').strip()
     rating    = request.form.get('rating', '').strip()
     content   = request.form.get('content', '').strip()
@@ -148,7 +142,7 @@ def write_free():
 @reviews_bp.route('/spots/<spot_id>/write', methods=['POST'])
 @login_required
 def write(spot_id):
-    """리뷰 작성 처리 (관광지 상세 페이지 폼)."""
+    """Handle review submission from a spot detail page."""
     spot = SpotModel.get_spot_by_id(spot_id)
     if not spot:
         flash(_('That spot does not exist.'), 'danger')
@@ -187,7 +181,7 @@ def write(spot_id):
 @reviews_bp.route('/<review_id>/delete', methods=['POST'])
 @login_required
 def delete(review_id):
-    """리뷰 삭제 (작성자 본인 또는 관리자만)."""
+    """Delete a review (author or admin only)."""
     review = ReviewModel.get_review_by_id(review_id)
     if not review:
         flash(_('That review does not exist.'), 'danger')

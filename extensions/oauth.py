@@ -37,14 +37,13 @@ def init_oauth(app: Flask) -> None:
         )
 
     if app.config.get('KAKAO_CLIENT_ID'):
-        # Kakao uses the REST API key as the OAuth client id. The client secret
-        # is optional and only sent when the Kakao application enables it.
+        # Kakao REST API key as client id; secret only when enabled. / Kakao REST API 키를 client id로 사용하며, 시크릿은 앱에서 활성화한 경우에만 전송합니다.
         oauth.register(
             name='kakao',
             client_id=app.config['KAKAO_CLIENT_ID'],
             client_secret=app.config.get('KAKAO_CLIENT_SECRET') or None,
             server_metadata_url=KAKAO_METADATA_URL,
-            # Kakao REST APIs (user/me, OIDC userinfo) live on kapi.kakao.com.
+            # Kakao REST APIs (user/me, OIDC userinfo) use kapi.kakao.com. / Kakao REST API(user/me, OIDC userinfo)는 kapi.kakao.com을 사용합니다.
             api_base_url='https://kapi.kakao.com',
             userinfo_endpoint='https://kapi.kakao.com/v1/oidc/userinfo',
             client_kwargs={

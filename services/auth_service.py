@@ -124,7 +124,7 @@ def _link_existing_user(
     """Attach a provider identity to an existing user (idempotent)."""
     user_id = user['_id']
     if stale_identity is not None:
-        # Identity existed but its user was deleted: re-point it at this user.
+        # Re-point orphaned identity after user deletion. / 삭제된 사용자에 묶인 identity를 재연결합니다.
         from extensions.db import mongo
         mongo.db.oauth_identities.update_one(
             {'_id': stale_identity['_id']},
@@ -140,7 +140,7 @@ def _link_existing_user(
                 avatar_url=claims['avatar_url'],
             )
         except DuplicateKeyError:
-            # Concurrent callback created the same identity first; reuse it.
+            # Concurrent callback won the race; reuse its identity. / 동시 콜백이 먼저 생성한 identity를 재사용합니다.
             existing = IdentityModel.find_identity(provider, subject)
             if existing:
                 linked = UserModel.find_by_id(existing['user_id'])
@@ -168,7 +168,7 @@ def resolve_oauth_user(provider: Provider, claims: OAuthClaims) -> Mapping[str, 
                 provider, subject, provider_email=claims['email_normalized']
             )
             return user
-        # Identity points at a deleted user: rebuild the link below.
+        # Orphan identity: rebuild link below. / 고아 identity는 아래에서 다시 연결합니다.
 
     if not claims['email_normalized']:
         raise OAuthEmailMissing()
@@ -200,7 +200,7 @@ def _create_oauth_user(
                 username, claims['email'], email_normalized=claims['email_normalized']
             )
         except DuplicateKeyError:
-            # Either username or email collided with a concurrent insert.
+            # Username/email race: link if email already exists. / 동시 삽입 충돌 시 기존 이메일 계정에 연결합니다.
             by_email = UserModel.find_by_normalized_email(claims['email_normalized'])
             if by_email:
                 return _link_existing_user(

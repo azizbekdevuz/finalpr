@@ -1,177 +1,109 @@
-# 프로젝트 실행 방법
+# 가보자고 (Gabojago)
 
-이 프로젝트는 Flask와 MongoDB를 기반으로 동작합니다.
-아래 순서대로 환경과 데이터베이스를 세팅한 후 실행해 주세요.
+<p align="right">
+  <strong>한국어</strong> ·
+  <a href="./README.en.md">English</a>
+</p>
 
-## 1. 가상환경 설정 및 패키지 설치
+한국 관광 정보·리뷰·코스 추천을 제공하는 Flask 웹 애플리케이션입니다. 지역·카테고리별 관광지 검색, Tour API 연동, Google/Kakao OAuth, 한국어/영어 UI를 지원합니다.
 
-터미널을 열고 프로젝트 폴더로 이동한 후 아래 명령어를 실행합니다.
+**상세 문서:** [docs/ko/README.md](docs/ko/README.md)
 
-```bash
-# 가상환경 생성 (최초 1회)
-python -m venv venv
+## 주요 기능
 
-# 가상환경 활성화 (Windows)
-.\venv\Scripts\activate
+- 인기 관광지·지역별 탐색 및 상세 페이지
+- 사용자 리뷰 작성·필터·정렬
+- Tour API 기반 코스 페이지 및 (로컬 Ollama 연동 시) AI 코스 추천
+- 아이디/비밀번호 + Google·Kakao OIDC 로그인
+- Flask-Babel 기반 한국어/영어 전환
+- 관리자 DB 직접 관리(관리자 계정)
 
-# 가상환경 활성화 (Mac/Linux)
-# source venv/bin/activate
+## 기술 스택
 
-# 필수 패키지 설치
-pip install -r requirements.txt
+| 영역 | 기술 |
+| --- | --- |
+| 백엔드 | Flask 3, Jinja2 |
+| DB | MongoDB (PyMongo) |
+| 인증 | 세션 + Authlib OAuth |
+| UI | MDB UI Kit, Font Awesome, 커스텀 CSS |
+| i18n | Flask-Babel |
+| 외부 API | 한국관광공사 Tour API, (선택) Ollama |
+
+## 아키텍처 개요
+
+```
+app.py              # 애플리케이션 팩토리, 인덱스, 블루프린트
+config.py           # 환경 설정·검증
+extensions/         # MongoDB, OAuth, i18n
+routes/             # HTTP 블루프린트
+models/             # 데이터 접근
+services/           # Tour API, LLM, 인증·마이그레이션
+templates/          # SSR 템플릿·매크로
+static/             # CSS, JS, 업로드
+translations/       # Babel 카탈로그
 ```
 
-## 2. 데이터베이스 세팅 (중요!)
-
-프로젝트와 함께 전달받은 **`tourism_db.zip`** 파일을 활용하여 MongoDB 데이터베이스를 세팅합니다.
-
-1. 사전 준비
-컴퓨터에 MongoDB가 설치되어 있고 실행 중이어야 합니다.
-
-시각화 툴인 MongoDB Compass를 실행합니다.
-
-2. 데이터베이스 및 컬렉션 생성 (가장 중요)
-JSON 파일은 '데이터 내용'만 가지고 있고, '데이터베이스 이름'과 '컬렉션 이름' 정보는 포함하고 있지 않습니다. 따라서 가져오기 전에 구조를 먼저 만들어야 합니다.
-
-MongoDB Compass 좌측 상단의 [+] (Create database) 버튼을 누릅니다.
-
-Database Name에 아래 이름을 입력합니다.
-
-📌 데이터베이스 이름: tourism_db
-
-Collection Name에는 전달받은 JSON 파일 중 하나와 일치하는 이름을 먼저 하나 입력하고 [Create Database]를 누릅니다.
-
-데이터베이스가 생성되면, 생성된 DB 이름 옆의 [+] 버튼을 누르고 나머지 JSON 파일들의 이름과 똑같이 컬렉션들을 미리 다 만들어 둡니다.
-
-예시: users.json, products.json 파일이 있다면, Compass에 users 컬렉션과 products 컬렉션을 각각 미리 만들어 놓아야 합니다.
-
-3. JSON 데이터 가져오기 (Import)
-생성한 컬렉션마다 하나씩 데이터를 채워 넣습니다.
-
-왼쪽 사이드바에서 데이터를 넣을 컬렉션을 선택합니다.
-
-화면 중앙의 [Add Data] 버튼을 누르고 [Import JSON or CSV file]을 클릭합니다.
-
-[Select File]을 눌러 해당 컬렉션 이름과 일치하는 JSON 파일을 선택합니다.
-
-파일 형식이 JSON으로 잘 선택되었는지 확인한 후, 하단의 [Import] 버튼을 누릅니다.
-
-나머지 컬렉션들도 똑같은 방법으로 각각의 JSON 파일을 매칭하여 데이터를 넣어줍니다.
-
-## 3. 웹 서버 실행
-
-기존에 가상환경(`venv`)을 활성화했던 터미널로 돌아와서 아래 명령어로 플라스크 서버를 띄웁니다.
+## 빠른 시작
 
 ```bash
+python -m venv venv
+.\venv\Scripts\activate          # Windows
+pip install -r requirements.txt
+cp .env.example .env             # 값 편집
+# MongoDB 설정 → docs/ko/mongodb.md
 python app.py
 ```
 
-서버가 켜지면 웹 브라우저에서 `http://127.0.0.1:5000` 으로 접속하여 확인합니다.
+브라우저: `http://127.0.0.1:5000`
 
----
+## 환경 설정
 
-# OAuth, Localization & Configuration Guide
+`.env.example`을 참고해 `SECRET_KEY`, `MONGO_URI` 등을 설정합니다. OAuth·Tour API·Ollama는 선택 사항이며, 설정된 항목만 활성화됩니다.
 
-This application adds Google/Kakao OAuth login (Authlib), Korean/English
-localization (Flask-Babel), and a refreshed MDB UI on top of the existing
-username/password authentication. Legacy login keeps working unchanged.
+→ [환경 변수](docs/ko/configuration.md)
 
-## Dependencies
+## OAuth
 
-Runtime dependencies (`requirements.txt`):
+Google·Kakao 개발자 콘솔의 리디렉션 URI와 Kakao 허용 IP를 환경에 맞게 등록하세요.
 
-```bash
-pip install -r requirements.txt
-```
+→ [OAuth 설정](docs/ko/oauth.md)
 
-Development/validation tools (`requirements-dev.txt` — pytest, ruff, mypy,
-types-requests, mongomock):
+## 다국어
+
+UI 문자열 변경 후 Babel 추출·컴파일이 필요합니다.
+
+→ [다국어(i18n)](docs/ko/localization.md)
+
+## 테스트
 
 ```bash
 pip install -r requirements-dev.txt
-```
-
-MongoDB must be running locally (default `mongodb://localhost:27017/`). The
-application starts even when OAuth secrets are absent — OAuth buttons render
-only for providers that are fully configured.
-
-## Environment variables
-
-Copy `.env.example` to `.env` and fill in real values (never commit `.env`):
-
-| Variable | Purpose |
-| --- | --- |
-| `SECRET_KEY` | Flask session signing key. Required in production. |
-| `MONGO_URI` | MongoDB connection string. |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth credentials. |
-| `KAKAO_CLIENT_ID` / `KAKAO_CLIENT_SECRET` | Kakao REST API key + (optional) secret. |
-| `SESSION_COOKIE_SECURE` | `true` in production HTTPS, leave unset/`false` for local HTTP. |
-| `TOUR_API_KEY`, `OLLAMA_*` | Existing TourAPI / local LLM settings. |
-
-In production (`DEBUG` off) the app logs a critical error if `SECRET_KEY` is
-missing — the development default is never silently used in production.
-
-Secure session cookies are enforced: `SESSION_COOKIE_HTTPONLY=True`,
-`SESSION_COOKIE_SAMESITE="Lax"`, and `SESSION_COOKIE_SECURE` controlled by the
-environment.
-
-## Google OAuth console setup
-
-1. Create an OAuth 2.0 Client ID (Web application) in the Google Cloud Console.
-2. Enable the OpenID Connect / userinfo scopes `openid`, `profile`, `email`.
-3. Add the authorized redirect URI exactly:
-   - `http://127.0.0.1:5000/auth/oauth/google/callback` (local)
-   - `https://YOUR_DOMAIN/auth/oauth/google/callback` (production)
-
-## Kakao Login & OIDC setup
-
-1. In Kakao Developers, register the app and enable **Kakao Login**.
-2. Enable **OpenID Connect (OIDC)** for the application.
-3. Request consent for **profile (nickname)** and **account email**.
-4. Use the **REST API key** as `KAKAO_CLIENT_ID` (set `KAKAO_CLIENT_SECRET`
-   only if a client secret is enabled for the app).
-5. Register the redirect URI exactly:
-   - `http://127.0.0.1:5000/auth/oauth/kakao/callback` (local)
-   - `https://YOUR_DOMAIN/auth/oauth/kakao/callback` (production)
-
-> Email linking only happens when the provider reports the email as **verified**
-> (`email_verified is true`). If consent for a verified email is missing, sign-in
-> fails safely with a translated message rather than linking an account.
-
-## Localization (Flask-Babel)
-
-Default locale is Korean (`ko`); English (`en`) is also supported. The active
-locale is chosen from the session, then the browser `Accept-Language` header,
-then the default. Use the navbar switcher or `POST /language/<locale>`.
-
-Extract, update and compile catalogs after changing source strings:
-
-```bash
-pybabel extract -F babel.cfg -o messages.pot .
-pybabel update -i messages.pot -d translations
-pybabel compile -d translations
-```
-
-## Non-destructive normalized-email migration
-
-New/updated users store an `email_normalized` field; lookups stay compatible
-with legacy records that lack it. To audit and backfill safely:
-
-```bash
-# Dry run (default): report what would change and any conflicts (no writes)
-flask --app app:create_app backfill-emails
-
-# Apply the backfill (idempotent, never deletes or merges accounts)
-flask --app app:create_app backfill-emails --apply
-```
-
-A unique normalized-email index should only be added after the dry run confirms
-there are no conflicting records.
-
-## Tests, lint & type checks
-
-```bash
 ruff check .
-mypy app.py config.py extensions routes models services
 pytest -q
 ```
+
+→ [테스트·검증](docs/ko/testing.md)
+
+## 보안
+
+- 프로덕션에서 `DEBUG=False` 및 전용 `SECRET_KEY` 필수
+- OAuth는 검증된 이메일만 계정 연결
+- 로그인 시 세션 교체(세션 고정 완화), 로케일 유지
+- 오픈 리디렉트 방지(`services/redirect_safety.py`)
+
+## 배포
+
+무료 티어(Render + Atlas) 개요는 [배포](docs/ko/deployment.md)를 참고하세요.
+
+## 문서 목록
+
+| 문서 | 링크 |
+| --- | --- |
+| 로컬 설정 | [docs/ko/setup.md](docs/ko/setup.md) |
+| MongoDB | [docs/ko/mongodb.md](docs/ko/mongodb.md) |
+| 환경 변수 | [docs/ko/configuration.md](docs/ko/configuration.md) |
+| OAuth | [docs/ko/oauth.md](docs/ko/oauth.md) |
+| i18n | [docs/ko/localization.md](docs/ko/localization.md) |
+| 마이그레이션 | [docs/ko/migrations.md](docs/ko/migrations.md) |
+| 테스트 | [docs/ko/testing.md](docs/ko/testing.md) |
+| 배포 | [docs/ko/deployment.md](docs/ko/deployment.md) |
