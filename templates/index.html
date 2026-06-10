@@ -9,28 +9,34 @@
 {% block content %}
 
 <!-- ══════════════ HERO CAROUSEL ══════════════ -->
-<section class="hero-carousel-section">
-  <p class="hero-carousel-title">Korea Travel</p>
-  <h1 class="hero-carousel-headline">{{ _('Today\'s <em>hottest</em> destinations') | safe }}</h1>
+<section class="hero-carousel-section" aria-label="{{ _('Featured destinations') }}">
+  <div class="hero-carousel-inner">
+    <p class="hero-carousel-title">Korea Travel</p>
+    <h1 class="hero-carousel-headline">{{ _('Today\'s <em>hottest</em> destinations') | safe }}</h1>
 
-  <div class="swiper mySwiper">
-    <div class="swiper-wrapper">
-      {% for spot in carousel_spots %}
-      <div class="swiper-slide" style="background-image: url('{{ spot.image }}');">
-        <div class="slide-overlay">
-          <p class="slide-region">{{ spot.region if spot.region else _('Korea') }}</p>
-          <h2 class="slide-title">{{ spot.name }}</h2>
-          <p class="slide-desc">{{ spot.desc }}</p>
-          <a href="{{ url_for('spots.api_detail', content_id=spot.contentid) }}" class="slide-btn">
-            {{ _('View details') }} <i class="fas fa-arrow-right fa-xs" aria-hidden="true"></i>
-          </a>
+    <div class="hero-swiper-wrap">
+      <div class="swiper hero-swiper">
+        <div class="swiper-wrapper">
+          {% for spot in carousel_spots %}
+          <div class="swiper-slide">
+            <div class="hero-slide-card" style="background-image: url('{{ spot.image }}');">
+              <div class="slide-overlay">
+                <p class="slide-region">{{ spot.region if spot.region else _('Korea') }}</p>
+                <h2 class="slide-title">{{ spot.name }}</h2>
+                <p class="slide-desc">{{ spot.desc }}</p>
+                <a href="{{ url_for('spots.api_detail', content_id=spot.contentid) }}" class="slide-btn">
+                  {{ _('View details') }} <i class="fas fa-arrow-right fa-xs" aria-hidden="true"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
         </div>
+        <div class="swiper-button-next" aria-label="{{ _('Next slide') }}"></div>
+        <div class="swiper-button-prev" aria-label="{{ _('Previous slide') }}"></div>
+        <div class="swiper-pagination"></div>
       </div>
-      {% endfor %}
     </div>
-    <div class="swiper-button-next" aria-label="{{ _('Next slide') }}"></div>
-    <div class="swiper-button-prev" aria-label="{{ _('Previous slide') }}"></div>
-    <div class="swiper-pagination"></div>
   </div>
 </section>
 
@@ -128,18 +134,36 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
   window.addEventListener('load', function () {
-    new Swiper('.mySwiper', {
-      effect: 'coverflow',
-      grabCursor: true,
-      centeredSlides: true,
+    var el = document.querySelector('.hero-swiper');
+    if (!el || !el.querySelector('.swiper-slide')) return;
+
+    new Swiper('.hero-swiper', {
       slidesPerView: 'auto',
-      coverflowEffect: { rotate: 0, stretch: 0, depth: 120, modifier: 2, slideShadows: true },
+      centeredSlides: true,
+      spaceBetween: 20,
       loop: true,
-      loopedSlides: 5,
-      speed: 700,
-      autoplay: { delay: 2500, disableOnInteraction: false, pauseOnMouseEnter: true },
-      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-      pagination: { el: '.swiper-pagination', clickable: true },
+      speed: 650,
+      grabCursor: true,
+      watchSlidesProgress: true,
+      autoplay: {
+        delay: 4000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      navigation: {
+        nextEl: '.hero-swiper .swiper-button-next',
+        prevEl: '.hero-swiper .swiper-button-prev',
+      },
+      pagination: {
+        el: '.hero-swiper .swiper-pagination',
+        clickable: true,
+        dynamicBullets: true,
+      },
+      breakpoints: {
+        0:    { spaceBetween: 14 },
+        768:  { spaceBetween: 22 },
+        1200: { spaceBetween: 28 },
+      },
     });
   });
 </script>
