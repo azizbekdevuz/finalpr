@@ -1,0 +1,593 @@
+{% extends 'base.html' %}
+{% block title %}추천 코스 — 가보자고{% endblock %}
+
+{% block head %}
+<style>
+/* ── AI 채팅 섹션 ─────────────────────────────────────────────────── */
+.ai-section {
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  margin: 3rem 0;
+  color: #fff;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+  position: relative;
+  overflow: hidden;
+}
+.ai-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(120,80,255,.15) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(0,200,255,.10) 0%, transparent 50%);
+  pointer-events: none;
+}
+.ai-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #a78bfa, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: .4rem;
+}
+.ai-section-sub {
+  color: rgba(255,255,255,.55);
+  font-size: .9rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── 모델 뱃지 ── */
+.model-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: rgba(167,139,250,.2);
+  border: 1px solid rgba(167,139,250,.4);
+  border-radius: 2rem;
+  padding: .25rem .75rem;
+  font-size: .78rem;
+  color: #c4b5fd;
+  margin-bottom: 1.5rem;
+}
+.model-badge .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .3; }
+}
+
+/* ── 채팅 입력 ── */
+.chat-input-wrap {
+  display: flex;
+  gap: .75rem;
+  align-items: stretch;
+}
+.chat-input {
+  flex: 1;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: .75rem;
+  padding: .85rem 1.1rem;
+  color: #fff;
+  font-size: .95rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.chat-input::placeholder { color: rgba(255,255,255,.35); }
+.chat-input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167,139,250,.2);
+}
+.chat-send-btn {
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  border: none;
+  border-radius: .75rem;
+  padding: .85rem 1.4rem;
+  color: #fff;
+  font-weight: 600;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  white-space: nowrap;
+}
+.chat-send-btn:hover  { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(124,58,237,.4); }
+.chat-send-btn:active { transform: translateY(0); }
+.chat-send-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ── 로딩 스피너 ── */
+.ai-loading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2.5rem 0;
+}
+.ai-loading.show { display: flex; }
+.spinner-ring {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(167,139,250,.2);
+  border-top-color: #a78bfa;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-steps {
+  list-style: none;
+  padding: 0; margin: 0;
+  text-align: center;
+  font-size: .85rem;
+  color: rgba(255,255,255,.5);
+}
+.loading-steps li { padding: .2rem 0; transition: color .3s; }
+.loading-steps li.active { color: #a78bfa; font-weight: 600; }
+.loading-steps li.done   { color: #4ade80; }
+
+/* ── 결과 카드 ── */
+.ai-result { display: none; }
+.ai-result.show { display: block; animation: fadeInUp .4s ease; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.result-summary-box {
+  background: rgba(255,255,255,.07);
+  border-left: 3px solid #a78bfa;
+  border-radius: .5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: .95rem;
+  color: rgba(255,255,255,.85);
+  line-height: 1.6;
+}
+.course-spots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.spot-mini-card {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s;
+}
+.spot-mini-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,.3); }
+.spot-mini-card img {
+  width: 100%; height: 120px;
+  object-fit: cover;
+  display: block;
+}
+.spot-mini-card .spot-no {
+  position: absolute;
+  top: .5rem; left: .5rem;
+  width: 26px; height: 26px;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem; font-weight: 700; color: #fff;
+}
+.spot-mini-card .card-wrap { position: relative; }
+.spot-mini-card .spot-info { padding: .75rem; }
+.spot-mini-card .spot-title { font-weight: 600; font-size: .9rem; color: #fff; margin-bottom: .25rem; }
+.spot-mini-card .spot-addr  { font-size: .75rem; color: rgba(255,255,255,.45); }
+
+.description-box {
+  background: rgba(255,255,255,.05);
+  border-radius: 1rem;
+  padding: 1.25rem 1.5rem;
+  font-size: .92rem;
+  color: rgba(255,255,255,.8);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+.result-label {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(167,139,250,.8);
+  margin-bottom: .5rem;
+}
+
+/* ── 에러 박스 ── */
+.ai-error {
+  display: none;
+  background: rgba(239,68,68,.1);
+  border: 1px solid rgba(239,68,68,.3);
+  border-radius: .75rem;
+  padding: 1rem 1.25rem;
+  color: #fca5a5;
+  font-size: .9rem;
+  margin-top: 1rem;
+}
+.ai-error.show { display: block; }
+
+/* ── 예시 태그 ── */
+.example-chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+.chip {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 2rem;
+  padding: .3rem .85rem;
+  font-size: .8rem;
+  color: rgba(255,255,255,.65);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.chip:hover {
+  background: rgba(167,139,250,.2);
+  border-color: #a78bfa;
+  color: #e9d5ff;
+}
+
+.divider-gradient {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167,139,250,.4), transparent);
+  margin: 1.5rem 0;
+}
+
+/* ── 저장 버튼 ── */
+.save-course-btn {
+  background: linear-gradient(135deg, #059669, #065f46);
+  border: none;
+  border-radius: .65rem;
+  padding: .5rem 1.2rem;
+  color: #fff;
+  font-weight: 600;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s, opacity .15s;
+  white-space: nowrap;
+}
+.save-course-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(5,150,105,.35); }
+.save-course-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.save-course-btn.saved { background: linear-gradient(135deg, #6b7280, #4b5563); }
+.save-feedback {
+  font-size: .82rem;
+  margin-top: .4rem;
+  text-align: right;
+  min-height: 1.2rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header-simple">
+  <div class="container">
+    <h1 class="page-title">🧭 추천 여행 코스</h1>
+    <p class="page-subtitle text-muted">전문가가 추천하는 지역별 최고의 여행 루트</p>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- ══════════════════════════════════════════════
+       AI 코스 추천 채팅 UI
+  ══════════════════════════════════════════════ -->
+  <div class="ai-section mb-5">
+
+    <!-- 헤더 -->
+    <div class="ai-section-title">🤖 AI 여행 코스 추천</div>
+    <p class="ai-section-sub">가고 싶은 장소를 말하면 AI가 3개 관광지 코스를 만들어 드립니다.</p>
+
+    <!-- 모델 뱃지 -->
+    <div class="model-badge" id="modelBadge">
+      <span class="dot"></span>
+      <span id="modelName">로딩 중…</span>
+    </div>
+
+    <!-- 채팅 입력 -->
+    <div class="chat-input-wrap">
+      <input
+        type="text"
+        id="chatInput"
+        class="chat-input"
+        placeholder="예) 경복궁 가고 싶어요, 부산 바다 보고 싶어요…"
+        maxlength="200"
+        autocomplete="off"
+      />
+      <button class="chat-send-btn" id="sendBtn" onclick="sendRecommend()">
+        <i class="fas fa-paper-plane me-1"></i> 코스 추천받기
+      </button>
+    </div>
+
+    <!-- 예시 칩 -->
+    <div class="example-chips">
+      <span class="chip" onclick="fillExample('경복궁 가고 싶어요')">경복궁 가고 싶어요</span>
+      <span class="chip" onclick="fillExample('속초 바다 보러 가고 싶어')">속초 바다 보러 가고 싶어</span>
+      <span class="chip" onclick="fillExample('제주도 자연을 느끼고 싶어')">제주도 자연을 느끼고 싶어</span>
+      <span class="chip" onclick="fillExample('경주 역사 탐방하고 싶어')">경주 역사 탐방하고 싶어</span>
+      <span class="chip" onclick="fillExample('설악산 등산하고 싶어')">설악산 등산하고 싶어</span>
+    </div>
+
+    <div class="divider-gradient mt-4"></div>
+
+    <!-- 로딩 -->
+    <div class="ai-loading" id="aiLoading">
+      <div class="spinner-ring"></div>
+      <ul class="loading-steps" id="loadingSteps">
+        <li id="lstep1">① LLM으로 장소 추출 중…</li>
+        <li id="lstep2">② 관광공사 API로 관광지 검색 중…</li>
+        <li id="lstep3">③ 주변 관광지 탐색 중…</li>
+        <li id="lstep4">④ 관광지 상세 정보 수집 중…</li>
+        <li id="lstep5">⑤ AI가 코스 설명 작성 중…</li>
+      </ul>
+    </div>
+
+    <!-- 에러 -->
+    <div class="ai-error" id="aiError"></div>
+
+    <!-- 결과 -->
+    <div class="ai-result" id="aiResult">
+
+      <!-- 코스 요약 -->
+      <div class="result-label">✨ 코스 요약</div>
+      <div class="result-summary-box" id="resultSummary"></div>
+
+      <!-- 3개 관광지 카드 -->
+      <div class="result-label">📍 추천 관광지</div>
+      <div class="course-spots-grid" id="resultSpots"></div>
+
+      <!-- 상세 설명 -->
+      <div class="result-label">💬 AI 가이드 설명</div>
+      <div class="description-box" id="resultDesc"></div>
+
+      <!-- 사용 모델 -->
+      <div class="mt-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <small style="color:rgba(255,255,255,.3);">
+          <i class="fas fa-microchip me-1"></i> 사용 모델: <span id="resultModel"></span>
+        </small>
+        <button class="save-course-btn" id="saveCourseBtn" onclick="saveCourse()">
+          <i class="fas fa-bookmark me-1"></i> 이 코스 저장하기
+        </button>
+      </div>
+      <div class="save-feedback" id="saveFeedback"></div>
+    </div>
+
+  </div><!-- /ai-section -->
+
+
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ════════════════════════════════════════════════
+   AI 코스 추천 클라이언트 스크립트
+════════════════════════════════════════════════ */
+
+// ── 모델 상태 확인 ────────────────────────────────
+(async function checkModelStatus() {
+  try {
+    const res  = await fetch('/courses/llm-status');
+    const data = await res.json();
+    const badge = document.getElementById('modelBadge');
+    const name  = document.getElementById('modelName');
+    name.textContent = data.model || 'gemma4:26b';
+    if (!data.online) {
+      badge.style.borderColor = 'rgba(239,68,68,.4)';
+      badge.style.background  = 'rgba(239,68,68,.1)';
+      badge.style.color       = '#fca5a5';
+      document.querySelector('.model-badge .dot').style.background = '#f87171';
+    }
+  } catch(e) {
+    document.getElementById('modelName').textContent = 'Ollama 오프라인';
+  }
+})();
+
+// ── 예시 칩 클릭 ─────────────────────────────────
+function fillExample(text) {
+  document.getElementById('chatInput').value = text;
+  document.getElementById('chatInput').focus();
+}
+
+// ── Enter 키 전송 ─────────────────────────────────
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendRecommend();
+  }
+});
+
+// ── 로딩 단계 표시 ────────────────────────────────
+let stepTimer = null;
+function animateLoadingSteps() {
+  const steps = ['lstep1','lstep2','lstep3','lstep4','lstep5'];
+  let i = 0;
+  // 초기화
+  steps.forEach(id => {
+    document.getElementById(id).className = '';
+  });
+  document.getElementById(steps[0]).className = 'active';
+
+  stepTimer = setInterval(() => {
+    if (i < steps.length - 1) {
+      document.getElementById(steps[i]).className = 'done';
+      i++;
+      document.getElementById(steps[i]).className = 'active';
+    }
+  }, 4000);
+}
+function stopLoadingSteps() {
+  if (stepTimer) { clearInterval(stepTimer); stepTimer = null; }
+  ['lstep1','lstep2','lstep3','lstep4','lstep5'].forEach(id => {
+    document.getElementById(id).className = 'done';
+  });
+}
+
+// ── 메인 추천 함수 ────────────────────────────────
+async function sendRecommend() {
+  const input   = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) { input.focus(); return; }
+
+  // UI 초기화
+  document.getElementById('aiLoading').classList.add('show');
+  document.getElementById('aiResult').classList.remove('show');
+  document.getElementById('aiError').classList.remove('show');
+  document.getElementById('sendBtn').disabled = true;
+  animateLoadingSteps();
+
+  try {
+    const res = await fetch('/courses/ai-recommend', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ message }),
+    });
+
+    const data = await res.json();
+    stopLoadingSteps();
+
+    if (!data.ok) {
+      showError(data.error || '알 수 없는 오류가 발생했습니다.');
+      return;
+    }
+
+    // 결과 렌더링
+    renderResult(data);
+
+  } catch(e) {
+    stopLoadingSteps();
+    showError('서버와 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  } finally {
+    document.getElementById('aiLoading').classList.remove('show');
+    document.getElementById('sendBtn').disabled = false;
+  }
+}
+
+// ── 저장 코스 데이터 보관 ────────────────────────────
+let currentCourseData = null;
+
+// ── 결과 렌더링 ───────────────────────────────────
+function renderResult(data) {
+  // 현재 코스 데이터 저장 (저장 버튼에서 사용)
+  currentCourseData = {
+    keyword:     data.keyword,
+    spots:       data.spots,
+    summary:     data.summary,
+    description: data.description,
+    model:       data.model,
+  };
+
+  // 저장 버튼 초기화
+  const saveBtn = document.getElementById('saveCourseBtn');
+  saveBtn.disabled  = false;
+  saveBtn.innerHTML = '<i class="fas fa-bookmark me-1"></i> 이 코스 저장하기';
+  saveBtn.classList.remove('saved');
+  document.getElementById('saveFeedback').textContent = '';
+
+  // 요약
+  document.getElementById('resultSummary').textContent = data.summary || '코스 요약 없음';
+
+  // 관광지 카드
+  const grid = document.getElementById('resultSpots');
+  grid.innerHTML = '';
+  (data.spots || []).forEach((spot, idx) => {
+    const img = spot.firstimage
+      ? `<img src="${escHtml(spot.firstimage)}" alt="${escHtml(spot.title)}"
+              onerror="this.src='https://via.placeholder.com/300x120?text=No+Image'">`
+      : `<div style="width:100%;height:120px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:.8rem;">이미지 없음</div>`;
+
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="spot-mini-card">
+        <div class="card-wrap">
+          ${img}
+          <div class="spot-no">${idx + 1}</div>
+        </div>
+        <div class="spot-info">
+          <div class="spot-title">${escHtml(spot.title)}</div>
+          <div class="spot-addr"><i class="fas fa-map-marker-alt me-1"></i>${escHtml(spot.addr1 || '주소 정보 없음')}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  // 상세 설명
+  document.getElementById('resultDesc').textContent = data.description || '';
+
+  // 사용 모델
+  document.getElementById('resultModel').textContent = data.model || '';
+
+  // 표시
+  document.getElementById('aiResult').classList.add('show');
+
+  // 결과로 부드럽게 스크롤
+  document.getElementById('aiResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// ── 코스 저장 ─────────────────────────────────────
+async function saveCourse() {
+  {% if not session.get('user_id') %}
+  if (confirm('코스를 저장하려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?')) {
+    location.href = '/auth/login';
+  }
+  return;
+  {% endif %}
+
+  if (!currentCourseData) return;
+
+  const btn      = document.getElementById('saveCourseBtn');
+  const feedback = document.getElementById('saveFeedback');
+
+  if (btn.classList.contains('saved')) {
+    feedback.textContent = '이미 저장된 코스입니다.';
+    feedback.style.color = '#fbbf24';
+    return;
+  }
+
+  btn.disabled = true;
+  feedback.textContent = '저장 중…';
+  feedback.style.color = 'rgba(255,255,255,.5)';
+
+  try {
+    const res  = await fetch('/courses/save', {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify(currentCourseData),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      btn.innerHTML = '<i class="fas fa-check me-1"></i> 저장됨';
+      btn.classList.add('saved');
+      feedback.innerHTML = '저장되었습니다! → <a href="/courses/my" style="color:#6ee7b7;">내 코스 목록 보기</a>';
+      feedback.style.color = '#4ade80';
+    } else {
+      feedback.textContent = data.error || '저장 실패';
+      feedback.style.color = '#fca5a5';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    feedback.textContent = '저장 중 오류가 발생했습니다.';
+    feedback.style.color = '#fca5a5';
+    btn.disabled = false;
+  }
+}
+
+// ── 에러 표시 ─────────────────────────────────────
+function showError(msg) {
+  const box = document.getElementById('aiError');
+  box.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${escHtml(msg)}`;
+  box.classList.add('show');
+}
+
+// ── HTML 이스케이프 ───────────────────────────────
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+{% endblock %}

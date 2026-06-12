@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}회원가입 — 가보자고{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card" style="max-width: 480px;">
+    <div class="auth-header text-center mb-4">
+      <a href="{{ url_for('main.index') }}" class="text-decoration-none">
+        <i class="fa-solid fa-earth-asia fa-2x text-primary mb-3 d-block"></i>
+      </a>
+      <h2 class="fw-bold mb-1">회원가입</h2>
+      <p class="text-muted small">새 계정을 만드세요</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="username"
+               name="username" placeholder="사용자명"
+               value="{{ username or '' }}" required />
+        <label for="username">
+          <i class="fas fa-user me-2"></i>사용자명 (3자 이상)
+        </label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="email"
+               name="email" placeholder="이메일"
+               value="{{ email or '' }}" required />
+        <label for="email">
+          <i class="fas fa-envelope me-2"></i>이메일
+        </label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="password"
+               name="password" placeholder="비밀번호"
+               minlength="6" required />
+        <label for="password">
+          <i class="fas fa-lock me-2"></i>비밀번호 (6자 이상)
+        </label>
+      </div>
+
+      <div class="form-floating mb-4">
+        <input type="password" class="form-control" id="confirm_password"
+               name="confirm_password" placeholder="비밀번호 확인" required />
+        <label for="confirm_password">
+          <i class="fas fa-lock me-2"></i>비밀번호 확인
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 btn-lg fw-bold mb-3">
+        <i class="fas fa-user-plus me-2"></i>회원가입
+      </button>
+    </form>
+
+    <p class="text-center text-muted small">
+      이미 계정이 있으신가요?
+      <a href="{{ url_for('auth.login') }}" class="fw-bold text-primary text-decoration-none">
+        로그인
+      </a>
+    </p>
+  </div>
+</div>
+{% endblock %}

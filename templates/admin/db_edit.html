@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}JSON 데이터 직접 수정 — 관리자 메뉴{% endblock %}
+
+{% block head %}
+<style>
+  .admin-db-wrap {
+    min-height: calc(100vh - 80px);
+    background: #f8f9fa;
+    padding-top: 80px;
+    padding-bottom: 40px;
+  }
+  
+  .edit-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.05);
+    padding: 30px;
+  }
+  
+  .editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 16px;
+  }
+  
+  .badge-col {
+    background: #302b63;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: .85rem;
+    font-weight: 700;
+  }
+  
+  .json-textarea {
+    width: 100%;
+    min-height: 500px;
+    background: #272822;
+    color: #f8f8f2;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    border: none;
+    resize: vertical;
+    outline: none;
+  }
+  .json-textarea:focus {
+    box-shadow: 0 0 0 4px rgba(201, 184, 255, 0.4);
+  }
+  
+  .alert-warning-custom {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: .9rem;
+    margin-bottom: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-db-wrap">
+  <div class="container">
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        
+        <div class="edit-card">
+          <div class="editor-header">
+            <div>
+              <h4 class="fw-bold mb-2">
+                <i class="fas fa-file-code text-primary me-2"></i>문서 직접 수정 (JSON)
+              </h4>
+              <div>
+                <span class="badge-col me-2">{{ collection }}</span>
+                <span class="text-muted font-monospace small">ID: {{ doc_id }}</span>
+              </div>
+            </div>
+            <a href="{{ url_for('admin.db_manage', col=collection) }}" class="btn btn-outline-secondary">
+              <i class="fas fa-times me-1"></i>취소
+            </a>
+          </div>
+          
+          <div class="alert-warning-custom">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>주의:</strong> JSON 문법에 맞게 작성해야 하며, 값의 타입(숫자, 문자열, 불리언 등)이 변경되면 시스템 오류를 일으킬 수 있습니다. <code>_id</code> 필드는 안전을 위해 수정이 무시됩니다.
+          </div>
+          
+          <form method="POST" action="{{ url_for('admin.db_edit', collection=collection, doc_id=doc_id) }}" id="jsonForm">
+            <div class="mb-4">
+              <textarea name="json_data" id="jsonData" class="json-textarea" spellcheck="false">{{ json_str }}</textarea>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center">
+              <button type="button" class="btn btn-outline-info" onclick="formatJson()">
+                <i class="fas fa-align-left me-1"></i>JSON 정렬하기
+              </button>
+              <button type="submit" class="btn btn-primary px-5 fw-bold">
+                <i class="fas fa-save me-1"></i>수정 내용 저장
+              </button>
+            </div>
+          </form>
+          
+        </div>
+        
+      </div>
+    </div>
+    
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function formatJson() {
+  const textarea = document.getElementById('jsonData');
+  try {
+    // 문자열을 파싱했다가 다시 들여쓰기 4칸으로 이쁘게 만듦
+    const obj = JSON.parse(textarea.value);
+    textarea.value = JSON.stringify(obj, null, 4);
+  } catch (e) {
+    alert("현재 텍스트가 올바른 JSON 형식이 아닙니다.\n오류: " + e.message);
+  }
+}
+
+// 폼 제출 전 JSON 문법 검사
+document.getElementById('jsonForm').addEventListener('submit', function(e) {
+  const textarea = document.getElementById('jsonData');
+  try {
+    JSON.parse(textarea.value);
+  } catch (err) {
+    e.preventDefault();
+    alert("저장 실패! 올바른 JSON 형식이 아닙니다.\n구두점이나 따옴표를 확인해주세요.\n\n" + err.message);
+  }
+});
+</script>
+{% endblock %}

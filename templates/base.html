@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="대한민국 대표 관광지 정보를 한눈에 — 지역별·카테고리별 검색과 리뷰까지" />
+  <title>{% block title %}가보자고{% endblock %}</title>
+
+  <!-- MDB 5 CSS -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand" href="{{ url_for('main.index') }}">
+      <i class="fa-solid fa-map-location-dot me-2 brand-icon"></i><span class="brand-logo">가보자고</span>
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-mdb-collapse-init
+            data-mdb-target="#navMenu"
+            aria-controls="navMenu" aria-expanded="false">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}"
+             href="{{ url_for('main.index') }}">홈</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.blueprint == 'spots' %}active{% endif %}"
+             href="{{ url_for('spots.list_spots') }}">관광지</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'courses.courses' %}active{% endif %}"
+             href="{{ url_for('courses.courses') }}">코스</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'main.regions' %}active{% endif %}"
+             href="{{ url_for('main.regions') }}">지역</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.blueprint == 'reviews' %}active{% endif %}"
+             href="{{ url_for('reviews.index') }}">리뷰</a>
+        </li>
+      </ul>
+
+
+
+      <!-- Auth Links -->
+      <ul class="navbar-nav">
+        {% if session.get('user_id') %}
+          {% if session.get('role') == 'admin' %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('spots.create') }}">
+              <i class="fas fa-plus-circle me-1"></i>관광지 등록
+            </a>
+          </li>
+          {% endif %}
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-member-btn dropdown-toggle" href="#"
+               id="userDropdown" role="button"
+               data-mdb-dropdown-init aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i>{{ session.get('username') }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li>
+                <a class="dropdown-item" href="{{ url_for('main.dashboard') }}">
+                  <i class="fas fa-tachometer-alt me-2"></i>마이페이지
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">
+                  <i class="fas fa-sign-out-alt me-2"></i>로그아웃
+                </a>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link nav-member-btn" href="{{ url_for('auth.login') }}">
+              <i class="fas fa-user-circle me-1"></i>회원
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════ FLASH MESSAGES ═══════════════════ -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-container">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+      {% if category == 'success' %}<i class="fas fa-check-circle me-2"></i>
+      {% elif category == 'danger' %}<i class="fas fa-exclamation-circle me-2"></i>
+      {% elif category == 'warning' %}<i class="fas fa-exclamation-triangle me-2"></i>
+      {% else %}<i class="fas fa-info-circle me-2"></i>{% endif %}
+      {{ message }}
+      <button type="button" class="btn-close" data-mdb-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+<!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h5 class="fw-bold mb-3">
+          <i class="fa-solid fa-map-location-dot me-2"></i>가보자고
+        </h5>
+        <p class="text-muted small">
+          대한민국의 아름다운 관광지 정보를 한눈에.<br />
+          지역별·카테고리별 검색과 생생한 리뷰를 만나보세요.
+        </p>
+      </div>
+      <div class="col-md-4">
+        <h6 class="fw-bold mb-3">바로가기</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{{ url_for('main.index') }}" class="footer-link">홈</a></li>
+          <li><a href="{{ url_for('spots.list_spots') }}" class="footer-link">관광지</a></li>
+          <li><a href="{{ url_for('courses.courses') }}" class="footer-link">코스</a></li>
+          <li><a href="{{ url_for('main.regions') }}" class="footer-link">지역</a></li>
+          <li><a href="{{ url_for('reviews.index') }}" class="footer-link">리뷰</a></li>
+          {% if not session.get('user_id') %}
+          <li><a href="{{ url_for('auth.login') }}" class="footer-link">로그인</a></li>
+          <li><a href="{{ url_for('auth.register') }}" class="footer-link">회원가입</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="fw-bold mb-3">카테고리</h6>
+        <div class="d-flex flex-wrap gap-2">
+          {% set cats = ['자연', '문화/역사', '음식/맛집', '액티비티', '쇼핑'] %}
+          {% for cat in cats %}
+          <a href="{{ url_for('spots.list_spots', category=cat) }}"
+             class="badge footer-badge">{{ cat }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <hr class="my-4 border-secondary" />
+    <p class="text-center text-muted small mb-0">
+      © 2025 가보자고. 웹 프로그래밍 프로젝트.
+    </p>
+  </div>
+</footer>
+
+<!-- MDB 5 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script>
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}{% if current_sort == 'popular' %}인기 관광지 TOP — 가보자고{% else %}관광지 목록 — 가보자고{% endif %}{% endblock %}
+
+{% block content %}
+<!-- ── 페이지 헤더 ──────────────────────────────────────────────── -->
+<div class="page-header-simple">
+  <div class="container">
+    {% if current_sort == 'popular' %}
+    <h1 class="page-title">🔥 인기 관광지 TOP</h1>
+    <p class="page-subtitle text-muted">실제 방문 데이터 기반 인기 관광지 순위 (고정 랭킹)</p>
+    {% else %}
+    <h1 class="page-title">🗺️ 관광지</h1>
+    <p class="page-subtitle text-muted">한국관광공사 공공데이터로 제공되는 전국 관광지 정보</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- ── 정렬 탭 + 관리자 버튼 ──────────────────────────────────── -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+    <!-- 정렬 탭 -->
+    <div class="sort-tabs">
+      <a href="{{ url_for('spots.list_spots', sort='latest', page=1) }}"
+         class="sort-tab {% if current_sort == 'latest' %}active{% endif %}">
+        <i class="fas fa-clock me-1"></i>최신순
+      </a>
+      <a href="{{ url_for('spots.list_spots', sort='popular', page=1) }}"
+         class="sort-tab {% if current_sort == 'popular' %}active{% endif %}">
+        <i class="fas fa-fire me-1"></i>인기순
+      </a>
+    </div>
+
+    <!-- 결과 수 + 관리자 버튼 -->
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-muted small">
+        총 <strong class="text-dark">{{ result.total | default(0) }}</strong>개
+      </span>
+      {% if session.get('role') == 'admin' %}
+      <a href="{{ url_for('spots.create') }}" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus me-1"></i>관광지 등록
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── API 오류 메시지 ──────────────────────────────────────────── -->
+  {% if result.error is defined and result.error %}
+  <div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    관광 정보를 불러오는 중 오류가 발생했습니다: {{ result.error }}
+  </div>
+  {% endif %}
+
+  <!-- ── 관광지 카드 그리드 ────────────────────────────────────────── -->
+  {% if result.spots %}
+  <div class="row g-4">
+    {% for item in result.spots %}
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+      <div class="api-spot-card h-100 position-relative">
+
+        <!-- 이미지 -->
+        <div class="api-spot-img-wrap">
+          {% if item.firstimage %}
+          <img src="{{ item.firstimage }}" alt="{{ item.title or item.name }}"
+               class="api-spot-img"
+               onerror="this.src='https://via.placeholder.com/400x260?text=No+Image'" />
+          {% else %}
+          <div class="api-spot-no-img">
+            <i class="fas fa-image fa-2x text-muted"></i>
+          </div>
+          {% endif %}
+
+          <!-- 타입 배지 -->
+          <span class="api-type-badge">
+            {% set type_map = {
+              '12': '관광지', '14': '문화시설', '15': '축제/공연',
+              '25': '여행코스', '28': '레포츠', '32': '숙박',
+              '38': '쇼핑', '39': '음식점'
+            } %}
+            {{ type_map.get(item.contenttypeid, item.category or '기타') }}
+          </span>
+        </div>
+
+        <!-- 정보 -->
+        <div class="api-spot-body">
+          <h6 class="api-spot-title">
+            <a href="{{ url_for('spots.api_detail', content_id=item.contentid) }}" class="text-dark text-decoration-none stretched-link">
+              {{ item.title or item.name }}
+            </a>
+          </h6>
+
+          {% if item.addr1 %}
+          <p class="api-spot-addr">
+            <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+            {{ item.addr1 }}
+          </p>
+          {% endif %}
+
+          {% if item.tel %}
+          <p class="api-spot-tel">
+            <i class="fas fa-phone me-1 text-primary"></i>
+            {{ item.tel }}
+          </p>
+          {% endif %}
+
+          <div class="api-spot-footer">
+            <span class="api-spot-detail-hint">
+              <i class="fas fa-info-circle me-1"></i>자세히 보기
+            </span>
+            {% if item.mapx and item.mapy %}
+            <a href="https://map.kakao.com/?q={{ (item.title or item.name) | urlencode }}"
+               target="_blank" class="api-spot-map-btn position-relative" style="z-index: 2;"
+               title="지도에서 보기">
+              <i class="fas fa-map"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ── 페이지네이션 ──────────────────────────────────────────────── -->
+  {% if result.total_pages > 1 %}
+  <nav class="mt-5" aria-label="페이지 탐색">
+    <ul class="pagination pagination-rounded justify-content-center flex-wrap">
+
+      <!-- 이전 -->
+      <li class="page-item {% if result.page <= 1 %}disabled{% endif %}">
+        <a class="page-link"
+           href="{{ url_for('spots.list_spots', sort=current_sort, page=result.page - 1) }}">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      </li>
+
+      <!-- 페이지 번호 (최대 10개 표시) -->
+      {% set start_p = [result.page - 4, 1] | max %}
+      {% set end_p   = [result.page + 5, result.total_pages] | min %}
+      {% for p in range(start_p, end_p + 1) %}
+      <li class="page-item {% if p == result.page %}active{% endif %}">
+        <a class="page-link"
+           href="{{ url_for('spots.list_spots', sort=current_sort, page=p) }}">
+          {{ p }}
+        </a>
+      </li>
+      {% endfor %}
+
+      <!-- 다음 -->
+      <li class="page-item {% if result.page >= result.total_pages %}disabled{% endif %}">
+        <a class="page-link"
+           href="{{ url_for('spots.list_spots', sort=current_sort, page=result.page + 1) }}">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </li>
+
+    </ul>
+    <p class="text-center text-muted small mt-2">
+      {{ result.page }} / {{ result.total_pages }} 페이지
+    </p>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <!-- 빈 상태 -->
+  <div class="empty-state text-center py-5">
+    <i class="fas fa-compass fa-3x text-muted mb-3 d-block"></i>
+    <h5 class="text-muted">관광지 정보를 불러오지 못했습니다</h5>
+    <p class="text-muted small">잠시 후 다시 시도해주세요.</p>
+    <a href="{{ url_for('spots.list_spots') }}" class="btn btn-outline-primary mt-2">
+      <i class="fas fa-redo me-1"></i>다시 시도
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

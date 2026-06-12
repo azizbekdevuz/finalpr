@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+{% block title %}가보자고 — 대한민국 관광 정보{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<style>
+/* ── Hero Carousel ─────────────────────────────── */
+.hero-carousel-section {
+  position: relative;
+  padding: 72px 0 60px;
+  background: #080c14;
+  overflow: hidden;
+}
+.hero-carousel-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(36,98,212,.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-carousel-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-weight: 800;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  text-align: center;
+  margin-bottom: .5rem;
+}
+.hero-carousel-headline {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  letter-spacing: -.5px;
+}
+.hero-carousel-headline em {
+  font-style: normal;
+  color: #74b0ff;
+}
+
+.mySwiper {
+  width: 100%;
+  padding: 20px 0 50px;
+}
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: 720px;
+  height: 460px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+@media (max-width: 992px) {
+  .swiper-slide { width: 88%; height: 360px; }
+}
+@media (max-width: 576px) {
+  .swiper-slide { height: 280px; }
+}
+.slide-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.4) 55%, transparent 100%);
+  padding: 2.5rem 2rem 2rem;
+  color: #fff;
+}
+.slide-region {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  margin-bottom: .4rem;
+}
+.slide-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  margin-bottom: .5rem;
+  letter-spacing: -.3px;
+  line-height: 1.2;
+}
+.slide-desc {
+  font-size: .88rem;
+  margin-bottom: 1.25rem;
+  opacity: .8;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.slide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  border: 1.5px solid rgba(255,255,255,.45);
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  padding: .5rem 1.25rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: .82rem;
+  font-weight: 600;
+  transition: all .22s ease;
+}
+.slide-btn:hover {
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.7);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.18);
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+  transition: background .2s;
+}
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: rgba(255,255,255,.22);
+}
+.swiper-button-next::after,
+.swiper-button-prev::after { font-size: 16px; font-weight: 800; }
+.swiper-pagination-bullet {
+  background: rgba(255,255,255,.4);
+  opacity: 1;
+}
+.swiper-pagination-bullet-active { background: #fff; }
+
+/* ── Region Section ────────────────────────────── */
+.region-section {
+  padding: 5rem 0;
+  background: #fff;
+}
+.region-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 2rem;
+}
+.region-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .55rem;
+  padding:1.75rem 1rem 1.5rem;
+  border-radius: 16px;
+  border: 1.5px solid #e4eaf2;
+  background: #fff;
+  text-decoration: none;
+  color: #0d1726;
+  transition: all .3s cubic-bezier(.16,1,.3,1);
+  cursor: pointer;
+}
+.region-btn:hover {
+  border-color: rgba(36,98,212,.35);
+  box-shadow: 0 8px 32px rgba(36,98,212,.45), 0 0 0 1px rgba(36,98,212,.2);
+  transform: translateY(-4px);
+  background: #fff;
+  color: #0d1726;
+}
+.region-btn:hover .region-btn-emoji {
+  filter: drop-shadow(0 4px 8px rgba(36,98,212,.3));
+  transform: scale(1.12);
+}
+.region-btn-emoji {
+  font-size: 2.4rem;
+  line-height: 1;
+  transition: transform .3s cubic-bezier(.16,1,.3,1), filter .3s;
+}
+.region-btn-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -.2px;
+}
+.region-btn-desc {
+  font-size: .7rem;
+  color: #95a5bc;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ── Review Cards ──────────────────────────────── */
+.review-card-custom {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid #e4eaf2;
+  box-shadow: 0 2px 8px rgba(13,23,38,.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all .3s cubic-bezier(.16,1,.3,1);
+}
+.review-card-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(13,23,38,.1);
+  border-color: transparent;
+}
+.review-spot-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  color: #2462d4;
+  margin-bottom: .35rem;
+}
+.review-stars { color: #e8a020; font-size: .82rem; }
+.review-content {
+  font-size: .88rem;
+  color: #4a5568;
+  line-height: 1.7;
+  flex: 1;
+  margin: .75rem 0;
+  font-style: italic;
+}
+.review-content::before { content: '"'; }
+.review-content::after  { content: '"'; }
+.review-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: .75rem;
+  border-top: 1px solid #f0f4fa;
+  font-size: .75rem;
+  color: #95a5bc;
+}
+.review-username { font-weight: 600; color: #6b7e99; }
+
+/* ── Courses CTA ───────────────────────────────── */
+.courses-cta {
+  padding: 4rem 0;
+  background: #0d1726;
+  position: relative;
+  overflow: hidden;
+}
+.courses-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1400&q=60') center/cover no-repeat;
+  opacity: .12;
+}
+.courses-cta .container { position: relative; z-index: 1; }
+
+/* ── Register CTA ──────────────────────────────── */
+.register-cta {
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #2462d4 0%, #6d28d9 100%);
+  position: relative;
+  overflow: hidden;
+}
+.register-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1400&q=60') center/cover no-repeat;
+  opacity: .1;
+}
+.register-cta .container { position: relative; z-index: 1; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════ HERO CAROUSEL ══════════════ -->
+<section class="hero-carousel-section">
+  <p class="hero-carousel-title">Korea Travel</p>
+  <h1 class="hero-carousel-headline">지금 가장 <em>뜨는</em> 여행지</h1>
+
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+      {% for spot in carousel_spots %}
+      <div class="swiper-slide" style="background-image: url('{{ spot.image }}');">
+        <div class="slide-overlay">
+          <p class="slide-region">{{ spot.region if spot.region else '대한민국' }}</p>
+          <h2 class="slide-title">{{ spot.name }}</h2>
+          <p class="slide-desc">{{ spot.desc }}</p>
+          <a href="{{ url_for('spots.api_detail', content_id=spot.contentid) }}" class="slide-btn">
+            자세히 보기 <i class="fas fa-arrow-right fa-xs"></i>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
+  </div>
+</section>
+
+<!-- ══════════════ REGIONS ══════════════ -->
+<section class="region-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-badge">🗺️ 지역별 탐색</span>
+      <h2 class="section-title">어디로 떠나볼까요?</h2>
+      <p class="section-desc">원하는 지역을 선택해 인기 관광지를 찾아보세요</p>
+    </div>
+    <div class="region-grid">
+      {% for region in region_data %}
+      <a href="{{ url_for('main.regions') }}#{{ region.name }}" class="region-btn">
+        <span class="region-btn-emoji">{{ region.emoji }}</span>
+        <span class="region-btn-name">{{ region.name }}</span>
+        <span class="region-btn-desc">{{ region.desc }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ REVIEWS ══════════════ -->
+<section class="section-padding" style="background:#f6f8fb;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-badge">💬 생생한 후기</span>
+      <h2 class="section-title">최신 여행 후기</h2>
+      <p class="section-desc">다른 여행자들의 솔직한 경험을 확인해보세요</p>
+    </div>
+
+    {% if recent_reviews %}
+    <div class="row g-4">
+      {% for review in recent_reviews %}
+      <div class="col-md-6 col-lg-4">
+        <div class="review-card-custom">
+          <div class="d-flex justify-content-between align-items-start">
+            <span class="review-spot-name">{{ review.spot_name }}</span>
+            <span class="review-stars">
+              {% for _ in range(review.rating) %}<i class="fas fa-star"></i>{% endfor %}
+              {% for _ in range(5 - review.rating) %}<i class="far fa-star"></i>{% endfor %}
+            </span>
+          </div>
+          <p class="review-content">{{ review.content }}</p>
+          <div class="review-meta">
+            <span class="review-username"><i class="fas fa-user-circle me-1"></i>{{ review.username }}</span>
+            <span>{{ review.created_at.strftime('%Y.%m.%d') if review.created_at else '' }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5 text-muted">
+      <i class="fas fa-comment-slash fa-3x mb-3 d-block opacity-25"></i>
+      <p>아직 등록된 리뷰가 없습니다.</p>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-5">
+      <a href="{{ url_for('reviews.index') }}"
+         class="btn btn-outline-primary btn-lg rounded-pill px-5 fw-bold">
+        모든 리뷰 보기 <i class="fas fa-arrow-right ms-2"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ COURSES CTA ══════════════ -->
+<section class="courses-cta">
+  <div class="container text-center text-white">
+    <span class="section-badge" style="background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);margin-bottom:1rem;">✈️ AI 코스 추천</span>
+    <h2 class="fw-bold mb-3" style="font-family:'Outfit',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.3px;">나만의 여행 코스를 만들어보세요</h2>
+    <p class="mb-4" style="color:rgba(255,255,255,.6);font-size:1rem;max-width:520px;margin-left:auto;margin-right:auto;">AI가 원하는 지역의 최적 여행 코스를 추천해드립니다</p>
+    <a href="{{ url_for('courses.courses') }}"
+       class="btn btn-light btn-lg rounded-pill px-5 fw-bold text-dark">
+      코스 짜러 가기 <i class="fas fa-route ms-2"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ══════════════ REGISTER CTA ══════════════ -->
+{% if not session.get('user_id') %}
+<section class="register-cta">
+  <div class="container text-center text-white">
+    <h2 class="fw-bold mb-3" style="font-family:'Outfit',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-.3px;">지금 바로 시작하세요</h2>
+    <p class="mb-4" style="color:rgba(255,255,255,.65);font-size:1rem;">회원가입하고 관광지 리뷰와 나만의 코스를 만들어보세요</p>
+    <a href="{{ url_for('auth.register') }}"
+       class="btn btn-light btn-lg px-5 fw-bold rounded-pill">
+      무료 회원가입 <i class="fas fa-arrow-right ms-2"></i>
+    </a>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+  window.addEventListener('load', function () {
+    var swiper = new Swiper(".mySwiper", {
+      effect: "coverflow",
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: "auto",
+      coverflowEffect: {
+        rotate: 0,
+        stretch: 0,
+        depth: 120,
+        modifier: 2,
+        slideShadows: true,
+      },
+      loop: true,
+      loopedSlides: 5,
+      speed: 700,
+      autoplay: {
+        delay: 2500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
+      },
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+    });
+  });
+</script>
+{% endblock %}

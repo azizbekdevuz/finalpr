@@ -1,0 +1,488 @@
+{% extends 'base.html' %}
+{% block title %}여행 후기 — 가보자고{% endblock %}
+
+{% block head %}
+<style>
+/* ══════════════ 히어로 ══════════════ */
+.rv-hero {
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  padding: 120px 0 72px;
+  position: relative;
+  overflow: hidden;
+}
+.rv-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 60px;
+  background: var(--bs-body-bg, #f8f9fa);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+.rv-hero-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  background: linear-gradient(90deg, #fff 0%, #c9b8ff 60%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.rv-hero-sub { color: rgba(255,255,255,.6); font-size: 1rem; }
+
+/* ══════════════ 통계 카드 ══════════════ */
+.rv-stats {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.09);
+  padding: 24px 36px;
+  margin-top: -38px;
+  position: relative;
+  z-index: 10;
+}
+.rv-stat { text-align: center; padding: 0 24px; }
+.rv-stat + .rv-stat { border-left: 1px solid #eee; }
+.rv-stat-num {
+  font-size: 2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.rv-stat-label { font-size: .75rem; color: #999; text-transform: uppercase; letter-spacing: .05em; }
+
+/* ══════════════ 필터 바 ══════════════ */
+.rv-filter-bar {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.06);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.rv-filter-btn {
+  border: 1.5px solid #e0e0e0;
+  background: #fafafa;
+  border-radius: 50px;
+  padding: 5px 16px;
+  font-size: .85rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.rv-filter-btn:hover,
+.rv-filter-btn.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(102,126,234,.3);
+}
+.rv-filter-sep { color: #ddd; font-size: 1.2rem; }
+
+/* ══════════════ 리뷰 카드 ══════════════ */
+.rv-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.07);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform .25s, box-shadow .25s;
+  position: relative;
+}
+.rv-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 44px rgba(0,0,0,.13);
+}
+
+/* 별점 상단 선 */
+.rv-card[data-rating="5"] { border-top: 3px solid #ffd700; }
+.rv-card[data-rating="4"] { border-top: 3px solid #66bb6a; }
+.rv-card[data-rating="3"] { border-top: 3px solid #42a5f5; }
+.rv-card[data-rating="2"] { border-top: 3px solid #ffa726; }
+.rv-card[data-rating="1"] { border-top: 3px solid #ef5350; }
+
+/* 카드 바디 */
+.rv-card-body { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; }
+.rv-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rv-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 1rem; flex-shrink: 0;
+}
+.rv-username { font-weight: 700; font-size: .9rem; color: #1a1a2e; line-height: 1.2; }
+.rv-date     { font-size: .72rem; color: #bbb; }
+.rv-stars    { display: flex; gap: 2px; margin-bottom: 8px; }
+.rv-stars i  { font-size: .8rem; }
+.star-on     { color: #ffd700; }
+.star-off    { color: #ddd; }
+.rv-content  { font-size: .88rem; color: #555; line-height: 1.65; flex: 1; word-break: break-word; }
+.rv-spot-link {
+  margin-top: 12px;
+  font-size: .78rem;
+  color: #667eea;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+.rv-spot-link:hover { text-decoration: underline; }
+
+.rv-spot-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #f0f2ff;
+  border-radius: 50px;
+  padding: 3px 12px;
+  font-size: .75rem;
+  font-weight: 700;
+  color: #302b63;
+  text-decoration: none;
+  transition: background .2s;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+.rv-spot-badge:hover { background: #e0e4ff; }
+.rv-spot-badge .cat-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  flex-shrink: 0;
+}
+
+/* quote 장식 */
+.rv-card-body::before {
+  content: '"';
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 4rem;
+  color: #f0f0f0;
+  font-family: Georgia, serif;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ══════════════ 사이드바 ══════════════ */
+.rv-sidebar-box {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.07);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.rv-dist-bar {
+  height: 8px;
+  border-radius: 50px;
+  background: #f0f0f0;
+  overflow: hidden;
+}
+.rv-dist-fill {
+  height: 100%;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transition: width .6s ease;
+}
+
+/* ══════════════ 빈 상태 ══════════════ */
+.rv-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: #ccc;
+}
+.rv-empty i { font-size: 4rem; margin-bottom: 16px; display: block; }
+
+/* ══════════════ 페이지네이션 ══════════════ */
+.rv-pagination .page-link {
+  border-radius: 10px !important;
+  margin: 0 3px;
+  border: none;
+  color: #667eea;
+  background: #f4f4ff;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all .2s;
+}
+.rv-pagination .page-link:hover,
+.rv-pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(102,126,234,.35);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════ 히어로 ══════════════ -->
+<section class="rv-hero">
+  <div class="container position-relative text-center text-white">
+    <p class="rv-hero-sub mb-2">⭐ 여행자들의 생생한 이야기</p>
+    <h1 class="rv-hero-title mb-3">전체 여행 후기</h1>
+    <p class="rv-hero-sub">
+      전국 관광지에 남겨진 솔직한 리뷰를 한눈에 모아봤어요.
+    </p>
+    {% if session.get('user_id') %}
+    <a href="{{ url_for('reviews.write_page') }}"
+       class="btn btn-light btn-lg px-5 fw-bold mt-4 shadow"
+       style="border-radius:50px;color:#302b63;">
+      <i class="fas fa-pen me-2"></i>리뷰 작성하기
+    </a>
+    {% else %}
+    <a href="{{ url_for('auth.login') }}"
+       class="btn btn-outline-light btn-lg px-5 mt-4"
+       style="border-radius:50px;">
+      <i class="fas fa-sign-in-alt me-2"></i>로그인하고 리뷰 남기기
+    </a>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ══════════════ 통계 바 ══════════════ -->
+<div class="container">
+  <div class="rv-stats d-flex justify-content-center flex-wrap gap-2">
+    <div class="rv-stat">
+      <div class="rv-stat-num">{{ stats.count }}</div>
+      <div class="rv-stat-label">총 리뷰</div>
+    </div>
+    <div class="rv-stat">
+      <div class="rv-stat-num">{{ '%.1f' % stats.avg_rating if stats.avg_rating else '0.0' }}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:2px;margin-top:2px;">
+        {% for i in range(1, 6) %}
+          <i class="fas fa-star" style="font-size:.75rem;color:{% if i <= (stats.avg_rating|round(0,'ceil')|int) %}#ffd700{% else %}#ddd{% endif %};"></i>
+        {% endfor %}
+      </div>
+      <div class="rv-stat-label">평균 별점</div>
+    </div>
+    <div class="rv-stat">
+      <div class="rv-stat-num">{{ ((stats.avg_rating / 5) * 100)|int if stats.count else 0 }}%</div>
+      <div class="rv-stat-label">만족도</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ 본문 ══════════════ -->
+<section class="section-padding">
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- 사이드바 -->
+      <div class="col-lg-3">
+        <div class="sticky-top" style="top:90px;">
+
+          <!-- 리뷰 작성 버튼 -->
+          {% if session.get('user_id') %}
+          <a href="{{ url_for('reviews.write_page') }}"
+             class="d-block text-center fw-bold mb-3 py-3 px-4"
+             style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
+                    border-radius:16px;text-decoration:none;
+                    box-shadow:0 6px 20px rgba(102,126,234,.35);
+                    transition:transform .2s,box-shadow .2s;"
+             onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 28px rgba(102,126,234,.45)'"
+             onmouseout="this.style.transform='';this.style.boxShadow='0 6px 20px rgba(102,126,234,.35)'">
+            <i class="fas fa-pen me-2"></i>리뷰 작성하기
+          </a>
+          {% endif %}
+
+          <!-- 별점 분포 -->
+          <div class="rv-sidebar-box">
+            <h6 class="fw-bold mb-3" style="color:#1a1a2e;">⭐ 별점 분포</h6>
+            {% for r in [5, 4, 3, 2, 1] %}
+            {% set cnt = dist.get(r, 0) %}
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span style="font-size:.8rem;width:16px;text-align:right;color:#666;">{{ r }}</span>
+              <i class="fas fa-star star-on" style="font-size:.78rem;"></i>
+              <div class="rv-dist-bar flex-grow-1">
+                <div class="rv-dist-fill"
+                     style="width:{{ ((cnt / stats.count) * 100)|int if stats.count else 0 }}%;"></div>
+              </div>
+              <span style="font-size:.75rem;color:#aaa;width:22px;">{{ cnt }}</span>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- 필터: 별점 -->
+          <div class="rv-sidebar-box">
+            <h6 class="fw-bold mb-3" style="color:#1a1a2e;">🔍 별점으로 보기</h6>
+            <div class="d-flex flex-column gap-2">
+              <a href="{{ url_for('reviews.index', sort=sort_by) }}"
+                 class="rv-filter-btn {% if not rating_filter %}active{% endif %}">
+                전체 보기
+              </a>
+              {% for r in [5, 4, 3, 2, 1] %}
+              <a href="{{ url_for('reviews.index', rating=r, sort=sort_by) }}"
+                 class="rv-filter-btn {% if rating_filter == r|string %}active{% endif %}">
+                {% for i in range(r) %}<i class="fas fa-star" style="font-size:.75rem;color:{% if rating_filter == r|string %}#fff{% else %}#ffd700{% endif %};"></i>{% endfor %}
+                &nbsp;{{ r }}점
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- 정렬 -->
+          <div class="rv-sidebar-box">
+            <h6 class="fw-bold mb-3" style="color:#1a1a2e;">📌 정렬</h6>
+            <div class="d-flex flex-column gap-2">
+              <a href="{{ url_for('reviews.index', sort='latest', rating=rating_filter) }}"
+                 class="rv-filter-btn {% if sort_by == 'latest' %}active{% endif %}">
+                <i class="fas fa-clock me-1"></i>최신순
+              </a>
+              <a href="{{ url_for('reviews.index', sort='rating', rating=rating_filter) }}"
+                 class="rv-filter-btn {% if sort_by == 'rating' %}active{% endif %}">
+                <i class="fas fa-star me-1"></i>별점 높은 순
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 리뷰 카드 그리드 -->
+      <div class="col-lg-9">
+        <!-- 헤더 -->
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <h2 class="fw-bold mb-0" style="font-size:1.4rem;color:#1a1a2e;">
+              <i class="fas fa-comment-dots me-2" style="color:#667eea;"></i>
+              {% if rating_filter %}{{ rating_filter }}점 리뷰{% else %}전체 리뷰{% endif %}
+            </h2>
+            <p class="text-muted small mb-0 mt-1">{{ total }}개의 리뷰</p>
+          </div>
+          {% if total_pages > 1 %}
+          <span class="badge bg-light text-secondary border">{{ page }} / {{ total_pages }} 페이지</span>
+          {% endif %}
+        </div>
+
+        {% if entries %}
+        <div class="row g-4" id="reviewGrid">
+          {% for e in entries %}
+          <div class="col-md-6 col-xl-4">
+            <div class="rv-card" data-rating="{{ e.rating }}">
+
+              <!-- 카드 바디 -->
+              <div class="rv-card-body">
+
+                <!-- 관광지명 뱃지 -->
+                {% if e.spot_name %}
+                {% if e.spot_id %}
+                <a href="{{ url_for('spots.detail', spot_id=e.spot_id) }}" class="rv-spot-badge">
+                  <span class="cat-dot"></span>{{ e.spot_name }}
+                  {% if e.spot_region %}<span style="opacity:.65;font-weight:400;">· {{ e.spot_region }}</span>{% endif %}
+                </a>
+                {% else %}
+                <span class="rv-spot-badge" style="cursor:default;">
+                  <span class="cat-dot"></span>{{ e.spot_name }}
+                </span>
+                {% endif %}
+                {% endif %}
+
+                <div class="rv-card-header">
+                  <div class="rv-avatar">{{ e.username[0]|upper }}</div>
+                  <div>
+                    <div class="rv-username">{{ e.username }}</div>
+                    <div class="rv-date">
+                      <i class="fas fa-clock me-1"></i>
+                      {{ e.created_at.strftime('%Y.%m.%d') if e.created_at else '' }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="rv-stars">
+                  {% for i in range(1, 6) %}
+                    <i class="fas fa-star {% if i <= e.rating %}star-on{% else %}star-off{% endif %}"></i>
+                  {% endfor %}
+                  <span style="font-size:.75rem;color:#aaa;margin-left:4px;">{{ e.rating }}.0</span>
+                </div>
+
+                <p class="rv-content">{{ e.content }}</p>
+
+                {% if e.spot_id %}
+                <a href="{{ url_for('spots.detail', spot_id=e.spot_id) }}" class="rv-spot-link">
+                  <i class="fas fa-arrow-right"></i>관광지 상세 보기
+                </a>
+                {% endif %}
+              </div>
+
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- 페이지네이션 -->
+        {% if total_pages > 1 %}
+        <nav class="mt-5 d-flex justify-content-center" aria-label="리뷰 페이지">
+          <ul class="pagination rv-pagination">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+              <a class="page-link"
+                 href="{{ url_for('reviews.index', page=page-1, rating=rating_filter, sort=sort_by) }}">
+                <i class="fas fa-chevron-left"></i>
+              </a>
+            </li>
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+              <a class="page-link"
+                 href="{{ url_for('reviews.index', page=p, rating=rating_filter, sort=sort_by) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+              <a class="page-link"
+                 href="{{ url_for('reviews.index', page=page+1, rating=rating_filter, sort=sort_by) }}">
+                <i class="fas fa-chevron-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="rv-empty">
+          <i class="fas fa-comment-slash" style="color:#c3cfe2;"></i>
+          <h4 style="color:#bbb;">
+            {% if rating_filter %}{{ rating_filter }}점 리뷰가 없습니다{% else %}아직 리뷰가 없습니다{% endif %}
+          </h4>
+          <p class="small">관광지를 방문하고 첫 리뷰를 남겨보세요!</p>
+          <a href="{{ url_for('spots.list_spots') }}" class="btn btn-outline-primary mt-2">
+            <i class="fas fa-map-marker-alt me-1"></i>관광지 둘러보기
+          </a>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 카드 입장 애니메이션
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.rv-card');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, idx) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, idx * 70);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  cards.forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(24px)';
+    card.style.transition = 'opacity .5s ease, transform .5s ease, box-shadow .25s, transform .25s';
+    observer.observe(card);
+  });
+});
+</script>
+{% endblock %}
