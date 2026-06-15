@@ -6,3 +6,4 @@ python-dotenv==1.0.1
 requests>=2.31.0
 Authlib==1.6.11
 Flask-Babel==4.0.0
+gunicorn==22.0.0

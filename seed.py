@@ -221,7 +221,7 @@ def seed():
 
         # ── 리뷰 데이터 삽입 ──────────────────────────────────────────
         from datetime import datetime, timezone
-        from bson import ObjectId
+        # from bson import ObjectId
         for rv in SAMPLE_REVIEWS:
             mongo.db.reviews.insert_one({
                 'spot_id':    None,
