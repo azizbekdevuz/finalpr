@@ -1,0 +1,33 @@
+{# Reusable UI primitives — icons via Font Awesome only (no emoji). #}
+
+{% macro section_badge(icon, text, variant='') %}
+<span class="section-badge{% if variant %} section-badge--{{ variant }}{% endif %}">
+  <i class="{{ icon }}" aria-hidden="true"></i>
+  <span>{{ text }}</span>
+</span>
+{% endmacro %}
+
+{% macro page_title(icon, text) %}
+<h1 class="page-title">
+  <i class="{{ icon }} me-2" aria-hidden="true"></i>{{ text }}
+</h1>
+{% endmacro %}
+
+{% macro empty_state(icon, title, description='', action_url='', action_label='') %}
+<div class="empty-state" role="status">
+  <div class="empty-state__icon" aria-hidden="true">
+    <i class="{{ icon }}"></i>
+  </div>
+  <h2 class="empty-state__title">{{ title }}</h2>
+  {% if description %}
+  <p class="empty-state__desc">{{ description }}</p>
+  {% endif %}
+  {% if action_url and action_label %}
+  <a href="{{ action_url }}" class="btn btn-primary btn-pill mt-2">{{ action_label }}</a>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro region_icon(icon) %}
+<span class="region-icon" aria-hidden="true"><i class="{{ icon }}"></i></span>
+{% endmacro %}

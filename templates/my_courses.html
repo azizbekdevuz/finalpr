@@ -1,189 +1,31 @@
 {% extends 'base.html' %}
-{% block title %}내 저장 코스 — 가보자고{% endblock %}
-
-{% block head %}
-<style>
-.my-courses-hero {
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  padding: 3rem 0 2rem;
-  color: #fff;
-}
-.my-courses-hero h1 {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 800;
-  background: linear-gradient(90deg, #a78bfa, #38bdf8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ── 저장 코스 카드 ── */
-.saved-card {
-  background: linear-gradient(145deg, #1e1b4b, #312e81);
-  border: 1px solid rgba(167,139,250,.2);
-  border-radius: 1.25rem;
-  padding: 1.75rem;
-  margin-bottom: 1.5rem;
-  transition: transform .2s, box-shadow .2s;
-  position: relative;
-}
-.saved-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 40px rgba(0,0,0,.35);
-}
-.saved-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-.saved-keyword {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  background: rgba(167,139,250,.15);
-  border: 1px solid rgba(167,139,250,.3);
-  border-radius: 2rem;
-  padding: .3rem .85rem;
-  font-size: .82rem;
-  color: #c4b5fd;
-  margin-bottom: .6rem;
-}
-.saved-date {
-  font-size: .78rem;
-  color: rgba(255,255,255,.35);
-}
-.delete-btn {
-  background: rgba(239,68,68,.12);
-  border: 1px solid rgba(239,68,68,.2);
-  border-radius: .5rem;
-  padding: .35rem .7rem;
-  color: #fca5a5;
-  font-size: .8rem;
-  cursor: pointer;
-  transition: background .15s;
-  flex-shrink: 0;
-}
-.delete-btn:hover { background: rgba(239,68,68,.25); }
-
-/* ── 관광지 썸네일 줄 ── */
-.spots-row {
-  display: flex;
-  gap: .75rem;
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-}
-.spot-thumb {
-  flex: 1;
-  min-width: 0;
-  background: rgba(255,255,255,.05);
-  border-radius: .75rem;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-}
-.spot-thumb img {
-  width: 100%;
-  height: 80px;
-  object-fit: cover;
-  display: block;
-}
-.spot-thumb .thumb-info {
-  padding: .5rem .6rem;
-}
-.spot-thumb .thumb-num {
-  font-size: .7rem;
-  color: #a78bfa;
-  font-weight: 700;
-  margin-bottom: .1rem;
-}
-.spot-thumb .thumb-name {
-  font-size: .8rem;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ── 요약 / 설명 박스 ── */
-.saved-summary {
-  background: rgba(255,255,255,.06);
-  border-left: 3px solid #a78bfa;
-  border-radius: .4rem;
-  padding: .75rem 1rem;
-  font-size: .88rem;
-  color: rgba(255,255,255,.75);
-  line-height: 1.6;
-  margin-bottom: .85rem;
-}
-.saved-desc {
-  font-size: .85rem;
-  color: rgba(255,255,255,.55);
-  line-height: 1.7;
-  white-space: pre-wrap;
-  max-height: 120px;
-  overflow: hidden;
-  position: relative;
-}
-.saved-desc.expanded { max-height: none; }
-.desc-toggle {
-  background: none;
-  border: none;
-  color: #a78bfa;
-  font-size: .8rem;
-  cursor: pointer;
-  padding: .25rem 0;
-  margin-top: .3rem;
-  display: block;
-}
-.saved-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 1rem;
-  padding-top: .75rem;
-  border-top: 1px solid rgba(255,255,255,.08);
-  font-size: .75rem;
-  color: rgba(255,255,255,.3);
-}
-
-/* ── 빈 상태 ── */
-.empty-state {
-  text-align: center;
-  padding: 5rem 2rem;
-  color: rgba(255,255,255,.4);
-}
-.empty-state i { font-size: 3.5rem; margin-bottom: 1rem; display: block; }
-.empty-state p { font-size: 1rem; margin-bottom: 1.5rem; }
-</style>
-{% endblock %}
+{% block title %}{{ _('My saved courses') }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
 <!-- Hero -->
 <div class="my-courses-hero">
   <div class="container">
-    <h1><i class="fas fa-bookmark me-2"></i>내 저장 코스</h1>
+    <h1><i class="fas fa-bookmark me-2" aria-hidden="true"></i>{{ _('My saved courses') }}</h1>
     <p style="color:rgba(255,255,255,.55); margin:0;">
-      AI가 추천한 코스를 저장하고 언제든지 다시 확인하세요.
+      {{ _('Save AI-recommended courses and revisit them anytime.') }}
     </p>
   </div>
 </div>
 
-<div class="container py-5" style="max-width:860px;">
+<div class="container py-5 my-courses-wrap">
 
   {% if not courses %}
   <!-- 빈 상태 -->
-  <div class="empty-state">
-    <i class="fas fa-map-marked-alt" style="color:#a78bfa;"></i>
-    <p>아직 저장한 코스가 없습니다.</p>
+  <div class="my-courses-empty">
+    <i class="fas fa-map-marked-alt" aria-hidden="true"></i>
+    <p>{{ _('You have no saved courses yet.') }}</p>
     <a href="{{ url_for('courses.courses') }}" class="btn btn-primary">
-      <i class="fas fa-robot me-1"></i> AI 코스 추천 받기
+      <i class="fas fa-robot me-1" aria-hidden="true"></i> {{ _('Get AI course recommendations') }}
     </a>
   </div>
 
   {% else %}
-  <p class="text-muted mb-4">총 <strong>{{ courses|length }}개</strong>의 코스가 저장되어 있습니다.</p>
+  <p class="text-muted mb-4">{{ _('You have <strong>%(n)s</strong> saved courses.', n=courses|length) | safe }}</p>
 
   {% for course in courses %}
   <div class="saved-card" id="card-{{ course._id }}">
@@ -196,13 +38,17 @@
           {{ course.keyword }}
         </div>
         <div class="saved-date">
-          <i class="fas fa-clock me-1"></i>
+          <i class="fas fa-clock me-1" aria-hidden="true"></i>
+          {% if current_locale == 'en' %}
+          {{ course.created_at.strftime('%b %d, %Y %H:%M') }}
+          {% else %}
           {{ course.created_at.strftime('%Y년 %m월 %d일 %H:%M') }}
+          {% endif %}
         </div>
       </div>
       <button class="delete-btn"
               onclick="deleteCourse('{{ course._id }}')">
-        <i class="fas fa-trash me-1"></i> 삭제
+        <i class="fas fa-trash me-1" aria-hidden="true"></i> {{ _('Delete') }}
       </button>
     </div>
 
@@ -219,7 +65,7 @@
         </div>
         {% endif %}
         <div class="thumb-info">
-          <div class="thumb-num">{{ loop.index }}번째</div>
+          <div class="thumb-num">{{ _('No. %(n)s', n=loop.index) }}</div>
           <div class="thumb-name">{{ spot.title }}</div>
         </div>
       </div>
@@ -235,14 +81,14 @@
     {% if course.description %}
     <div class="saved-desc" id="desc-{{ course._id }}">{{ course.description }}</div>
     <button class="desc-toggle" onclick="toggleDesc('{{ course._id }}')">
-      더 보기 <i class="fas fa-chevron-down ms-1 fa-xs"></i>
+      {{ _('Show more') }} <i class="fas fa-chevron-down ms-1 fa-xs" aria-hidden="true"></i>
     </button>
     {% endif %}
 
     <!-- 푸터: 사용 모델 -->
     <div class="saved-footer">
-      <span><i class="fas fa-microchip me-1"></i> {{ course.model or '-' }}</span>
-      <span>{{ course.spots|length }}개 관광지</span>
+      <span><i class="fas fa-microchip me-1" aria-hidden="true"></i> {{ course.model or '-' }}</span>
+      <span>{{ _('%(n)s attractions', n=course.spots|length) }}</span>
     </div>
 
   </div>
@@ -254,8 +100,16 @@
 
 {% block scripts %}
 <script>
+const MC_I18N = {
+  confirmDelete: {{ _('Delete this course?') | tojson }},
+  deleteFailed:  {{ _('Failed to delete.') | tojson }},
+  error:         {{ _('An error occurred.') | tojson }},
+  showMore:      {{ _('Show more') | tojson }},
+  showLess:      {{ _('Show less') | tojson }},
+};
+
 async function deleteCourse(courseId) {
-  if (!confirm('이 코스를 삭제하시겠습니까?')) return;
+  if (!confirm(MC_I18N.confirmDelete)) return;
 
   try {
     const res  = await fetch(`/courses/delete/${courseId}`, {
@@ -271,10 +125,10 @@ async function deleteCourse(courseId) {
       card.style.transform  = 'scale(.97)';
       setTimeout(() => card.remove(), 320);
     } else {
-      alert('삭제에 실패했습니다.');
+      alert(MC_I18N.deleteFailed);
     }
   } catch(e) {
-    alert('오류가 발생했습니다.');
+    alert(MC_I18N.error);
   }
 }
 
@@ -284,8 +138,8 @@ function toggleDesc(courseId) {
   const isOpen = desc.classList.contains('expanded');
   desc.classList.toggle('expanded', !isOpen);
   btn.innerHTML = isOpen
-    ? '더 보기 <i class="fas fa-chevron-down ms-1 fa-xs"></i>'
-    : '접기 <i class="fas fa-chevron-up ms-1 fa-xs"></i>';
+    ? MC_I18N.showMore + ' <i class="fas fa-chevron-down ms-1 fa-xs" aria-hidden="true"></i>'
+    : MC_I18N.showLess + ' <i class="fas fa-chevron-up ms-1 fa-xs" aria-hidden="true"></i>';
 }
 </script>
 {% endblock %}

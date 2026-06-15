@@ -1,0 +1,20 @@
+{# Server-rendered language switcher. Works without JavaScript: each option is
+   a small POST form that sets the session locale and redirects back. #}
+{% macro language_switcher(current_locale, supported_languages, compact=False) %}
+<div class="lang-switch {% if compact %}lang-switch--compact{% endif %}"
+     role="group" aria-label="{{ _('Select language') }}">
+  {% for code, name in supported_languages %}
+  <form method="POST"
+        action="{{ url_for('language.set_language', locale=code) }}"
+        class="lang-switch__form">
+    <input type="hidden" name="next" value="{{ request.full_path }}" />
+    <button type="submit"
+            class="lang-switch__btn {% if code == current_locale %}is-active{% endif %}"
+            lang="{{ code }}"
+            {% if code == current_locale %}aria-current="true"{% endif %}>
+      {{ name }}
+    </button>
+  </form>
+  {% endfor %}
+</div>
+{% endmacro %}

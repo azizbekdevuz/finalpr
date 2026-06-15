@@ -7,13 +7,13 @@ Endpoint: areaBasedSyncList2  (지역기반 관광정보 동기화 목록 조회
            detailImage2       (이미지 조회)
 """
 import os
+from typing import Any
+
 import requests
-from urllib.parse import quote
 
 # ── 설정 ──────────────────────────────────────────────────────────────────────
 SERVICE_KEY = os.environ.get(
-    'TOUR_API_KEY',
-    'BiJFkUSMy+7rGFaSZz9T3l4B+ClKAsEFj0pk9OIkaH+8XhkmoVROvvIeKwNoEeg7/0gYT1hvCpSBqmOJfgWNfw=='
+    'TOUR_API_KEY'
 )
 BASE_URL          = 'https://apis.data.go.kr/B551011/KorService2/areaBasedSyncList2'
 DETAIL_COMMON     = 'https://apis.data.go.kr/B551011/KorService2/detailCommon2'
@@ -59,7 +59,7 @@ def fetch_spots(
             'total_pages': int,
         }
     """
-    params = {
+    params: dict[str, Any] = {
         'serviceKey': SERVICE_KEY,   # 인코딩 없이 전달 (requests가 처리)
         'numOfRows':  per_page,
         'pageNo':     page,
@@ -189,7 +189,7 @@ def fetch_detail_images(content_id: str) -> list:
     반환 필드: originimgurl, smallimageurl, imgname, cpyrhtDivCd, serialnum
     """
     try:
-        params = {
+        params: dict[str, Any] = {
             **_BASE_PARAMS,
             'serviceKey': SERVICE_KEY,
             'contentId':  content_id,
@@ -233,7 +233,7 @@ def fetch_nearby(
         리스트 (거리순 정렬, count개 이하)
     """
     try:
-        params = {
+        params: dict[str, Any] = {
             **_BASE_PARAMS,
             'serviceKey':    SERVICE_KEY,
             'numOfRows':     count + 5,   # 자신 제외 후 count개 확보
@@ -276,7 +276,7 @@ def fetch_search_keyword(keyword: str, num_of_rows: int = 5) -> list:
         리스트 (각 항목: contentid, contenttypeid, title, addr1, firstimage, mapx, mapy 등)
     """
     try:
-        params = {
+        params: dict[str, Any] = {
             **_BASE_PARAMS,
             'serviceKey': SERVICE_KEY,
             'numOfRows':  num_of_rows,
@@ -319,7 +319,7 @@ def fetch_first_spot_by_keyword(keyword: str) -> dict:
 
     while True:
         try:
-            params = {
+            params: dict[str, Any] = {
                 **_BASE_PARAMS,
                 'serviceKey':    SERVICE_KEY,
                 'numOfRows':     PER_PAGE,

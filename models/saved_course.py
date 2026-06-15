@@ -23,8 +23,10 @@ Document 구조:
 }
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 from bson import ObjectId
+
 from extensions.db import mongo
 
 
@@ -38,7 +40,7 @@ def save_course(user_id: str, keyword: str, spots: list,
         'summary':     summary,
         'description': description,
         'model':       model,
-        'created_at':  datetime.now(timezone.utc),
+        'created_at':  datetime.now(UTC),
     }
     result = mongo.db.saved_courses.insert_one(doc)
     return str(result.inserted_id)

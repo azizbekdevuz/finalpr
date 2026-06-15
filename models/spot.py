@@ -1,6 +1,8 @@
-from datetime import datetime, timezone
-from extensions.db import mongo
+from datetime import UTC, datetime
+
 from bson import ObjectId
+
+from extensions.db import mongo
 
 
 def create_spot(name, category, region, description, address, image_url, created_by):
@@ -15,7 +17,7 @@ def create_spot(name, category, region, description, address, image_url, created
         'rating_avg': 0.0,
         'review_count': 0,
         'created_by': created_by,
-        'created_at': datetime.now(timezone.utc)
+        'created_at': datetime.now(UTC)
     }
     result = mongo.db.tourist_spots.insert_one(spot)
     return str(result.inserted_id)

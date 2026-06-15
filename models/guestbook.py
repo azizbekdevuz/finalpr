@@ -1,6 +1,8 @@
-from datetime import datetime, timezone
-from extensions.db import mongo
+from datetime import UTC, datetime
+
 from bson import ObjectId
+
+from extensions.db import mongo
 
 
 def create_entry(user_id, username, rating, content):
@@ -10,7 +12,7 @@ def create_entry(user_id, username, rating, content):
         'username':   username,
         'rating':     int(rating),
         'content':    content,
-        'created_at': datetime.now(timezone.utc),
+        'created_at': datetime.now(UTC),
     }
     result = mongo.db.guestbook.insert_one(entry)
     return str(result.inserted_id)
@@ -61,7 +63,7 @@ def get_stats():
 def user_already_wrote_today(user_id):
     """오늘 이미 작성한 글이 있는지 확인합니다 (하루 1회 제한)."""
     from datetime import date
-    today_start = datetime.combine(date.today(), datetime.min.time()).replace(tzinfo=timezone.utc)
+    today_start = datetime.combine(date.today(), datetime.min.time()).replace(tzinfo=UTC)
     return mongo.db.guestbook.find_one({
         'user_id':    ObjectId(user_id),
         'created_at': {'$gte': today_start},

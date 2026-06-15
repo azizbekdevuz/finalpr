@@ -1,62 +1,64 @@
 {% extends 'base.html' %}
-{% block title %}회원가입 — 가보자고{% endblock %}
+{% block title %}{{ _('Sign up') }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
 <div class="auth-page">
   <div class="auth-card" style="max-width: 480px;">
     <div class="auth-header text-center mb-4">
-      <a href="{{ url_for('main.index') }}" class="text-decoration-none">
-        <i class="fa-solid fa-earth-asia fa-2x text-primary mb-3 d-block"></i>
+      <a href="{{ url_for('main.index') }}" class="text-decoration-none"
+         aria-label="{{ _('Gabojago') }}">
+        <i class="fa-solid fa-earth-asia fa-2x text-primary mb-3 d-block" aria-hidden="true"></i>
       </a>
-      <h2 class="fw-bold mb-1">회원가입</h2>
-      <p class="text-muted small">새 계정을 만드세요</p>
+      <h1 class="auth-title h3 fw-bold mb-1">{{ _('Sign up') }}</h1>
+      <p class="text-muted small">{{ _('Create a new account') }}</p>
     </div>
 
     <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
       <div class="form-floating mb-3">
         <input type="text" class="form-control" id="username"
-               name="username" placeholder="사용자명"
-               value="{{ username or '' }}" required />
+               name="username" placeholder="{{ _('Username') }}"
+               value="{{ username or '' }}" autocomplete="username" required />
         <label for="username">
-          <i class="fas fa-user me-2"></i>사용자명 (3자 이상)
+          <i class="fas fa-user me-2" aria-hidden="true"></i>{{ _('Username (3+ characters)') }}
         </label>
       </div>
 
       <div class="form-floating mb-3">
         <input type="email" class="form-control" id="email"
-               name="email" placeholder="이메일"
-               value="{{ email or '' }}" required />
+               name="email" placeholder="{{ _('Email') }}"
+               value="{{ email or '' }}" autocomplete="email" required />
         <label for="email">
-          <i class="fas fa-envelope me-2"></i>이메일
+          <i class="fas fa-envelope me-2" aria-hidden="true"></i>{{ _('Email') }}
         </label>
       </div>
 
       <div class="form-floating mb-3">
         <input type="password" class="form-control" id="password"
-               name="password" placeholder="비밀번호"
-               minlength="6" required />
+               name="password" placeholder="{{ _('Password') }}"
+               minlength="6" autocomplete="new-password" required />
         <label for="password">
-          <i class="fas fa-lock me-2"></i>비밀번호 (6자 이상)
+          <i class="fas fa-lock me-2" aria-hidden="true"></i>{{ _('Password (6+ characters)') }}
         </label>
       </div>
 
       <div class="form-floating mb-4">
         <input type="password" class="form-control" id="confirm_password"
-               name="confirm_password" placeholder="비밀번호 확인" required />
+               name="confirm_password" placeholder="{{ _('Confirm password') }}"
+               autocomplete="new-password" required />
         <label for="confirm_password">
-          <i class="fas fa-lock me-2"></i>비밀번호 확인
+          <i class="fas fa-lock me-2" aria-hidden="true"></i>{{ _('Confirm password') }}
         </label>
       </div>
 
       <button type="submit" class="btn btn-primary w-100 btn-lg fw-bold mb-3">
-        <i class="fas fa-user-plus me-2"></i>회원가입
+        <i class="fas fa-user-plus me-2" aria-hidden="true"></i>{{ _('Sign up') }}
       </button>
     </form>
 
     <p class="text-center text-muted small">
-      이미 계정이 있으신가요?
+      {{ _('Already have an account?') }}
       <a href="{{ url_for('auth.login') }}" class="fw-bold text-primary text-decoration-none">
-        로그인
+        {{ _('Sign in') }}
       </a>
     </p>
   </div>

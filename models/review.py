@@ -1,6 +1,8 @@
-from datetime import datetime, timezone
-from extensions.db import mongo
+from datetime import UTC, datetime
+
 from bson import ObjectId
+
+from extensions.db import mongo
 
 
 def create_review(spot_id, user_id, username, rating, content):
@@ -11,7 +13,7 @@ def create_review(spot_id, user_id, username, rating, content):
         'username': username,
         'rating': int(rating),
         'content': content,
-        'created_at': datetime.now(timezone.utc)
+        'created_at': datetime.now(UTC)
     }
     result = mongo.db.reviews.insert_one(review)
     return str(result.inserted_id)
@@ -26,7 +28,7 @@ def create_free_review(spot_name, user_id, username, rating, content):
         'username':  username,
         'rating':    int(rating),
         'content':   content,
-        'created_at': datetime.now(timezone.utc)
+        'created_at': datetime.now(UTC)
     }
     result = mongo.db.reviews.insert_one(review)
     return str(result.inserted_id)

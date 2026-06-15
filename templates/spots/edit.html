@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
-{% block title %}{{ spot.name }} 수정 — 가보자고{% endblock %}
+{% from 'macros/ui.html' import page_title %}
+{% block title %}{{ _('Edit %(name)s', name=spot.name) }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
 <div class="page-header-simple">
   <div class="container">
-    <h1 class="page-title">✏️ 관광지 수정</h1>
-    <p class="page-subtitle text-muted">{{ spot.name }}의 정보를 수정하세요</p>
+    {{ page_title('fa-solid fa-pen-to-square', _('Edit Spot')) }}
+    <p class="page-subtitle">{{ _('Edit information for %(name)s', name=spot.name) }}</p>
   </div>
 </div>
+
+{% set cat_labels = {'자연': _('Nature'), '문화/역사': _('Culture/History'), '음식/맛집': _('Food'), '액티비티': _('Activities'), '쇼핑': _('Shopping')} %}
 
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -18,17 +21,17 @@
 
           <div class="row g-3 mb-3">
             <div class="col-md-8">
-              <label class="form-label fw-bold" for="name">관광지 이름 *</label>
+              <label class="form-label fw-bold" for="name">{{ _('Spot name') }} *</label>
               <input type="text" class="form-control" id="name" name="name"
                      value="{{ spot.name }}" required />
             </div>
             <div class="col-md-4">
-              <label class="form-label fw-bold" for="category">카테고리 *</label>
+              <label class="form-label fw-bold" for="category">{{ _('Category') }} *</label>
               <select class="form-select" id="category" name="category" required>
                 {% for cat in categories %}
                 <option value="{{ cat }}"
                   {% if spot.category == cat %}selected{% endif %}>
-                  {{ cat }}
+                  {{ cat_labels.get(cat, cat) }}
                 </option>
                 {% endfor %}
               </select>
@@ -36,7 +39,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold" for="region">지역 *</label>
+            <label class="form-label fw-bold" for="region">{{ _('Region') }} *</label>
             <select class="form-select" id="region" name="region" required>
               {% for r in regions %}
               <option value="{{ r }}"
@@ -48,37 +51,37 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold" for="description">설명 *</label>
+            <label class="form-label fw-bold" for="description">{{ _('Description') }} *</label>
             <textarea class="form-control" id="description" name="description"
                       rows="5" required>{{ spot.description }}</textarea>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold" for="address">주소</label>
+            <label class="form-label fw-bold" for="address">{{ _('Address') }}</label>
             <input type="text" class="form-control" id="address" name="address"
                    value="{{ spot.address or '' }}" />
           </div>
 
           <div class="mb-4">
-            <label class="form-label fw-bold" for="image_url">이미지 URL</label>
+            <label class="form-label fw-bold" for="image_url">{{ _('Image URL') }}</label>
             <input type="url" class="form-control" id="image_url" name="image_url"
                    value="{{ spot.image_url or '' }}"
                    placeholder="https://..." />
             <div id="imgPreviewWrap" class="mt-3"
                  style="{{ 'display:block' if spot.image_url else 'display:none' }}">
               <img id="imgPreview" src="{{ spot.image_url or '' }}"
-                   alt="미리보기" class="img-fluid rounded"
+                   alt="{{ _('Preview') }}" class="img-fluid rounded"
                    style="max-height: 200px;" />
             </div>
           </div>
 
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-warning px-5 fw-bold">
-              <i class="fas fa-save me-1"></i>저장하기
+              <i class="fas fa-save me-1" aria-hidden="true"></i>{{ _('Save') }}
             </button>
             <a href="{{ url_for('spots.detail', spot_id=spot._id) }}"
                class="btn btn-outline-secondary">
-              취소
+              {{ _('Cancel') }}
             </a>
           </div>
         </form>

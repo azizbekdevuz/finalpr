@@ -1,22 +1,24 @@
 {% extends 'base.html' %}
-{% block title %}{{ spot.name }} — 가보자고{% endblock %}
+{% block title %}{{ spot.name }} — {{ _('Gabojago') }}{% endblock %}
+
+{% set cat_labels = {'자연': _('Nature'), '문화/역사': _('Culture/History'), '음식/맛집': _('Food'), '액티비티': _('Activities'), '쇼핑': _('Shopping')} %}
 
 {% block content %}
 
-<!-- ── Hero Image ──────────────────────────────────── -->
 <div class="detail-hero"
-     style="background-image: url('{{ spot.image_url or 'https://via.placeholder.com/1400x500?text=No+Image' }}')">
+     style="background-image: url('{{ spot.image_url or 'https://via.placeholder.com/1400x500?text=No+Image' }}')"
+     role="img" aria-label="{{ spot.name }}">
   <div class="detail-hero-overlay"></div>
   <div class="container detail-hero-content">
     <div class="d-flex gap-2 mb-3">
-      <span class="badge bg-primary fs-6">{{ spot.category }}</span>
+      <span class="badge bg-primary fs-6">{{ cat_labels.get(spot.category, spot.category) }}</span>
       <span class="badge bg-success fs-6">
-        <i class="fas fa-map-marker-alt me-1"></i>{{ spot.region }}
+        <i class="fas fa-map-marker-alt me-1" aria-hidden="true"></i>{{ spot.region }}
       </span>
     </div>
     <h1 class="detail-hero-title">{{ spot.name }}</h1>
     <div class="d-flex align-items-center gap-3 mt-3">
-      <div class="star-display">
+      <div class="star-display" aria-hidden="true">
         {% for i in range(1, 6) %}
           {% if i <= spot.rating_avg | int %}
             <i class="fas fa-star text-warning"></i>
@@ -28,112 +30,103 @@
         {% endfor %}
         <span class="ms-2 fw-bold text-white fs-5">{{ '%.1f' % spot.rating_avg }}</span>
       </div>
-      <span class="text-white-50">(리뷰 {{ spot.review_count | default(0) }}개)</span>
+      <span class="text-white-50">{{ _('(%(n)s reviews)', n=spot.review_count | default(0)) }}</span>
     </div>
   </div>
 </div>
 
-<!-- ── Content ──────────────────────────────────── -->
 <div class="container py-5">
   <div class="row g-5">
 
-    <!-- Left: Info + Reviews -->
     <div class="col-lg-8">
-      <!-- Back Button -->
       <a href="{{ url_for('spots.list_spots') }}" class="btn btn-outline-secondary btn-sm mb-4">
-        <i class="fas fa-arrow-left me-1"></i>목록으로
+        <i class="fas fa-arrow-left me-1" aria-hidden="true"></i>{{ _('Back to list') }}
       </a>
 
-      <!-- Description Card -->
       <div class="info-card mb-4">
-        <h4 class="fw-bold mb-3"><i class="fas fa-info-circle text-primary me-2"></i>소개</h4>
+        <h2 class="h4 fw-bold mb-3"><i class="fas fa-info-circle text-primary me-2" aria-hidden="true"></i>{{ _('Introduction') }}</h2>
         <p class="text-muted lh-lg">{{ spot.description }}</p>
       </div>
 
-      <!-- Address Card -->
       {% if spot.address %}
       <div class="info-card mb-5">
-        <h4 class="fw-bold mb-3"><i class="fas fa-map-pin text-danger me-2"></i>위치</h4>
+        <h2 class="h4 fw-bold mb-3"><i class="fas fa-map-pin text-danger me-2" aria-hidden="true"></i>{{ _('Location') }}</h2>
         <p class="text-muted mb-0">
-          <i class="fas fa-location-dot me-2"></i>{{ spot.address }}
+          <i class="fas fa-location-dot me-2" aria-hidden="true"></i>{{ spot.address }}
         </p>
       </div>
       {% endif %}
 
-      <!-- Admin Actions -->
       {% if session.get('role') == 'admin' %}
       <div class="d-flex gap-2 mb-5">
         <a href="{{ url_for('spots.edit', spot_id=spot._id) }}"
            class="btn btn-outline-warning">
-          <i class="fas fa-edit me-1"></i>수정
+          <i class="fas fa-edit me-1" aria-hidden="true"></i>{{ _('Edit') }}
         </a>
         <form method="POST" action="{{ url_for('spots.delete', spot_id=spot._id) }}"
-              onsubmit="return confirm('정말로 이 관광지를 삭제하시겠습니까?\n관련 리뷰도 모두 삭제됩니다.')">
+              data-confirm="{{ _('Really delete this spot? All related reviews will also be deleted.') }}">
           <button type="submit" class="btn btn-outline-danger">
-            <i class="fas fa-trash me-1"></i>삭제
+            <i class="fas fa-trash me-1" aria-hidden="true"></i>{{ _('Delete') }}
           </button>
         </form>
       </div>
       {% endif %}
 
-      <!-- ── Reviews ──────────────────────────── -->
-      <h4 class="fw-bold mb-4">
-        <i class="fas fa-comments text-primary me-2"></i>
-        리뷰 <span class="text-muted fs-6 fw-normal">({{ reviews | length }}개)</span>
-      </h4>
+      <h2 class="h4 fw-bold mb-4">
+        <i class="fas fa-comments text-primary me-2" aria-hidden="true"></i>
+        {{ _('Reviews') }} <span class="text-muted fs-6 fw-normal">{{ _('(%(n)s)', n=reviews | length) }}</span>
+      </h2>
 
-      <!-- Write Review Form -->
       {% if session.get('user_id') %}
         {% if already_reviewed %}
         <div class="alert alert-info mb-4">
-          <i class="fas fa-check-circle me-2"></i>
-          이미 이 관광지에 리뷰를 작성하셨습니다.
+          <i class="fas fa-check-circle me-2" aria-hidden="true"></i>
+          {{ _('You have already written a review for this spot.') }}
         </div>
         {% else %}
         <div class="review-form-card mb-4">
-          <h6 class="fw-bold mb-3">✏️ 리뷰 작성</h6>
+          <h3 class="h6 fw-bold mb-3"><i class="fa-solid fa-pen me-2 text-primary" aria-hidden="true"></i>{{ _('Write a review') }}</h3>
           <form method="POST"
                 action="{{ url_for('reviews.write', spot_id=spot._id) }}">
-            <!-- Star Rating -->
             <div class="mb-3">
-              <label class="form-label small fw-bold">평점</label>
+              <label class="form-label small fw-bold">{{ _('Rating') }}</label>
               <div class="star-rating-input" id="starRating">
                 {% for i in range(5, 0, -1) %}
                 <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required />
-                <label for="star{{ i }}" title="{{ i }}점">
-                  <i class="fas fa-star"></i>
+                <label for="star{{ i }}" title="{{ _('%(n)s pts', n=i) }}"
+                       aria-label="{{ _('%(n)s pts', n=i) }}">
+                  <i class="fas fa-star" aria-hidden="true"></i>
                 </label>
                 {% endfor %}
               </div>
             </div>
             <div class="mb-3">
-              <textarea class="form-control" name="content" rows="3"
-                        placeholder="여행 경험을 공유해주세요... (5자 이상)"
+              <label class="form-label small fw-bold" for="reviewContent">{{ _('Review') }}</label>
+              <textarea class="form-control" id="reviewContent" name="content" rows="3"
+                        placeholder="{{ _('Share your travel experience... (5+ characters)') }}"
                         minlength="5" required></textarea>
             </div>
             <button type="submit" class="btn btn-primary btn-sm">
-              <i class="fas fa-paper-plane me-1"></i>리뷰 등록
+              <i class="fas fa-paper-plane me-1" aria-hidden="true"></i>{{ _('Post review') }}
             </button>
           </form>
         </div>
         {% endif %}
       {% else %}
       <div class="alert alert-light border mb-4">
-        <i class="fas fa-sign-in-alt me-2"></i>
-        리뷰를 작성하려면
-        <a href="{{ url_for('auth.login') }}" class="fw-bold text-primary">로그인</a>
-        하세요.
+        <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>
+        {{ _('To write a review, please') }}
+        <a href="{{ url_for('auth.login') }}" class="fw-bold text-primary">{{ _('sign in') }}</a>.
       </div>
       {% endif %}
 
-      <!-- Review List -->
       {% if reviews %}
         {% for review in reviews %}
         <div class="review-item">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
               <span class="fw-bold me-2">{{ review.username }}</span>
-              <span class="text-warning">
+              <span class="text-warning" aria-hidden="true">
                 {% for i in range(review.rating) %}
                 <i class="fas fa-star fa-sm"></i>
                 {% endfor %}
@@ -150,9 +143,10 @@
                  or session.get('role') == 'admin' %}
               <form method="POST"
                     action="{{ url_for('reviews.delete', review_id=review._id) }}"
-                    onsubmit="return confirm('리뷰를 삭제하시겠습니까?')">
-                <button type="submit" class="btn btn-link btn-sm text-danger p-0">
-                  <i class="fas fa-times"></i>
+                    data-confirm="{{ _('Delete this review?') }}">
+                <button type="submit" class="btn btn-link btn-sm text-danger p-0"
+                        aria-label="{{ _('Delete this review?') }}">
+                  <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
               </form>
               {% endif %}
@@ -163,18 +157,17 @@
         {% endfor %}
       {% else %}
       <div class="text-center py-4 text-muted">
-        <i class="fas fa-comment-slash fa-2x mb-2 d-block"></i>
-        아직 리뷰가 없습니다. 첫 리뷰를 작성해보세요!
+        <i class="fas fa-comment-slash fa-2x mb-2 d-block" aria-hidden="true"></i>
+        {{ _('No reviews yet. Be the first to write one!') }}
       </div>
       {% endif %}
     </div>
 
-    <!-- Right: Sidebar -->
     <div class="col-lg-4">
       <div class="detail-sidebar sticky-top" style="top: 80px;">
         <div class="sidebar-rating text-center mb-4">
           <div class="rating-big">{{ '%.1f' % spot.rating_avg }}</div>
-          <div class="text-warning mb-1">
+          <div class="text-warning mb-1" aria-hidden="true">
             {% for i in range(1, 6) %}
               {% if i <= spot.rating_avg | int %}
                 <i class="fas fa-star"></i>
@@ -185,26 +178,26 @@
               {% endif %}
             {% endfor %}
           </div>
-          <small class="text-muted">{{ spot.review_count | default(0) }}개의 리뷰</small>
+          <small class="text-muted">{{ _('%(n)s reviews', n=spot.review_count | default(0)) }}</small>
         </div>
 
         <hr />
 
         <ul class="list-unstyled sidebar-meta">
           <li>
-            <i class="fas fa-tag text-primary me-2"></i>
-            <strong>카테고리</strong>
-            <span class="float-end">{{ spot.category }}</span>
+            <i class="fas fa-tag text-primary me-2" aria-hidden="true"></i>
+            <strong>{{ _('Category') }}</strong>
+            <span class="float-end">{{ cat_labels.get(spot.category, spot.category) }}</span>
           </li>
           <li>
-            <i class="fas fa-map-marker-alt text-danger me-2"></i>
-            <strong>지역</strong>
+            <i class="fas fa-map-marker-alt text-danger me-2" aria-hidden="true"></i>
+            <strong>{{ _('Region') }}</strong>
             <span class="float-end">{{ spot.region }}</span>
           </li>
           {% if spot.address %}
           <li>
-            <i class="fas fa-location-dot text-success me-2"></i>
-            <strong>주소</strong>
+            <i class="fas fa-location-dot text-success me-2" aria-hidden="true"></i>
+            <strong>{{ _('Address') }}</strong>
             <div class="text-muted small mt-1">{{ spot.address }}</div>
           </li>
           {% endif %}

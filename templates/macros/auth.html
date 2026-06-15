@@ -1,0 +1,46 @@
+{# OAuth provider buttons. Renders a real button when the provider is
+   configured, otherwise a disabled control with a translated explanation.
+   `oauth_enabled` is supplied by a context processor. #}
+{% macro oauth_buttons(oauth_enabled, next_url='') %}
+<div class="oauth-divider" role="separator" aria-hidden="false">
+  <span>{{ _('or continue with') }}</span>
+</div>
+
+<div class="oauth-group">
+  {# ── Google ── #}
+  {% if oauth_enabled.get('google') %}
+  <a class="oauth-btn oauth-btn--google"
+     href="{{ url_for('oauth.login', provider='google', next=next_url) }}"
+     data-loading-label="{{ _('Connecting…') }}"
+     aria-label="{{ _('Continue with Google') }}">
+    <i class="fa-brands fa-google" aria-hidden="true"></i>
+    <span>{{ _('Continue with Google') }}</span>
+  </a>
+  {% else %}
+  <button type="button" class="oauth-btn oauth-btn--google" disabled
+          title="{{ _('Google sign-in is not configured on this server.') }}"
+          aria-label="{{ _('Google sign-in is not configured on this server.') }}">
+    <i class="fa-brands fa-google" aria-hidden="true"></i>
+    <span>{{ _('Continue with Google') }}</span>
+  </button>
+  {% endif %}
+
+  {# ── Kakao ── #}
+  {% if oauth_enabled.get('kakao') %}
+  <a class="oauth-btn oauth-btn--kakao"
+     href="{{ url_for('oauth.login', provider='kakao', next=next_url) }}"
+     data-loading-label="{{ _('Connecting…') }}"
+     aria-label="{{ _('Continue with Kakao') }}">
+    <i class="fa-solid fa-comment" aria-hidden="true"></i>
+    <span>{{ _('Continue with Kakao') }}</span>
+  </a>
+  {% else %}
+  <button type="button" class="oauth-btn oauth-btn--kakao" disabled
+          title="{{ _('Kakao sign-in is not configured on this server.') }}"
+          aria-label="{{ _('Kakao sign-in is not configured on this server.') }}">
+    <i class="fa-solid fa-comment" aria-hidden="true"></i>
+    <span>{{ _('Continue with Kakao') }}</span>
+  </button>
+  {% endif %}
+</div>
+{% endmacro %}

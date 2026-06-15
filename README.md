@@ -67,3 +67,111 @@ python app.py
 ```
 
 서버가 켜지면 웹 브라우저에서 `http://127.0.0.1:5000` 으로 접속하여 확인합니다.
+
+---
+
+# OAuth, Localization & Configuration Guide
+
+This application adds Google/Kakao OAuth login (Authlib), Korean/English
+localization (Flask-Babel), and a refreshed MDB UI on top of the existing
+username/password authentication. Legacy login keeps working unchanged.
+
+## Dependencies
+
+Runtime dependencies (`requirements.txt`):
+
+```bash
+pip install -r requirements.txt
+```
+
+Development/validation tools (`requirements-dev.txt` — pytest, ruff, mypy,
+types-requests, mongomock):
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+MongoDB must be running locally (default `mongodb://localhost:27017/`). The
+application starts even when OAuth secrets are absent — OAuth buttons render
+only for providers that are fully configured.
+
+## Environment variables
+
+Copy `.env.example` to `.env` and fill in real values (never commit `.env`):
+
+| Variable | Purpose |
+| --- | --- |
+| `SECRET_KEY` | Flask session signing key. Required in production. |
+| `MONGO_URI` | MongoDB connection string. |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth credentials. |
+| `KAKAO_CLIENT_ID` / `KAKAO_CLIENT_SECRET` | Kakao REST API key + (optional) secret. |
+| `SESSION_COOKIE_SECURE` | `true` in production HTTPS, leave unset/`false` for local HTTP. |
+| `TOUR_API_KEY`, `OLLAMA_*` | Existing TourAPI / local LLM settings. |
+
+In production (`DEBUG` off) the app logs a critical error if `SECRET_KEY` is
+missing — the development default is never silently used in production.
+
+Secure session cookies are enforced: `SESSION_COOKIE_HTTPONLY=True`,
+`SESSION_COOKIE_SAMESITE="Lax"`, and `SESSION_COOKIE_SECURE` controlled by the
+environment.
+
+## Google OAuth console setup
+
+1. Create an OAuth 2.0 Client ID (Web application) in the Google Cloud Console.
+2. Enable the OpenID Connect / userinfo scopes `openid`, `profile`, `email`.
+3. Add the authorized redirect URI exactly:
+   - `http://127.0.0.1:5000/auth/oauth/google/callback` (local)
+   - `https://YOUR_DOMAIN/auth/oauth/google/callback` (production)
+
+## Kakao Login & OIDC setup
+
+1. In Kakao Developers, register the app and enable **Kakao Login**.
+2. Enable **OpenID Connect (OIDC)** for the application.
+3. Request consent for **profile (nickname)** and **account email**.
+4. Use the **REST API key** as `KAKAO_CLIENT_ID` (set `KAKAO_CLIENT_SECRET`
+   only if a client secret is enabled for the app).
+5. Register the redirect URI exactly:
+   - `http://127.0.0.1:5000/auth/oauth/kakao/callback` (local)
+   - `https://YOUR_DOMAIN/auth/oauth/kakao/callback` (production)
+
+> Email linking only happens when the provider reports the email as **verified**
+> (`email_verified is true`). If consent for a verified email is missing, sign-in
+> fails safely with a translated message rather than linking an account.
+
+## Localization (Flask-Babel)
+
+Default locale is Korean (`ko`); English (`en`) is also supported. The active
+locale is chosen from the session, then the browser `Accept-Language` header,
+then the default. Use the navbar switcher or `POST /language/<locale>`.
+
+Extract, update and compile catalogs after changing source strings:
+
+```bash
+pybabel extract -F babel.cfg -o messages.pot .
+pybabel update -i messages.pot -d translations
+pybabel compile -d translations
+```
+
+## Non-destructive normalized-email migration
+
+New/updated users store an `email_normalized` field; lookups stay compatible
+with legacy records that lack it. To audit and backfill safely:
+
+```bash
+# Dry run (default): report what would change and any conflicts (no writes)
+flask --app app:create_app backfill-emails
+
+# Apply the backfill (idempotent, never deletes or merges accounts)
+flask --app app:create_app backfill-emails --apply
+```
+
+A unique normalized-email index should only be added after the dry run confirms
+there are no conflicting records.
+
+## Tests, lint & type checks
+
+```bash
+ruff check .
+mypy app.py config.py extensions routes models services
+pytest -q
+```
