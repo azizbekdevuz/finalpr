@@ -3,6 +3,7 @@
 Locale is passed explicitly from the route so generated descriptions match the
 selected UI language. Response keys returned to the client are unchanged
 (``summary`` / ``description``); only the natural-language content varies.
+Place keywords are always Korean (Hangul) for Tour API lookup, regardless of UI.
 """
 from __future__ import annotations
 
@@ -18,23 +19,53 @@ __all__ = [
     'OLLAMA_OFFLINE',
 ]
 
+# Romanized / English aliases → Korean keywords for the Tour API.
+_PLACE_ALIASES: dict[str, str] = {
+    'gyeongbokgung': '경복궁',
+    'gyeongbok palace': '경복궁',
+    'sokcho': '속초',
+    'jeju': '제주',
+    'jeju island': '제주',
+    'gyeongju': '경주',
+    'seoraksan': '설악산',
+    'mount seorak': '설악산',
+    'busan': '부산',
+    'seoul': '서울',
+    'incheon': '인천',
+    'gangneung': '강릉',
+}
+
+
+def _has_hangul(text: str) -> bool:
+    return bool(re.search(r'[가-힣]', text))
+
+
+def _normalize_keyword(keyword: str) -> str:
+    """Map common English/romanized names to Korean Tour API keywords."""
+    cleaned = keyword.strip()
+    if not cleaned or _has_hangul(cleaned):
+        return cleaned
+    return _PLACE_ALIASES.get(cleaned.lower(), cleaned)
+
 
 def extract_place(user_message: str) -> str:
-    """Extract a place/region keyword from a free-form user message."""
+    """Extract a Korean place keyword from a free-form user message."""
     messages = [
         {
             'role': 'system',
             'content': (
-                'You extract a Korean place name from a travel message.\n'
-                'Reply with JSON only: {"keyword": "place"}.\n'
+                'You extract a Korean place name in Hangul from a travel message in any language.\n'
+                'Reply with JSON only: {"keyword": "한글지명"}.\n'
+                'Always use the official Korean name (Hangul), never romanized English.\n'
+                'Examples: Gyeongbokgung → 경복궁, Busan → 부산, Jeju → 제주, Sokcho → 속초.\n'
                 'If there is no place: {"keyword": ""}.\n'
                 'Output a single JSON line with no code block or extra text.'
             ),
         },
-        {'role': 'user', 'content': f'Message: "{user_message}"\nExtract the place.'},
+        {'role': 'user', 'content': f'Message: "{user_message}"\nExtract the place in Hangul.'},
     ]
 
-    raw = ollama_chat(messages, max_tokens=80)
+    raw = ollama_chat(messages, max_tokens=48, temperature=0.2, num_ctx=1024)
     if raw == OLLAMA_OFFLINE:
         return OLLAMA_OFFLINE
     if not raw:
@@ -47,14 +78,14 @@ def extract_place(user_message: str) -> str:
             obj = json.loads(match.group())
             keyword = (obj.get('keyword') or '').strip()
             if keyword:
-                return keyword
+                return _normalize_keyword(keyword)
     except (ValueError, json.JSONDecodeError):
         pass
 
     for line in raw.split('\n'):
         line = re.sub(r'^\*+\s*', '', line.strip()).strip('"\'').strip()
         if line and len(line) <= 50 and not any(c in line for c in ['{', '}', '`']):
-            return line
+            return _normalize_keyword(line)
     return ''
 
 
@@ -79,70 +110,70 @@ def _build_spot_info(spots: list, overviews: list) -> str:
     for i, (spot, ov) in enumerate(zip(spots, overviews, strict=False), 1):
         title = spot.get('title', f'Spot {i}')
         addr = spot.get('addr1', '')
-        ov_text = (ov[:200] + '…') if len(ov or '') > 200 else (ov or '')
+        ov_text = (ov[:120] + '…') if len(ov or '') > 120 else (ov or '')
         lines.append(f'{i}. {title} ({addr}): {ov_text}')
     return '\n'.join(lines)
 
 
-def _prompts(locale: str, spot_info: str) -> tuple[list, list]:
-    """Build (summary_messages, description_messages) for the given locale.
-
-    Place names from the external API stay in their original language; only the
-    surrounding narration follows the selected locale.
-    """
+def _course_prompt(locale: str, spot_info: str) -> list[dict[str, str]]:
+    """Single prompt that returns both summary and description (one LLM round-trip)."""
     if _is_english(locale):
-        summary_sys = 'You are a Korea travel expert. Answer in English only.'
-        summary_user = (
-            f'Summarize this 3-spot travel course in one or two sentences.\n\n'
-            f'{spot_info}\n\nWrite only a short, appealing summary. Keep place names as given.'
+        sys = (
+            'You are a Korea travel expert. Reply with JSON only:\n'
+            '{"summary":"1-2 sentence course overview","description":"guide text"}.\n'
+            'Write in warm conversational English. Keep every place name exactly as given (Korean).\n'
+            'Description: 2 short sentences per spot in visiting order. No markdown.'
         )
-        desc_sys = (
-            'You are a friendly Korea travel guide.\n'
-            'Write in a warm, conversational English voice addressed to the visitor.\n'
-            'Avoid markdown and special symbols. Keep place names as given.'
-        )
-        desc_user = (
-            f'Introduce each of these 3 spots warmly, in visiting order.\n\n'
-            f'{spot_info}\n\nWrite 2-3 conversational sentences per spot.'
+        user = (
+            f'Create a travel course summary and guide for these 3 spots:\n\n{spot_info}\n\n'
+            'JSON only.'
         )
     else:
-        summary_sys = '당신은 한국 여행 전문가입니다. 한국어로만 답하세요.'
-        summary_user = (
-            f'다음 3개 관광지 코스를 한두 문장으로 요약해주세요.\n\n'
-            f'{spot_info}\n\n짧고 매력적인 요약문만 작성하세요.'
+        sys = (
+            '당신은 한국 여행 전문가입니다. JSON만 출력하세요:\n'
+            '{"summary":"한두 문장 요약","description":"가이드 본문"}.\n'
+            '친근한 대화체 한국어. 관광지 이름은 주어진 그대로 유지. 마크다운 금지.\n'
+            'description: 관광지마다 2문장씩 순서대로.'
         )
-        desc_sys = (
-            '당신은 친근하고 따뜻한 한국 여행 가이드입니다.\n'
-            '방문객에게 직접 말하는 대화체 한국어로 작성하세요.\n'
-            '마크다운, 특수기호, 영어는 최대한 피하세요.'
-        )
-        desc_user = (
-            f'다음 3개 관광지를 순서대로 방문하는 여행자에게 각 장소를 친근하게 소개해주세요.\n\n'
-            f'{spot_info}\n\n각 관광지마다 2~3문장씩 대화체로 작성하세요.'
+        user = (
+            f'다음 3개 관광지 코스의 요약과 가이드를 작성하세요:\n\n{spot_info}\n\n'
+            'JSON만 출력.'
         )
 
-    summary_msgs = [
-        {'role': 'system', 'content': summary_sys},
-        {'role': 'user', 'content': summary_user},
+    return [
+        {'role': 'system', 'content': sys},
+        {'role': 'user', 'content': user},
     ]
-    desc_msgs = [
-        {'role': 'system', 'content': desc_sys},
-        {'role': 'user', 'content': desc_user},
-    ]
-    return summary_msgs, desc_msgs
+
+
+def _parse_course_json(raw: str) -> dict[str, str]:
+    if not raw:
+        return {'summary': '', 'description': ''}
+    try:
+        cleaned = re.sub(r'```(?:json)?\s*', '', raw).replace('```', '').strip()
+        match = re.search(r'\{.*\}', cleaned, re.DOTALL)
+        if match:
+            obj = json.loads(match.group())
+            return {
+                'summary': clean_text((obj.get('summary') or '').strip()),
+                'description': clean_text((obj.get('description') or '').strip()),
+            }
+    except (ValueError, json.JSONDecodeError):
+        pass
+    parts = raw.split('\n\n', 1)
+    return {
+        'summary': clean_text(parts[0]),
+        'description': clean_text(parts[1] if len(parts) > 1 else ''),
+    }
 
 
 def generate_course_description(spots: list, overviews: list, locale: str = 'ko') -> dict[str, str]:
     """Generate a course summary + conversational description in ``locale``."""
     spot_info = _build_spot_info(spots, overviews)
-    summary_msgs, desc_msgs = _prompts(locale, spot_info)
+    messages = _course_prompt(locale, spot_info)
 
-    summary_raw = ollama_chat(summary_msgs, max_tokens=256)
-    if summary_raw == OLLAMA_OFFLINE:
+    raw = ollama_chat(messages, max_tokens=512, temperature=0.6, num_ctx=2048)
+    if raw == OLLAMA_OFFLINE:
         return _offline_result(locale)
 
-    desc_raw = ollama_chat(desc_msgs, max_tokens=1024)
-    return {
-        'summary': clean_text(summary_raw),
-        'description': clean_text(desc_raw),
-    }
+    return _parse_course_json(raw)

@@ -1,10 +1,12 @@
 """Flask-Babel wiring and locale selection for Korean/English localization."""
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
+from babel.dates import format_datetime as babel_format_datetime
 from flask import current_app, request, session
-from flask_babel import Babel
+from flask_babel import Babel, get_locale
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     from flask import Flask
@@ -50,3 +52,16 @@ def select_locale() -> str:
 def init_i18n(app: Flask) -> None:
     """Initialise Babel with the locale selector (Flask-Babel 4 style)."""
     babel.init_app(app, locale_selector=select_locale)
+
+    @app.template_filter('display_datetime')
+    def display_datetime_filter(value: datetime | None) -> str:
+        """Locale-aware datetime safe on Windows (avoids non-ASCII strftime format strings)."""
+        if value is None:
+            return ''
+        locale = str(get_locale() or app.config.get('BABEL_DEFAULT_LOCALE', 'ko'))
+        if locale.startswith('en'):
+            return babel_format_datetime(value, 'MMM d, yyyy HH:mm', locale='en')
+        return (
+            f'{value.year}년 {value.month:02d}월 {value.day:02d}일 '
+            f'{value.hour:02d}:{value.minute:02d}'
+        )

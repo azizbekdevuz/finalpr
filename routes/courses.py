@@ -1,5 +1,7 @@
 """Course pages, AI recommendation API, and saved courses."""
 
+from concurrent.futures import ThreadPoolExecutor
+
 from flask import Blueprint, jsonify, render_template, request, session
 from flask_babel import get_locale
 from flask_babel import gettext as _
@@ -90,17 +92,12 @@ def ai_recommend():
         )
 
     all_spots = [first_spot] + list(nearby_spots[:2])
-    enriched_spots = []
-    overviews      = []
 
-    for spot in all_spots:
-        cid    = str(spot.get('contentid', ''))
+    def _enrich_spot(spot: dict) -> tuple[dict, str]:
+        cid = str(spot.get('contentid', ''))
         common = fetch_detail_common(cid) if cid else {}
-
         overview = common.get('overview', '') or ''
-        overviews.append(overview)
-
-        enriched_spots.append({
+        enriched = {
             'contentid':  cid,
             'title':      spot.get('title') or common.get('title', ''),
             'addr1':      spot.get('addr1') or common.get('addr1', ''),
@@ -108,7 +105,14 @@ def ai_recommend():
             'mapx':       spot.get('mapx') or common.get('mapx', ''),
             'mapy':       spot.get('mapy') or common.get('mapy', ''),
             'overview':   overview[:300] + '…' if len(overview) > 300 else overview,
-        })
+        }
+        return enriched, overview
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        enriched_pairs = list(pool.map(_enrich_spot, all_spots))
+
+    enriched_spots = [pair[0] for pair in enriched_pairs]
+    overviews = [pair[1] for pair in enriched_pairs]
 
     llm_result = generate_course_description(enriched_spots, overviews, locale=locale)
 

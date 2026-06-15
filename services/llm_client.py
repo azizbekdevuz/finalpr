@@ -13,7 +13,13 @@ from flask import current_app
 OLLAMA_OFFLINE = '__OLLAMA_OFFLINE__'
 
 
-def ollama_chat(messages: list[dict[str, str]], max_tokens: int = 2048) -> str:
+def ollama_chat(
+    messages: list[dict[str, str]],
+    max_tokens: int = 2048,
+    *,
+    temperature: float = 0.7,
+    num_ctx: int = 4096,
+) -> str:
     """Call Ollama ``/api/chat`` and return the final text answer.
 
     Handles models that emit a separate ``thinking`` field by falling back to
@@ -29,10 +35,10 @@ def ollama_chat(messages: list[dict[str, str]], max_tokens: int = 2048) -> str:
         'messages': messages,
         'think': False,
         'options': {
-            'temperature': 0.7,
+            'temperature': temperature,
             'top_p': 0.9,
             'num_predict': max_tokens,
-            'num_ctx': 4096,
+            'num_ctx': num_ctx,
         },
     }
 
