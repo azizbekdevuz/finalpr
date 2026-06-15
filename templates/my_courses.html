@@ -39,11 +39,7 @@
         </div>
         <div class="saved-date">
           <i class="fas fa-clock me-1" aria-hidden="true"></i>
-          {% if current_locale == 'en' %}
-          {{ course.created_at.strftime('%b %d, %Y %H:%M') }}
-          {% else %}
-          {{ course.created_at.strftime('%Y년 %m월 %d일 %H:%M') }}
-          {% endif %}
+          {{ course.created_at | display_datetime }}
         </div>
       </div>
       <button class="delete-btn"
