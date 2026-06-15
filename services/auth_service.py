@@ -65,6 +65,30 @@ def _as_bool(value: Any) -> bool:
     return False
 
 
+def _normalize_avatar_url(raw: Any) -> str | None:
+    """Accept only HTTPS provider avatar URLs. / HTTPS 공급자 아바타 URL만 허용합니다."""
+    if not isinstance(raw, str):
+        return None
+    url = raw.strip()
+    if not url.startswith('https://'):
+        return None
+    return url
+
+
+def _extract_avatar_url(userinfo: Mapping[str, Any]) -> str | None:
+    """Map OIDC ``picture`` or Kakao profile URLs into a stored avatar URL."""
+    picture = _normalize_avatar_url(userinfo.get('picture'))
+    if picture:
+        return picture
+    profile = userinfo.get('profile')
+    if isinstance(profile, Mapping):
+        for key in ('profile_image_url', 'thumbnail_image_url'):
+            url = _normalize_avatar_url(profile.get(key))
+            if url:
+                return url
+    return None
+
+
 def build_claims(provider: Provider, userinfo: Mapping[str, Any]) -> OAuthClaims:
     """Map an Authlib-validated ``userinfo`` mapping into normalized claims.
 
@@ -74,7 +98,7 @@ def build_claims(provider: Provider, userinfo: Mapping[str, Any]) -> OAuthClaims
     subject = str(userinfo.get('sub', '')).strip()
     raw_email = userinfo.get('email')
     display_name = userinfo.get('name') or userinfo.get('nickname')
-    avatar_url = userinfo.get('picture')
+    avatar_url = _extract_avatar_url(userinfo)
 
     try:
         email_normalized = normalize_email(raw_email)
@@ -87,7 +111,7 @@ def build_claims(provider: Provider, userinfo: Mapping[str, Any]) -> OAuthClaims
         email_normalized=email_normalized,
         email_verified=_as_bool(userinfo.get('email_verified')),
         display_name=display_name.strip() if isinstance(display_name, str) else None,
-        avatar_url=avatar_url if isinstance(avatar_url, str) else None,
+        avatar_url=avatar_url,
     )
 
 
@@ -128,7 +152,12 @@ def _link_existing_user(
         from extensions.db import mongo
         mongo.db.oauth_identities.update_one(
             {'_id': stale_identity['_id']},
-            {'$set': {'user_id': user_id, 'provider_email': claims['email_normalized']}},
+            {'$set': {
+                'user_id': user_id,
+                'provider_email': claims['email_normalized'],
+                **({'avatar_url': claims['avatar_url']} if claims['avatar_url'] else {}),
+                **({'display_name': claims['display_name']} if claims['display_name'] else {}),
+            }},
         )
     else:
         try:
@@ -165,7 +194,8 @@ def resolve_oauth_user(provider: Provider, claims: OAuthClaims) -> Mapping[str, 
         user = UserModel.find_by_id(identity['user_id'])
         if user:
             IdentityModel.touch_identity(
-                provider, subject, provider_email=claims['email_normalized']
+                provider, subject, provider_email=claims['email_normalized'],
+                avatar_url=claims['avatar_url'], display_name=claims['display_name'],
             )
             return user
         # Orphan identity: rebuild link below. / 고아 identity는 아래에서 다시 연결합니다.

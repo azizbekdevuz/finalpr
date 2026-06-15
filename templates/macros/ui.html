@@ -28,6 +28,23 @@
 </div>
 {% endmacro %}
 
+{% macro user_avatar(avatar_url, username, size='sm') %}
+{% if avatar_url %}
+<img src="{{ avatar_url }}"
+     alt=""
+     class="user-avatar user-avatar--{{ size }}"
+     width="{% if size == 'lg' %}80{% else %}28{% endif %}"
+     height="{% if size == 'lg' %}80{% else %}28{% endif %}"
+     loading="lazy"
+     decoding="async"
+     referrerpolicy="no-referrer" />
+{% else %}
+<span class="user-avatar user-avatar--{{ size }} user-avatar--initial" aria-hidden="true">
+  {{ (username or 'U')[0]|upper }}
+</span>
+{% endif %}
+{% endmacro %}
+
 {% macro region_icon(icon) %}
 <span class="region-icon" aria-hidden="true"><i class="{{ icon }}"></i></span>
 {% endmacro %}

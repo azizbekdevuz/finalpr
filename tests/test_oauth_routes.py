@@ -53,6 +53,7 @@ def test_successful_callback_creates_session(client, app, monkeypatch, db):
     token = {'userinfo': {
         'sub': 'g-success', 'email': 'success@example.com',
         'email_verified': True, 'name': 'Success User',
+        'picture': 'https://lh3.googleusercontent.com/a/success',
     }}
     _patch_token(app, monkeypatch, token)
     resp = client.get('/auth/oauth/google/callback')
@@ -60,10 +61,12 @@ def test_successful_callback_creates_session(client, app, monkeypatch, db):
     with client.session_transaction() as sess:
         assert sess['user_id']
         assert sess['auth_provider'] == 'google'
+        assert sess['avatar_url'] == 'https://lh3.googleusercontent.com/a/success'
     assert db.users.count_documents({'email_normalized': 'success@example.com'}) == 1
     # Token material is never persisted.
     ident = db.oauth_identities.find_one({'subject': 'g-success'})
     assert 'access_token' not in ident and 'token' not in ident
+    assert ident['avatar_url'] == 'https://lh3.googleusercontent.com/a/success'
 
 
 def test_callback_unverified_email_rejected(client, app, monkeypatch, db):

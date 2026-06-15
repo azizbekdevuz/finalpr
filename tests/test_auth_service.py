@@ -121,3 +121,37 @@ def test_kakao_unverified_when_flag_absent(app, db):
     assert claims['email_verified'] is False
     with pytest.raises(OAuthEmailUnverified):
         resolve_oauth_user('kakao', claims)
+
+
+def test_build_claims_google_picture(app):
+    claims = build_claims('google', {
+        'sub': 'g-pic', 'email': 'pic@example.com', 'email_verified': True,
+        'picture': 'https://lh3.googleusercontent.com/a/example',
+    })
+    assert claims['avatar_url'] == 'https://lh3.googleusercontent.com/a/example'
+
+
+def test_build_claims_rejects_non_https_avatar(app):
+    claims = build_claims('google', {
+        'sub': 'g-pic', 'email': 'pic@example.com', 'email_verified': True,
+        'picture': 'http://insecure.example/photo.jpg',
+    })
+    assert claims['avatar_url'] is None
+
+
+def test_build_claims_kakao_profile_image(app):
+    claims = build_claims('kakao', {
+        'sub': 'k-pic', 'email': 'pic@example.com', 'email_verified': True,
+        'profile': {'profile_image_url': 'https://k.kakaocdn.net/dn/example/profile.jpg'},
+    })
+    assert claims['avatar_url'] == 'https://k.kakaocdn.net/dn/example/profile.jpg'
+
+
+def test_oauth_login_persists_avatar_url(app, db):
+    claims = build_claims('google', {
+        'sub': 'g-store', 'email': 'store@example.com', 'email_verified': True,
+        'picture': 'https://lh3.googleusercontent.com/a/stored',
+    })
+    resolve_oauth_user('google', claims)
+    ident = db.oauth_identities.find_one({'subject': 'g-store'})
+    assert ident['avatar_url'] == 'https://lh3.googleusercontent.com/a/stored'

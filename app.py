@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from flask import Flask
+from flask import Flask, session
 from flask_babel import get_locale
 from pymongo.errors import PyMongoError
 
@@ -95,6 +95,17 @@ def _register_context_processors(app: Flask) -> None:
         return {
             'oauth_enabled': {p: provider_configured(p) for p in SUPPORTED_PROVIDERS},
         }
+
+    @app.context_processor
+    def inject_user_avatar() -> dict[str, Any]:
+        user_id = session.get('user_id')
+        if not user_id:
+            return {'user_avatar_url': None}
+        url = session.get('avatar_url')
+        if not url:
+            from models import oauth_identity as IdentityModel
+            url = IdentityModel.find_avatar_for_user(user_id)
+        return {'user_avatar_url': url}
 
 
 def _register_cli(app: Flask) -> None:
