@@ -14,10 +14,10 @@ def is_safe_local_path(target: str | None) -> bool:
     """Return ``True`` when ``target`` is a safe same-host relative path."""
     if not target:
         return False
-    # Reject scheme-relative URLs like "//evil.example/path".
+    # Reject scheme-relative open redirects. / 스킴 상대 오픈 리디렉트를 거부합니다.
     if target.startswith('//'):
         return False
-    # Resolve against the current host and confirm it stays on this origin.
+    # Resolve on current host only. / 현재 호스트 기준으로만 해석합니다.
     host_url = request.host_url
     resolved = urljoin(host_url, target)
     parsed_host = urlparse(host_url)

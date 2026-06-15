@@ -88,7 +88,7 @@ def callback(provider: str) -> Any:
     client = oauth.create_client(provider)
 
     try:
-        # Authlib validates the OAuth state against the session here.
+        # Authlib validates OAuth state in session. / Authlib가 세션의 OAuth state를 검증합니다.
         token = client.authorize_access_token()
         if provider == 'kakao':
             userinfo = _resolve_kakao_userinfo(client, token, nonce)

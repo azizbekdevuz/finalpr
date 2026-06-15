@@ -45,8 +45,8 @@ class Config:
     # ── Session cookie hardening ──────────────────────────────────────────────────
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
-    # Enable Secure cookies only when running behind HTTPS (production). Keeping
-    # this False by default avoids breaking local HTTP development.
+    # EN: Secure cookies on HTTPS only; default False keeps local HTTP dev working.
+    # KO: HTTPS에서만 Secure 쿠키 사용. 기본 False는 로컬 HTTP 개발을 유지합니다.
     SESSION_COOKIE_SECURE = _env_bool('SESSION_COOKIE_SECURE', False)
     PERMANENT_SESSION_LIFETIME = timedelta(days=14)
     PREFERRED_URL_SCHEME = os.environ.get('PREFERRED_URL_SCHEME', 'http')

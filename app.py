@@ -40,8 +40,7 @@ def _ensure_indexes(app: Flask) -> None:
         try:
             mongo.db.users.create_index('username', unique=True)
             mongo.db.users.create_index('email', unique=True)
-            # Non-unique helper index for normalized-email lookups. A unique
-            # partial index is added only by the audited backfill command.
+            # Unique partial index only after audited backfill. / 감사된 백필 이후에만 유니크 부분 인덱스를 추가합니다.
             mongo.db.users.create_index('email_normalized')
             mongo.db.tourist_spots.create_index('name')
             mongo.db.tourist_spots.create_index('region')

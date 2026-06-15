@@ -40,11 +40,7 @@ def admin_required(f: F) -> F:
 
 
 def establish_session(user: Mapping[str, Any], provider: str | None = None) -> None:
-    """Start a fresh authenticated session (prevents session fixation).
-
-    Preserves the visitor's chosen locale, clears any stale data, then writes
-    the canonical session contract used across the application.
-    """
+    """Rotate auth session to mitigate fixation; preserve locale. / 세션 고정 완화를 위해 인증 세션을 교체하고 locale은 유지합니다."""
     locale = session.get('locale')
     session.clear()
     if locale:

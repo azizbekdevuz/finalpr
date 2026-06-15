@@ -1,7 +1,4 @@
-/* ─────────────────────────────────────────────────────
-   Gabojago — liquid-bg.js
-   Global cursor-responsive fluid background (no deps)
-───────────────────────────────────────────────────── */
+/* Gabojago — liquid-bg.js: cursor-responsive fluid background (no deps). / 커서 반응형 유체 배경 */
 (function () {
   'use strict';
 

@@ -107,7 +107,7 @@ body {
 
 html { background-color: var(--surface-0); }
 
-/* ── Liquid background layer ────────────────────────── */
+/* Liquid layer: fixed, non-interactive, behind content. / 고정·비상호작용 레이어로 콘텐츠 뒤에 배치 */
 .liquid-bg {
   position: fixed;
   inset: 0;

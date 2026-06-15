@@ -1,12 +1,8 @@
-/* ─────────────────────────────────────────────────────
-   Gabojago — main.js  v3
-   Navbar · Flash · Lazy load · Confirm · Motion
-───────────────────────────────────────────────────── */
+/* Gabojago main.js — navbar, flash, motion. / 네비·플래시·모션 UI */
 
 document.addEventListener('DOMContentLoaded', function () {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ── Navbar: scroll state ─────────────────────────── */
   const nav = document.getElementById('mainNav');
   if (nav) {
     let ticking = false;
@@ -23,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  /* ── Mobile nav: close on link tap ──────────────────── */
   const navMenu = document.getElementById('navMenu');
   if (navMenu && nav) {
     navMenu.querySelectorAll('.nav-link:not(.dropdown-toggle)').forEach(link => {
@@ -36,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ── Flash messages auto-dismiss ────────────────────── */
   document.querySelectorAll('.flash-container .alert').forEach(alert => {
     setTimeout(() => {
       try {
@@ -51,19 +45,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 4000);
   });
 
-  /* ── Lazy load fallback ─────────────────────────────── */
   document.querySelectorAll('img[data-src]').forEach(img => {
     img.src = img.dataset.src;
   });
 
-  /* ── Confirm destructive forms ──────────────────────── */
   document.querySelectorAll('form[data-confirm]').forEach(form => {
     form.addEventListener('submit', function (e) {
       if (!confirm(this.dataset.confirm)) e.preventDefault();
     });
   });
 
-  /* ── OAuth buttons: loading feedback ────────────────── */
   document.querySelectorAll('a.oauth-btn').forEach(btn => {
     btn.addEventListener('click', function () {
       if (this.classList.contains('is-loading')) return;
@@ -77,7 +68,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* ── Star rating hover (spot forms) ─────────────────── */
   document.querySelectorAll('.star-rating-input label, .star-pick label').forEach(label => {
     label.addEventListener('mouseenter', function () {
       if (!prefersReducedMotion) this.style.transform = 'scale(1.12)';
@@ -87,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* ── Button press feedback ──────────────────────────── */
   if (!prefersReducedMotion) {
     document.querySelectorAll('.btn, .chat-send-btn, .submit-btn, .oauth-btn, .region-tab-btn').forEach(btn => {
       btn.addEventListener('mousedown', () => { btn.style.transform = 'scale(0.98)'; });
@@ -96,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ── Card reveal on scroll ──────────────────────────── */
   if (!prefersReducedMotion && 'IntersectionObserver' in window) {
     const cardSelectors = [
       '.spot-card', '.region-card', '.new-spot-card',

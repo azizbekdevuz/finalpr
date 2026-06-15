@@ -19,7 +19,7 @@ def set_language(locale: str) -> Any:
     target = request.form.get('next') or request.referrer
     if is_supported(locale):
         session[SESSION_LOCALE_KEY] = locale
-        # Refresh so the confirmation flash uses the newly selected language.
+        # Flash after refresh so message uses new locale. / refresh 후 플래시가 새 locale로 표시됩니다.
         refresh()
         flash(_('Language updated.'), 'success')
     return redirect(safe_redirect_target(target))
