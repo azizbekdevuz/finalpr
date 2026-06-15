@@ -146,6 +146,18 @@ def _course_prompt(locale: str, spot_info: str) -> list[dict[str, str]]:
     ]
 
 
+def _coerce_text_field(value: object) -> str:
+    """Normalize LLM JSON fields that may be returned as strings or lists."""
+    if value is None:
+        return ''
+    if isinstance(value, str):
+        return value.strip()
+    if isinstance(value, list):
+        parts = [str(item).strip() for item in value if str(item).strip()]
+        return '\n\n'.join(parts)
+    return str(value).strip()
+
+
 def _parse_course_json(raw: str) -> dict[str, str]:
     if not raw:
         return {'summary': '', 'description': ''}
@@ -155,10 +167,10 @@ def _parse_course_json(raw: str) -> dict[str, str]:
         if match:
             obj = json.loads(match.group())
             return {
-                'summary': clean_text((obj.get('summary') or '').strip()),
-                'description': clean_text((obj.get('description') or '').strip()),
+                'summary': clean_text(_coerce_text_field(obj.get('summary'))),
+                'description': clean_text(_coerce_text_field(obj.get('description'))),
             }
-    except (ValueError, json.JSONDecodeError):
+    except (ValueError, json.JSONDecodeError, AttributeError, TypeError):
         pass
     parts = raw.split('\n\n', 1)
     return {
