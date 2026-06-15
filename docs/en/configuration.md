@@ -19,7 +19,7 @@ Copy `.env.example` to `.env` and fill in real values. **Never commit secrets.**
 | `SESSION_COOKIE_SECURE` | `True` on HTTPS production; `False` for local HTTP |
 | `PREFERRED_URL_SCHEME` | Use `https` in production |
 | `TOUR_API_KEY` | Korea Tourism Organization Tour API |
-| `OLLAMA_HOST` / `LLM_MODEL` | Local LLM (Ollama) endpoint and model |
+| `OLLAMA_HOST` / `LLM_MODEL` | Local LLM (Ollama) endpoint and model. Production setup: [Ollama in production](ollama-production.md) |
 
 ## Production security
 
