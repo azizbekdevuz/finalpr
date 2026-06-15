@@ -28,7 +28,7 @@ _NEXT_KEY = 'oauth_next'
 
 KAKAO_OIDC_USERINFO_URL = 'https://kapi.kakao.com/v1/oidc/userinfo'
 KAKAO_USER_ME_URL = 'https://kapi.kakao.com/v2/user/me'
-KAKAO_EMAIL_PROPERTY_KEYS = '["kakao_account.email"]'
+KAKAO_EMAIL_PROPERTY_KEYS = '["kakao_account.email","kakao_account.profile"]'
 KAKAO_FORM_CONTENT_TYPE = 'application/x-www-form-urlencoded;charset=utf-8'
 
 PROVIDER_LABELS = {'google': 'Google', 'kakao': 'Kakao'}
@@ -126,7 +126,7 @@ def callback(provider: str) -> Any:
         flash(_('Sign-in could not be completed. Please try again.'), 'danger')
         return redirect(url_for('auth.login'))
 
-    establish_session(user, provider=provider)
+    establish_session(user, provider=provider, avatar_url=claims['avatar_url'])
     current_app.logger.info(
         'OAuth login succeeded (provider=%s, user_id=%s).', provider, str(user['_id'])
     )
@@ -246,6 +246,10 @@ def _resolve_kakao_userinfo(
         profile = account.get('profile') or {}
         if nickname := profile.get('nickname'):
             claims.setdefault('nickname', nickname)
+        if picture := profile.get('profile_image_url') or profile.get('thumbnail_image_url'):
+            claims.setdefault('picture', picture)
+        if isinstance(profile, dict):
+            claims.setdefault('profile', profile)
 
     return claims
 

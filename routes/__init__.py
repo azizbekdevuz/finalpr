@@ -11,7 +11,7 @@ from flask_babel import gettext as _
 F = TypeVar('F', bound=Callable[..., Any])
 
 #: Session keys related to authentication (cleared on login/logout).
-_AUTH_KEYS = ('user_id', 'username', 'role', 'auth_provider')
+_AUTH_KEYS = ('user_id', 'username', 'role', 'auth_provider', 'avatar_url')
 
 
 def login_required(f: F) -> F:
@@ -39,8 +39,15 @@ def admin_required(f: F) -> F:
     return decorated_function  # type: ignore[return-value]
 
 
-def establish_session(user: Mapping[str, Any], provider: str | None = None) -> None:
+def establish_session(
+    user: Mapping[str, Any],
+    provider: str | None = None,
+    *,
+    avatar_url: str | None = None,
+) -> None:
     """Rotate auth session to mitigate fixation; preserve locale. / 세션 고정 완화를 위해 인증 세션을 교체하고 locale은 유지합니다."""
+    from models import oauth_identity as IdentityModel
+
     locale = session.get('locale')
     session.clear()
     if locale:
@@ -51,6 +58,9 @@ def establish_session(user: Mapping[str, Any], provider: str | None = None) -> N
     session['role'] = user.get('role', 'user')
     if provider:
         session['auth_provider'] = provider
+    resolved_avatar = avatar_url or IdentityModel.find_avatar_for_user(user['_id'])
+    if resolved_avatar:
+        session['avatar_url'] = resolved_avatar
 
 
 def logout_session() -> None:

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% from 'macros/ui.html' import user_avatar %}
 {% block title %}{{ _('My Page') }} — {{ _('Gabojago') }}{% endblock %}
 
 {% block content %}
@@ -17,8 +18,8 @@
   <div class="row g-4 mb-5">
     <div class="col-md-4">
       <div class="profile-card text-center">
-        <div class="profile-avatar">
-          {{ session.get('username', 'U')[0].upper() }}
+        <div class="profile-avatar-wrap">
+          {{ user_avatar(user_avatar_url, session.get('username'), 'lg') }}
         </div>
         <h2 class="h5 fw-bold mt-3 mb-1">{{ session.get('username') }}</h2>
         <span class="badge {% if session.get('role') == 'admin' %}bg-danger{% else %}bg-primary{% endif %}">

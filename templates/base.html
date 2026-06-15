@@ -29,6 +29,7 @@
 </div>
 
 {% from 'macros/language.html' import language_switcher %}
+{% from 'macros/ui.html' import user_avatar %}
 
 <!-- ═══════════════════ NAVBAR ═══════════════════ -->
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
@@ -87,10 +88,12 @@
           </li>
           {% endif %}
           <li class="nav-item dropdown">
-            <a class="nav-link nav-member-btn dropdown-toggle" href="#"
+            <a class="nav-link nav-member-btn dropdown-toggle d-inline-flex align-items-center gap-2"
+               href="#"
                id="userDropdown" role="button"
                data-mdb-dropdown-init aria-expanded="false">
-              <i class="fas fa-user-circle me-1" aria-hidden="true"></i>{{ session.get('username') }}
+              {{ user_avatar(user_avatar_url, session.get('username'), 'sm') }}
+              <span class="nav-member-name">{{ session.get('username') }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li>

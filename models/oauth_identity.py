@@ -57,9 +57,37 @@ def create_identity(
     return str(result.inserted_id)
 
 
-def touch_identity(provider: str, subject: str, *, provider_email: str | None) -> None:
-    """Refresh the ``updated_at`` timestamp (and last seen email) on login."""
+def touch_identity(
+    provider: str,
+    subject: str,
+    *,
+    provider_email: str | None,
+    avatar_url: str | None = None,
+    display_name: str | None = None,
+) -> None:
+    """Refresh identity metadata on login (email, avatar, display name)."""
+    updates: dict[str, Any] = {'updated_at': _now(), 'provider_email': provider_email}
+    if avatar_url:
+        updates['avatar_url'] = avatar_url
+    if display_name:
+        updates['display_name'] = display_name
     mongo.db.oauth_identities.update_one(
         {'provider': provider, 'subject': subject},
-        {'$set': {'updated_at': _now(), 'provider_email': provider_email}},
+        {'$set': updates},
     )
+
+
+def find_avatar_for_user(user_id: str | ObjectId) -> str | None:
+    """Return the newest OAuth provider avatar URL for a user, if any."""
+    doc = mongo.db.oauth_identities.find_one(
+        {
+            'user_id': ObjectId(user_id),
+            'avatar_url': {'$type': 'string', '$ne': ''},
+        },
+        sort=[('updated_at', -1)],
+        projection={'avatar_url': 1},
+    )
+    if not doc:
+        return None
+    url = doc.get('avatar_url')
+    return url if isinstance(url, str) and url.strip() else None
