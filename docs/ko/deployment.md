@@ -43,7 +43,7 @@ gunicorn --bind 0.0.0.0:$PORT --workers 2 wsgi:app
 
 ## 제한 사항
 
-- **Ollama**는 대부분의 무료 PaaS에서 실행할 수 없습니다. AI 코스 기능은 오프라인으로 표시될 수 있습니다.
+- **Ollama**는 대부분의 무료 PaaS에서 실행할 수 없습니다. AI 코스 기능은 오프라인으로 표시될 수 있습니다. 로컬 Ollama를 터널로 연결하려면 [프로덕션 Ollama](ollama-production.md)를 참고하세요.
 - `static/uploads`는 ephemeral 디스크일 수 있어 재배포 시 업로드가 사라질 수 있습니다.
 - OAuth 콘솔에 프로덕션 콜백 URL과 Kakao 허용 IP를 등록해야 합니다.
 

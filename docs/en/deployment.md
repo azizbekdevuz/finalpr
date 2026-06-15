@@ -43,7 +43,7 @@ Add `gunicorn` to `requirements.txt`.
 
 ## Limitations
 
-- **Ollama** usually cannot run on free PaaS; AI course features may appear offline.
+- **Ollama** usually cannot run on free PaaS; AI course features may appear offline. See [Ollama in production](ollama-production.md) to tunnel a local instance.
 - `static/uploads` may use ephemeral disk and be lost on redeploy.
 - Register production OAuth callback URLs and Kakao allowed IPs.
 

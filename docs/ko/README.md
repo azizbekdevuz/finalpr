@@ -17,5 +17,6 @@
 | [데이터 마이그레이션](migrations.md) | 이메일 정규화 백필(비파괴) |
 | [테스트·검증](testing.md) | pytest, ruff, mypy |
 | [배포](deployment.md) | 무료/저비용 프로덕션 배포 개요 |
+| [프로덕션 Ollama](ollama-production.md) | 호스팅 앱과 로컬 Ollama 연결 (ngrok, 환경 변수) |
 
 루트 [README.md](../../README.md)에서 프로젝트 개요와 빠른 시작을 확인할 수 있습니다.

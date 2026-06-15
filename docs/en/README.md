@@ -17,5 +17,6 @@ Gabojago project documentation. The guides below follow the same order from loca
 | [Data migrations](migrations.md) | Non-destructive normalized-email backfill |
 | [Testing](testing.md) | pytest, ruff, mypy |
 | [Deployment](deployment.md) | Free and low-cost production hosting overview |
+| [Ollama in production](ollama-production.md) | Connect hosted app to local Ollama (ngrok, env vars) |
 
 See the root [README.en.md](../../README.en.md) for a project overview and quick start.

@@ -19,7 +19,7 @@
 | `SESSION_COOKIE_SECURE` | HTTPS 프로덕션에서 `True`, 로컬 HTTP는 `False` |
 | `PREFERRED_URL_SCHEME` | 프로덕션에서 `https` 권장 |
 | `TOUR_API_KEY` | 한국관광공사 Tour API |
-| `OLLAMA_HOST` / `LLM_MODEL` | 로컬 LLM(Ollama) 엔드포인트·모델 |
+| `OLLAMA_HOST` / `LLM_MODEL` | 로컬 LLM(Ollama) 엔드포인트·모델. 프로덕션 연결: [프로덕션 Ollama](ollama-production.md) |
 
 ## 프로덕션 보안
 
